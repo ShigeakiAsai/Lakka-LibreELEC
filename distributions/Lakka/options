@@ -321,7 +321,7 @@
                  "
 
 # disable some cores
-    if [ "${PROJECT}" = "RPi" -a "${DEVICE}" = "RPi" -o "${DEVICE}" = "GPICase" -o "${DEVICE}" = "Pi02GPi" ]; then
+    if [ "${PROJECT}" = "RPi" -a "${DEVICE}" = "RPi" -o "${DEVICE}" = "GPICase" -o "${DEVICE}" = "RPiZero-GPiCASE2W" -o "${DEVICE}" = "Pi02GPi" ]; then
       EXCLUDE_LIBRETRO_CORES+="\
                                beetle_bsnes \
                                beetle_psx \
@@ -396,10 +396,10 @@
   fi
 
 # disable cores that are only for specific targets
-  # fbalpha2012 and mame2000 only for RPi/GPICase
+  # fbalpha2012 and mame2000 only for RPi/GPICase/RPiZero-GPiCASE2W
   if [ "${PROJECT}" != "RPi" ]; then
     EXCLUDE_LIBRETRO_CORES+=" fbalpha2012 mame2000"
-  elif [ "${DEVICE}" != "RPi" -a "${DEVICE}" != "GPICase" ]; then
+  elif [ "${DEVICE}" != "RPi" -a "${DEVICE}" != "GPICase"  -a "${DEVICE}" != "RPiZero-GPiCASE2W" ]; then
     EXCLUDE_LIBRETRO_CORES+=" fbalpha2012 mame2000"
   fi
   # boom3 and vitaquake for now only for Switch

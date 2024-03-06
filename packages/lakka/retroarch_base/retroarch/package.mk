@@ -266,7 +266,7 @@ makeinstall_target() {
   fi
 
   # GPICase
-  if [ "${PROJECT}" = "RPi" ] && [ "${DEVICE}" = "GPICase" -o "${DEVICE}" = "Pi02GPi" ]; then
+  if [ "${PROJECT}" = "RPi" ] && [ "${DEVICE}" = "GPICase" -o "${DEVICE}" = "Pi02GPi" -o "${DEVICE}" = "RPiZero-GPiCASE2W" ]; then
     sed -i -e 's|^input_menu_toggle_gamepad_combo =.*|input_menu_toggle_gamepad_combo = "4"|' ${INSTALL}/etc/retroarch.cfg
     sed -i -e 's|^menu_driver =.*|menu_driver = "rgui"|' ${INSTALL}/etc/retroarch.cfg
     echo 'audio_device = "default:CARD=Headphones"' >> ${INSTALL}/etc/retroarch.cfg
@@ -276,7 +276,7 @@ makeinstall_target() {
     echo 'audio_out_rate = "44100"' >> ${INSTALL}/etc/retroarch.cfg
     echo 'video_font_size = "16"' >> ${INSTALL}/etc/retroarch.cfg
 
-    if [ "${DEVICE}" = "GPICase" ]; then
+    if [ "${DEVICE}" = "GPICase" -o "${DEVICE}" = "RPiZero-GPiCASE2W" ]; then
       sed -i -e 's|^video_threaded =.*|video_threaded = "false"|' ${INSTALL}/etc/retroarch.cfg
       echo 'video_scale_integer = "true"' >> ${INSTALL}/etc/retroarch.cfg
     fi

@@ -7,6 +7,9 @@ PKG_LONGDESC="Package to install a service"
 PKG_TOOLCHAIN="manual"
 
 post_install() {
+  # When "${DEVICE}" = "RPiZero-GPiCASE2W"
+  # HDMI is already disabled by KMS(vc4-kms-v3d) in distroconfig.txt.
+  # Therefore, it does not enable "disable-hdmi.service".
   if [ "${PROJECT}" = "RPi" ] && [ "${DEVICE}" = "GPICase" -o "${DEVICE}" = "Pi02GPi" ]; then
     enable_service disable-hdmi.service
   fi

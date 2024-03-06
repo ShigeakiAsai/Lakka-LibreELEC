@@ -17,7 +17,7 @@ PKG_LIBVAR="SNES9X2002_LIB"
 
 PKG_MAKE_OPTS_TARGET="platform=unix"
 
-if [ "${PROJECT}" = "RPi" ] && [ "${DEVICE}" = "RPi" -o "${DEVICE}" = "GPICase" ]; then
+if [ "${PROJECT}" = "RPi" ] && [ "${DEVICE}" = "RPi" -o "${DEVICE}" = "GPICase" -o "${DEVICE}" = "RPiZero-GPiCASE2W" ]; then
   PKG_MAKE_OPTS_TARGET+=" ARM_ASM=1"
 fi
 
