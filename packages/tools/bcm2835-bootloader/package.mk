@@ -46,6 +46,14 @@ makeinstall_target() {
       echo "dtparam=audio=on" >> ${INSTALL}/usr/share/bootloader/distroconfig.txt
       echo "hdmi_max_pixel_freq:0=200000000" >> ${INSTALL}/usr/share/bootloader/distroconfig.txt
       echo "hdmi_max_pixel_freq:1=200000000" >> ${INSTALL}/usr/share/bootloader/distroconfig.txt
+      if [ "${DEVICE}" = "RPi4-Picade" ]; then
+        sed -i -e 's/dtparam=audio=on/dtparam=audio=off/g' ${INSTALL}/usr/share/bootloader/distroconfig.txt
+        # Generate distroconfig.txt file for Picade Console
+        cp -v ${INSTALL}/usr/share/bootloader/distroconfig.txt ${INSTALL}/usr/share/bootloader/distroconfig.PicadeConsole.txt
+        sed -i -e 's/dtoverlay=vc4-kms-v3d,cma-512,noaudio/dtoverlay=vc4-kms-v3d,cma-512/g' ${INSTALL}/usr/share/bootloader/distroconfig.PicadeConsole.txt
+        sed -i -e 's/dtoverlay=picade/dtoverlay=picade,coin=0x13a,start=0x13b/g' ${INSTALL}/usr/share/bootloader/distroconfig.PicadeConsole.txt
+        sed -i '/include distroconfig.txt/a #include distroconfig.PicadeConsole.txt' ${INSTALL}/usr/share/bootloader/config.txt
+      fi
       echo "force_turbo=0" >> ${INSTALL}/usr/share/bootloader/config.txt
     fi
 }

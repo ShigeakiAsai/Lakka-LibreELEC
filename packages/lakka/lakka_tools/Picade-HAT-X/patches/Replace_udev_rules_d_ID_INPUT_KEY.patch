@@ -1,0 +1,7 @@
+diff --git a/lakka-driver/10-picade.rules b/lakka-driver/10-picade.rules
+index 29ecb92..484d5f4 100644
+--- a/lakka-driver/10-picade.rules
++++ b/lakka-driver/10-picade.rules
+@@ -1 +1 @@
+-SUBSYSTEM=="input", ATTRS{name}=="gpio_keys", ENV{ID_INPUT_KEYBOARD}="1"
++SUBSYSTEM=="input", ATTRS{name}=="gpio_keys", ENV{ID_INPUT_KEY}="1"

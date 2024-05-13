@@ -1,0 +1,20 @@
+diff --git a/udev/gpio_keys.cfg b/udev/gpio_keys.cfg
+new file mode 100644
+index 0000000..2c06bcd
+--- /dev/null
++++ b/udev/gpio_keys.cfg
+@@ -0,0 +1,14 @@
++input_driver = "udev"
++input_device = "gpio_keys"
++input_vendor_id = "1"
++input_product_id = "1"
++input_b_btn = "4"
++input_y_btn = "6"
++input_select_btn = "13"
++input_a_btn = "5"
++input_x_btn = "7"
++input_l_btn = "8"
++input_r_btn = "9"
++input_l2_btn = "10"
++input_r2_btn = "11"
++input_start_btn = "12"

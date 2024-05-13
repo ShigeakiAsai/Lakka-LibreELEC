@@ -33,6 +33,11 @@ post_makeinstall_target() {
 
   mkdir -p ${INSTALL}/usr/config
     cp -PR ${PKG_DIR}/config/modprobe.d ${INSTALL}/usr/config
+
+  if [ "${DISTRO}" = "Lakka" ] && [ "${DEVICE}" = "RPi4-Picade" ]; then
+    mkdir -p ${INSTALL}/etc
+      cp -PRv ${PKG_BUILD}/asound.conf.RPi4-Picade ${INSTALL}/etc/asound.conf
+  fi
 }
 
 post_install() {

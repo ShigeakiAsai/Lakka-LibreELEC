@@ -314,6 +314,11 @@ makeinstall_target() {
     sed -i -e 's|^menu_driver =.*|menu_driver = "ozone"|' ${INSTALL}/etc/retroarch.cfg
   fi
 
+  # PIMORONI Picade
+  if [ "${DEVICE}" = "RPi4-Picade" ]; then
+    sed -i -e 's|^input_menu_toggle_gamepad_combo =.*|input_menu_toggle_gamepad_combo = "10"|' ${INSTALL}/etc/retroarch.cfg
+  fi
+
   # iMX6
   if [ "${PROJECT}" = "NXP" -a "${DEVICE}" = "iMX6" ]; then
     echo 'audio_device = "default:CARD=DWHDMI"' >> ${INSTALL}/etc/retroarch.cfg

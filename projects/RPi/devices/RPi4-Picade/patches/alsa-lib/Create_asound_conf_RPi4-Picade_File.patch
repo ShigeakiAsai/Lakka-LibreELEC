@@ -1,0 +1,25 @@
+--- a/asound.conf.RPi4-Picade	2024-05-02 09:50:40.309898832 +0900
++++ b/asound.conf.RPi4-Picade	2024-05-02 09:50:29.099891994 +0900
+@@ -0,0 +1,22 @@
++pcm.!default {
++    type plug
++    slave.pcm "picade-x-hat-audio"
++}
++
++pcm.picade-x-hat-audio {
++    type softvol
++    slave {
++        pcm "plughw:sndrpihifiberry"
++    }
++    control {
++        name "Softmaster"
++        card sndrpihifiberry
++    }
++    min_dB -60.0
++    max_dB -18.0
++}
++
++ctl.!default {
++    type hw
++    card sndrpihifiberry
++}
