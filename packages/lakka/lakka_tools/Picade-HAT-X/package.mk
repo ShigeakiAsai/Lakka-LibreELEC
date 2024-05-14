@@ -4,7 +4,7 @@
 PKG_NAME="Picade-HAT-X"
 PKG_VERSION="df02844c0cd773af5b908f47eac5fb1f7f361531"
 PKG_ARCH="aarch64"
-PKG_LICENSE="none"
+PKG_LICENSE="MIT"
 PKG_SITE="https://github.com/pimoroni/picade-hat"
 PKG_URL="${PKG_SITE}.git"
 PKG_DEPENDS_TARGET="toolchain dtc alsa-lib"
