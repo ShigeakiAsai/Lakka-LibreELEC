@@ -193,7 +193,7 @@ SAY =======
 SAY live: boot ${DISTRO} using this USB memory device for storage
 SAY installer: permanently install ${DISTRO} to HDD/SSD
 EOF
-    if [ "${LAKKA_DEVBUILD}" = "yes" -o "${LAKKA_NIGHTLY}" = "yes" ]; then
+    if [ ! "${LAKKA_BUILD_TYPE}" = "release" ]; then
       cat << EOF >> "${LE_TMP}/syslinux.cfg"
 SAY debug: boot ${DISTRO} to console for debugging
 EOF
@@ -212,7 +212,7 @@ LABEL installer
   KERNEL /${KERNEL_NAME}
   APPEND boot=UUID=${UUID_SYSTEM} installer quiet systemd.debug_shell vga=current
 EOF
-    if [ "${LAKKA_DEVBUILD}" = "yes" -o "${LAKKA_NIGHTLY}" = "yes" ]; then
+    if [ ! "${LAKKA_BUILD_TYPE}" = "release" ]; then
       cat << EOF >> "${LE_TMP}/syslinux.cfg"
 
 LABEL debug
@@ -235,7 +235,7 @@ menuentry "Install ${DISTRO} to HDD/SSD" {
 	linux /KERNEL boot=UUID=${UUID_SYSTEM} installer quiet systemd.debug_shell vga=current
 }
 EOF
-      if [ "${LAKKA_DEVBUILD}" = "yes" -o "${LAKKA_NIGHTLY}" = "yes" ]; then
+      if [ ! "${LAKKA_BUILD_TYPE}" = "release" ]; then
         cat << EOF >> "${LE_TMP}/grub.cfg"
 menuentry "Debug ${DISTRO} (console)" {
 	search --set -f /KERNEL

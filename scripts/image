@@ -57,8 +57,7 @@ function do_mkimage() {
     STORAGE_SIZE="${STORAGE_SIZE:-32}" \
     OVA_SIZE="${OVA_SIZE}" \
     SKIP_VIRTUAL_APPLIANCE="${SKIP_VIRTUAL_APPLIANCE}" \
-    LAKKA_DEVBUILD="${LAKKA_DEVBUILD:-no}" \
-    LAKKA_NIGHTLY="${LAKKA_NIGHTLY:-no}" \
+    LAKKA_BUILD_TYPE="${LAKKA_BUILD_TYPE:-release}" \
     ${SCRIPTS}/mkimage
 }
 
