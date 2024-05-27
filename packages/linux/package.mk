@@ -348,8 +348,6 @@ pre_make_target() {
     kernel_make olddefconfig
     kernel_make prepare
     kernel_make modules_prepare
-  elif [ "${DISTRO}" = "Lakka" ]; then
-    kernel_make olddefconfig
   else
     kernel_make listnewconfig
     if [ "${INTERACTIVE_CONFIG}" = "yes" ]; then
