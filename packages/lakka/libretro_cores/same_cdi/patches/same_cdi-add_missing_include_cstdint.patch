@@ -1,0 +1,12 @@
+diff --git a/src/osd/modules/lib/osdlib.h b/src/osd/modules/lib/osdlib.h
+index 4a06b70..361da9b 100644
+--- a/src/osd/modules/lib/osdlib.h
++++ b/src/osd/modules/lib/osdlib.h
+@@ -21,6 +21,7 @@
+ #include <type_traits>
+ #include <vector>
+ #include <memory>
++#include <cstdint>
+ 
+ /*-----------------------------------------------------------------------------
+     osd_process_kill: kill the current process
