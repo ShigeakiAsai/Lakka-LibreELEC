@@ -31,10 +31,6 @@ if [ "${VULKAN_SUPPORT}" = yes ]; then
   PKG_CMAKE_OPTS_TARGET+=" -DUSE_VULKAN=ON"
 fi
 
-if [ "${PROJECT}" = "RPi" -a "${DEVICE}" = "RPi5" ]; then
-  PKG_CMAKE_OPTS_TARGET+=" -DPAGE_SIZE=16384"
-fi
-
 pre_make_target() {
   find ${PKG_BUILD} -name flags.make -exec sed -i "s:isystem :I:g" \{} \;
   find ${PKG_BUILD} -name build.ninja -exec sed -i "s:isystem :I:g" \{} \;
