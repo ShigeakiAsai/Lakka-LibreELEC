@@ -1,0 +1,16 @@
+diff --git a/deps/libgo2/src/display.c b/deps/libgo2/src/display.c
+index b91cf0624b..3b0c9a781c 100644
+--- a/deps/libgo2/src/display.c
++++ b/deps/libgo2/src/display.c
+@@ -636,6 +636,11 @@ void go2_surface_blit(go2_surface_t* srcSurface, int srcX, int srcY, int srcWidt
+     if (ret)
+     {
+         printf("c_RkRgaBlit failed.\n");
++        // Retroarch is failed first time launching.
++        // So exit.
++        // This like workaraound.
++        fprintf(stderr, "c_RkRgaBlit failed.\n");
++        exit(1);
+     }
+ }
+ 

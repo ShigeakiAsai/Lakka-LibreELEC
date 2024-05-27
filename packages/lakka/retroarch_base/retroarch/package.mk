@@ -107,7 +107,7 @@ if [[ "${TARGET_FPU}" =~ "neon" ]]; then
   fi
 fi
 
-if [ "${DEVICE}" = "OdroidGoAdvance" ]; then
+if [ "${DEVICE}" = "RK3326" ]; then
   PKG_DEPENDS_TARGET+=" librga"
   PKG_CONFIGURE_OPTS_TARGET+=" --enable-odroidgo2"
 fi
@@ -196,7 +196,7 @@ makeinstall_target() {
   # Power settings
   # Use ondemand for all RPi devices (for backwards compatibility?)
   # and any battery powered device (OGA and RPi case)
-  if [ "${PROJECT}" = "RPi" ] || [ "${DEVICE}" = "OdroidGoAdvance" ]; then
+  if [ "${PROJECT}" = "RPi" ] || [ "${DEVICE}" = "RK3326" ]; then
     echo 'cpu_main_gov = "ondemand"' >> ${INSTALL}/etc/retroarch.cfg
     echo 'cpu_menu_gov = "ondemand"' >> ${INSTALL}/etc/retroarch.cfg
     echo 'cpu_scaling_mode = "1"' >> ${INSTALL}/etc/retroarch.cfg
@@ -257,8 +257,8 @@ makeinstall_target() {
   echo 'playlist_entry_rename = "false"' >> ${INSTALL}/etc/retroarch.cfg
   echo 'playlist_entry_remove = "false"' >> ${INSTALL}/etc/retroarch.cfg
 
-  # OdroidGoAdvance
-  if [ "${DEVICE}" = "OdroidGoAdvance" ]; then
+  # RK3326(OdroidGoAdvance)
+  if [ "${DEVICE}" = "RK3326" ]; then
     echo 'xmb_layout = "2"' >> ${INSTALL}/etc/retroarch.cfg
     echo 'menu_widget_scale_auto = "false"' >> ${INSTALL}/etc/retroarch.cfg
     echo 'menu_widget_scale_factor = "2.25"' >> ${INSTALL}/etc/retroarch.cfg

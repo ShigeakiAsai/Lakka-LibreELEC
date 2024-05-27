@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
+
+SRCDIR="${BUILD}/image/system/usr/share/bootloader"
+DSTDIR="${RELEASE_DIR}/3rdparty/bootloader"
+
+mkdir -p "${DSTDIR}"
+if [ -n "${UBOOT_SYSTEM}" ]; then
+
+  if [ -f "${SRCDIR}/idbloader.img" ]; then
+    cp -av "${SRCDIR}/idbloader.img" "${DSTDIR}"
+  else
+    echo "release: ${SRCDIR}/idbloader.img does not exist."
+    exit 1
+  fi
+
+  if [ -f "${SRCDIR}/uboot.img" ]; then
+    cp -av "${SRCDIR}/uboot.img" "${DSTDIR}"
+  else
+    echo "release: ${SRCDIR}/uboot.img does not exist."
+    exit 1
+  fi
+
+  if [ -f "${SRCDIR}/trust.img" ]; then
+    cp -av "${SRCDIR}/trust.img" "${DSTDIR}"
+  else
+    echo "release: ${SRCDIR}/trust.img does not exist."
+    exit 1
+  fi
+
+  if [ -f "${SRCDIR}/boot.ini" ]; then
+    cp -av "${SRCDIR}/boot.ini" "${DSTDIR}"
+    sed -e "s/@UUID_SYSTEM@/${UUID_SYSTEM}/" \
+        -e "s/@UUID_STORAGE@/${UUID_STORAGE}/" \
+        -e "s/@EXTRA_CMDLINE@/${EXTRA_CMDLINE}/" \
+        -e "s/@UBOOT_SYSTEM@/${UBOOT_SYSTEM}/" \
+        -i "${DSTDIR}/boot.ini"
+  else
+    echo "release: ${SRCDIR}/boot.ini does not exist."
+    exit 1
+  fi
+
+  cp -av "${SRCDIR}/${DEVICE,,}"*.dtb "${DSTDIR}"
+
+fi

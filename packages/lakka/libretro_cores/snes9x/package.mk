@@ -9,8 +9,8 @@ PKG_TOOLCHAIN="make"
 
 PKG_MAKE_OPTS_TARGET="-C libretro/"
 
-if [ "${DEVICE}" = "OdroidGoAdvance" ]; then
-  PKG_MAKE_OPTS_TARGET+=" platform=classic_armv8_a35"
+if [ "${DEVICE}" = "RK3326" ]; then
+  [ "${ARCH}" = "arm"] && PKG_MAKE_OPTS_TARGET+=" platform=classic_armv8_a35"
 fi
 
 makeinstall_target() {

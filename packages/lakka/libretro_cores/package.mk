@@ -248,6 +248,11 @@ if [ "${DEVICE}" = "Switch" ]; then
   EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
 fi
 
+# RK3326 trial
+if [ "${DEVICE}" = "RK3326" ]; then
+  EXCLUDE_LIBRETRO_CORES+=" flycast melonds vircon32 vice vitaquake2"
+fi
+
 # disable cores that do not build for OPENGLES
 if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   EXCLUDE_LIBRETRO_CORES+=" kronos"

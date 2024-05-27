@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
+
+RK3326_BOOT_FILES_DIR="${RELEASE_DIR}/3rdparty/bootloader"
+
+if [ -f "${RK3326_BOOT_FILES_DIR}/idbloader.img" ]; then
+  echo "image: burn idbloader.img to image..."
+  dd if="${RK3326_BOOT_FILES_DIR}/idbloader.img" of="$DISK" bs=32k seek=1 conv=sync,noerror,notrunc >"$SAVE_ERROR" 2>&1 || show_error
+fi
+
+if [ -f "${RK3326_BOOT_FILES_DIR}/uboot.img" ]; then
+  echo "image: burn uboot.img to image..."
+  dd if="${RK3326_BOOT_FILES_DIR}/uboot.img" of="$DISK" bs=512 seek=16384 conv=sync,noerror,notrunc >"$SAVE_ERROR" 2>&1 || show_error
+fi
+
+if [ -f "${RK3326_BOOT_FILES_DIR}/trust.img" ]; then
+  echo "image: burn trust.img to image..."
+  dd if="${RK3326_BOOT_FILES_DIR}/trust.img" of="$DISK" bs=512 seek=24576 conv=sync,noerror,notrunc >"$SAVE_ERROR" 2>&1 || show_error
+fi
+
+if [ -f "${RK3326_BOOT_FILES_DIR}/boot.ini" ]; then
+  echo "image: copy boot.ini to root..."
+  mcopy "${RK3326_BOOT_FILES_DIR}/boot.ini" ::
+fi
+
+mkdir -p "${LE_TMP}/extlinux"
+
+for dtb in "${RK3326_BOOT_FILES_DIR}/"*.dtb; do
+
+  cat << EOF > "${LE_TMP}/extlinux/$(basename "${dtb}").conf"
+LABEL "${DISTRO}"
+  LINUX /"${KERNEL_NAME}"
+  FDT /$(basename "${dtb}")
+  APPEND boot=UUID="${UUID_SYSTEM}" disk=UUID="${UUID_STORAGE}" quiet "${EXTRA_CMDLINE}"
+EOF
+
+  [ -e "${dtb}" ] && mcopy -o "${dtb}" ::
+
+done
