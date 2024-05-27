@@ -28,7 +28,7 @@ if [ "${ARCH}" = "arm" ]; then
   else
     PKG_MAKE_OPTS_TARGET+=" HAVE_NEON_ASM=0 BUILTIN_GPU=unai"
   fi
-  if [ "${DEVICE}" = "OdroidGoAdvance" ]; then
+  if [ "${DEVICE}" = "RK3326" ]; then
     sed -e "s|armv8-a|armv8-a+crc|" \
         -i ../Makefile.libretro
     PKG_MAKE_OPTS_TARGET+=" platfrom=classic_armv8_a35"

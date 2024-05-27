@@ -12,6 +12,10 @@ PKG_URL="https://ftp.denx.de/pub/u-boot/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
 PKG_DEPENDS_TARGET="toolchain openssl:host pkg-config:host Python3:host swig:host pyelftools:host"
 PKG_LONGDESC="Das U-Boot is a cross-platform bootloader for embedded systems."
 
+if [ "${PROJECT}" = "Rockchip" -a "${DEVICE}" != "RK3326" ]; then
+  PKG_PATCH_DIRS="NonRK3326"
+fi
+
 PKG_STAMP="${UBOOT_SYSTEM} ${UBOOT_TARGET}"
 
 [ -n "${KERNEL_TOOLCHAIN}" ] && PKG_DEPENDS_TARGET+=" gcc-${KERNEL_TOOLCHAIN}:host"

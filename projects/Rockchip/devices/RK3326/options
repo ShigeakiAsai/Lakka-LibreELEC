@@ -1,0 +1,67 @@
+################################################################################
+# setup device defaults
+#   Based on RK3328
+#     TARGET_CPU       "cortex-a53" -> "cortex-a35"
+#       https://www.rockchip.fr/RK3326%20datasheet%20V1.4.pdf
+#     ATF_PLATFORM     "rk3328"     -> "px30"
+#     MALI_FAMILY      "450"        -> "bifrost-g31"
+#       https://www.rockchip.fr/RK3326%20datasheet%20V1.4.pdf
+#     GRAPHIC_DRIVERS  "lima"       -> "panfrost"
+#       https://docs.mesa3d.org/drivers/panfrost.html
+#     Remove EXTRA_CMDLINE
+################################################################################
+
+  # The TARGET_CPU variable controls which processor should be targeted for
+  # generated code.
+    case $TARGET_ARCH in
+      aarch64)
+        TARGET_CPU="cortex-a35"
+        TARGET_CPU_FLAGS="+crc+crypto"
+        ;;
+      arm)
+        TARGET_KERNEL_ARCH="arm64"
+        TARGET_FLOAT="hard"
+        TARGET_CPU="cortex-a35"
+        TARGET_CPU_FLAGS="+crc"
+        TARGET_FPU="crypto-neon-fp-armv8"
+        ;;
+    esac
+
+  # Firmware
+    UBOOT_FIRMWARE+=" atf"
+    ATF_PLATFORM="px30"
+    ATF_BL31_BINARY="bl31/bl31.elf"
+
+  # Kernel target
+    KERNEL_TARGET="Image"
+
+  # Mali GPU family
+    MALI_FAMILY="g31"
+    GRAPHIC_DRIVERS="mali panfrost"
+
+  # OpenGL-ES implementation to use
+    OPENGLES="mesa"
+
+  # Specific to ODROID-GO Advance
+    CEC_FRAMEWORK_SUPPORT="no"
+
+  # Displayserver to use (wl / x11 / no)
+    DISPLAYSERVER="wl"
+
+  # Windowmanager to use (fluxbox / sway / weston / no)
+    WINDOWMANAGER="sway"
+
+  # additional packages to install
+  # ADDITIONAL_PACKAGES+=" odroidgo2-utils odroidgoa-volkeys"
+    ADDITIONAL_PACKAGES+=" odroidgo2-utils"
+
+  # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
+  # Space separated list is supported,
+  # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
+    FIRMWARE="esp8089-firmware"
+
+  # kernel serial console
+    EXTRA_CMDLINE="console=tty0 net.iframes=0 ssh fbcon=rotate:3"
+
+  # set the addon project
+    ADDON_PROJECT="ARMv8"

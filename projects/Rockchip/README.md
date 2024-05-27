@@ -8,6 +8,11 @@ This project is for Rockchip SoC devices
 * [ASUS Tinker Board](devices/RK3288)
 * [mqmaker MiQi](devices/RK3288)
 
+**RK3326**
+* [HARDKERNEL ODROID-GO Advance](devices/RK3326)
+* [HARDKERNEL ODROID-GO Advance Black Edition](devices/RK3326)
+* [HARDKERNEL ODROID-GO Super](devices/RK3326)
+
 **RK3328**
 * [Beelink A1 TV BOX](devices/RK3328)
 * [PINE64 ROCK64](devices/RK3328)
