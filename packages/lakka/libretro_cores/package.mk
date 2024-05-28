@@ -212,7 +212,7 @@ if [ "${PROJECT}" = "RPi" ]; then
   elif [ "${DEVICE}" = "RPi2" ]; then
     EXCLUDE_LIBRETRO_CORES+=" play"
   elif [ "${DEVICE}" = "RPiZero2-GPiCase" ]; then
-    EXCLUDE_LIBRETRO_CORES+=" kronos openlara play ppsspp vircon32 swanstation"
+    EXCLUDE_LIBRETRO_CORES+=" flycast kronos openlara play ppsspp vircon32 swanstation"
   elif [ "${DEVICE}" = "RPi3" ]; then
     EXCLUDE_LIBRETRO_CORES+=" yabasanshiro"
   fi
