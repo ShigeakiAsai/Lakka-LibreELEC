@@ -20,11 +20,11 @@ PKG_MAKE_OPTS_TARGET="all \
 pre_make_target() {
   PKG_MAKE_OPTS_TARGET+=" -C ${PKG_BUILD}/backends/platform/libretro"
   CXXFLAGS+=" -DHAVE_POSIX_MEMALIGN=1"
-#  if [ "${DEVICE}" = "RK3326" ]; then
-#    PKG_MAKE_OPTS_TARGET+=" platform=oga_a35_neon_hardfloat"
-#  else
+  if [ "${DEVICE}" = "RK3326" -a "${ARCH}" = "arm" ]; then
+    PKG_MAKE_OPTS_TARGET+=" platform=oga_a35_neon_hardfloat"
+  else
     PKG_MAKE_OPTS_TARGET+=" platform=${TARGET_NAME}"
-#  fi
+  fi
 }
 
 makeinstall_target() {

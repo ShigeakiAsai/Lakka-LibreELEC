@@ -248,9 +248,9 @@ if [ "${DEVICE}" = "Switch" ]; then
   EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
 fi
 
-# RK3326 trial
+# RK3326 : vircon32 core needs OpenGL library, but there is no OpenGL library for RK3326
 if [ "${DEVICE}" = "RK3326" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" flycast melonds vircon32 vice vitaquake2"
+  EXCLUDE_LIBRETRO_CORES+=" vircon32"
 fi
 
 # disable cores that do not build for OPENGLES

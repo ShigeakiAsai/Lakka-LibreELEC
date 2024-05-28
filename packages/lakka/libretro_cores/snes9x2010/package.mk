@@ -11,7 +11,7 @@ PKG_TOOLCHAIN="make"
 
 PKG_MAKE_OPTS_TARGET="-f Makefile.libretro"
 
-if [ "${PROJECT}" = "Rockchip" -a "${DEVICE}" = "RK3326" ];then 
+if [ "${PROJECT}" = "Rockchip" -a "${DEVICE}" = "RK3326" ];then
   [ "${ARCH}" = "arm"] && PKG_MAKE_OPTS_TARGET+=" platform=goa_armv8_a35"
 fi
 
