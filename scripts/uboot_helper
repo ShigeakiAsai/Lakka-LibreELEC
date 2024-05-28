@@ -309,6 +309,11 @@ devices = \
         'config': 'odroidgoa_defconfig',
         'rockchip_legacy_boot': '1'
       },
+      'rg351v': {
+        'dtb': 'rk3326-anbernic-rg351v.dtb',
+        'config': 'odroidgoa_defconfig',
+        'rockchip_legacy_boot': '1'
+      },
     },
     'RK3328': {
       'a1': {

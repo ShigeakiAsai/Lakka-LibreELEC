@@ -12,6 +12,8 @@ This project is for Rockchip SoC devices
 * [HARDKERNEL ODROID-GO Advance](devices/RK3326)
 * [HARDKERNEL ODROID-GO Advance Black Edition](devices/RK3326)
 * [HARDKERNEL ODROID-GO Super](devices/RK3326)
+* [ANBERNIC RG351M](devices/RK3326)
+* [ANBERNIC RG351V](devices/RK3326)
 
 **RK3328**
 * [Beelink A1 TV BOX](devices/RK3328)
