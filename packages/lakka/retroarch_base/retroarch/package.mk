@@ -107,10 +107,10 @@ if [[ "${TARGET_FPU}" =~ "neon" ]]; then
   fi
 fi
 
-if [ "${DEVICE}" = "RK3326" ]; then
-  PKG_DEPENDS_TARGET+=" librga"
-  PKG_CONFIGURE_OPTS_TARGET+=" --enable-odroidgo2"
-fi
+#if [ "${DEVICE}" = "RK3326" ]; then
+#  PKG_DEPENDS_TARGET+=" librga"
+#  PKG_CONFIGURE_OPTS_TARGET+=" --enable-odroidgo2"
+#fi
 
 if [ "${OPENGLES}" = "bcm2835-driver" ]; then
   PKG_CONFIGURE_OPTS_TARGET+=" --enable-videocore --enable-dispmanx"
