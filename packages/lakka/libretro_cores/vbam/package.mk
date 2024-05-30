@@ -1,5 +1,5 @@
 PKG_NAME="vbam"
-PKG_VERSION="f646c3848c91a66a89521c4b4e6e213ad9690ef9"
+PKG_VERSION="4f1a5dd726ecae3ce232e8ed5fe6cb70843cf7a6"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/visualboyadvance-m/visualboyadvance-m"
 PKG_URL="${PKG_SITE}.git"
