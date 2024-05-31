@@ -1,0 +1,25 @@
+diff --git a/Makefile.common b/Makefile.common
+index 2a715f4786..e18957a07d 100644
+--- a/Makefile.common
++++ b/Makefile.common
+@@ -2518,4 +2518,8 @@ ifeq ($(HAVE_ODROIDGO2), 1)
+          gfx/drivers/oga_gfx.o
+ endif
+ 
++ifeq ($(HAVE_RK3326), 1)
++  DEFINES += -DHAVE_RK3326
++endif
++
+ ##################################
+diff --git a/qb/config.params.sh b/qb/config.params.sh
+index d261c8f6f3..482f6325ce 100644
+--- a/qb/config.params.sh
++++ b/qb/config.params.sh
+@@ -196,6 +196,7 @@ HAVE_NETWORK_VIDEO=no
+ HAVE_STEAM=no              # Enable Steam build
+ HAVE_MIST=no               # Enable Steam build w/ mist
+ HAVE_ODROIDGO2=no          # ODROID-GO Advance rotation support (requires librga)
++HAVE_RK3326=no             # ODROID-GO and compatible devices support (Linux kernel 6.6-)
+ HAVE_LIBSHAKE=no           # libShake haptic feedback support
+ HAVE_CHECK=no              # check support for unit tests
+ HAVE_WIFI=no               # wifi driver support

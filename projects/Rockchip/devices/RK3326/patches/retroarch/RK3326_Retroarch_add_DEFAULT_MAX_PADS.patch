@@ -1,0 +1,13 @@
+diff --git a/input/input_driver.h b/input/input_driver.h
+index 99f5abf9bc..a53d3c4b71 100644
+--- a/input/input_driver.h
++++ b/input/input_driver.h
+@@ -78,7 +78,7 @@
+ #define DEFAULT_MAX_PADS 8
+ #elif defined(GEKKO) || defined(HW_RVL)
+ #define DEFAULT_MAX_PADS 4
+-#elif defined(HAVE_ODROIDGO2)
++#elif defined(HAVE_ODROIDGO2) || defined(HAVE_RK3326)
+ #define DEFAULT_MAX_PADS 8
+ #elif (defined(BSD) && !defined(__MACH__))
+ #define DEFAULT_MAX_PADS 8

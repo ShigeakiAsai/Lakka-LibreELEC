@@ -1,0 +1,13 @@
+diff --git a/frontend/drivers/platform_unix.c b/frontend/drivers/platform_unix.c
+index a8245be244..789fa9aff3 100644
+--- a/frontend/drivers/platform_unix.c
++++ b/frontend/drivers/platform_unix.c
+@@ -3004,7 +3004,7 @@ frontend_ctx_driver_t frontend_ctx_unix = {
+ #else
+    NULL,                               /* get_lakka_version */
+ #endif
+-#if defined(HAVE_LAKKA_SWITCH) || (defined(HAVE_LAKKA) && defined(HAVE_ODROIDGO2))
++#if defined(HAVE_LAKKA_SWITCH) || (defined(HAVE_LAKKA) && (defined(HAVE_ODROIDGO2) || defined(HAVE_RK3326)))
+    frontend_unix_set_screen_brightness,/* set_screen_brightness */
+ #else
+    NULL,                         /* set_screen_brightness */

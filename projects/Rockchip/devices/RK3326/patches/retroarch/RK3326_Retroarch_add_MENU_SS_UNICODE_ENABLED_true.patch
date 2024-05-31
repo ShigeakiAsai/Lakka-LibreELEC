@@ -1,0 +1,13 @@
+diff --git a/menu/menu_screensaver.c b/menu/menu_screensaver.c
+index 3080959cd9..130485735d 100644
+--- a/menu/menu_screensaver.c
++++ b/menu/menu_screensaver.c
+@@ -39,7 +39,7 @@
+ 
+ /* Determines whether current platform has
+  * Unicode character support */
+-#if defined(HAVE_FREETYPE) || (defined(__APPLE__) && defined(HAVE_CORETEXT)) || (defined(HAVE_STB_FONT) && (defined(VITA) || defined(WIIU) || defined(ANDROID) || (defined(_WIN32) && !defined(_XBOX) && !defined(_MSC_VER) && _MSC_VER >= 1400) || (defined(_WIN32) && !defined(_XBOX) && defined(_MSC_VER)) || defined(HAVE_LIBNX) || defined(__linux__) || defined (HAVE_EMSCRIPTEN) || defined(__APPLE__) || defined(HAVE_ODROIDGO2) || defined(__PS3__)))
++#if defined(HAVE_FREETYPE) || (defined(__APPLE__) && defined(HAVE_CORETEXT)) || (defined(HAVE_STB_FONT) && (defined(VITA) || defined(WIIU) || defined(ANDROID) || (defined(_WIN32) && !defined(_XBOX) && !defined(_MSC_VER) && _MSC_VER >= 1400) || (defined(_WIN32) && !defined(_XBOX) && defined(_MSC_VER)) || defined(HAVE_LIBNX) || defined(__linux__) || defined (HAVE_EMSCRIPTEN) || defined(__APPLE__) || defined(HAVE_ODROIDGO2) || defined(HAVE_RK3326) || defined(__PS3__)))
+ #define MENU_SS_UNICODE_ENABLED true
+ #else
+ #define MENU_SS_UNICODE_ENABLED false
