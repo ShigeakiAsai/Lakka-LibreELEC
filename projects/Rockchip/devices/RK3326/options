@@ -61,7 +61,7 @@
     FIRMWARE="esp8089-firmware"
 
   # kernel serial console
-    EXTRA_CMDLINE="console=tty0 net.iframes=0 ssh fbcon=rotate:3"
+    EXTRA_CMDLINE="console=uart8250,mmio32,0xff160000 console=tty0 net.iframes=0 ssh fbcon=rotate:3"
 
   # set the addon project
     ADDON_PROJECT="ARMv8"
