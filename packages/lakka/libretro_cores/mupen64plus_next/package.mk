@@ -64,7 +64,11 @@ pre_make_target() {
       [ "${ARCH}" = "arm" ] && PKG_MAKE_OPTS_TARGET+=" platform=AMLGX-amlogic" || true
       ;;
     RK3326)
-      [ "${ARCH}" = "arm"] && PKG_MAKE_OPTS_TARGET+=" platform=odroid BOARD=ODROIDGOA"
+      if [ "${ARCH}" = "aarch64" ]; then
+        PKG_MAKE_OPTS_TARGET+=" platform=odroid64 BOARD=ODROIDGOA"
+      else
+        PKG_MAKE_OPTS_TARGET+=" platform=odroid BOARD=ODROIDGOA"
+      fi
       ;;
     RK3328)
       [ "${ARCH}" = "arm"] && PKG_MAKE_OPTS_TARGET+=" platform=RK3328" || true
