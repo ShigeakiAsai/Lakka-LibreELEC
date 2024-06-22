@@ -78,21 +78,6 @@ diff -rupN u-boot.orig/board/rockchip/odroidgoa/odroidgoa.c u-boot/board/rockchi
  
  	/* set wifi_en as default high */
  	if (!is_odroidgo3())
-@@ -194,10 +205,10 @@ int rk_board_late_init(void)
- #endif
- 
- 	/* show boot logo and version */
--	lcd_show_logo();
--	lcd_setfg_color("grey");
--	lcd_printf(0, 18 + disp_offs, 1, " %s", U_BOOT_VERSION);
--	lcd_printf(0, 19 + disp_offs, 1, " %s %s", U_BOOT_DATE, U_BOOT_TIME);
-+	//lcd_show_logo();
-+	//lcd_setfg_color("red");
-+	//lcd_printf(0, 18 + disp_offs, 1, " %s", U_BOOT_VERSION);
-+	//lcd_printf(0, 19 + disp_offs, 1, " %s %s", U_BOOT_DATE, U_BOOT_TIME);
- 
- 	if (!board_check_autotest()) {
- 		board_run_autotest();
 diff -rupN u-boot.orig/scripts/dtc/dtc-lexer.l u-boot/scripts/dtc/dtc-lexer.l
 --- u-boot.orig/scripts/dtc/dtc-lexer.l	2023-12-28 14:42:41.414052459 +0000
 +++ u-boot/scripts/dtc/dtc-lexer.l	2023-12-28 14:39:14.956037945 +0000
