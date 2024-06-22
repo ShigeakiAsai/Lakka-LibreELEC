@@ -50,11 +50,11 @@ case $1 in
       esac
     fi
     # Get list of all libretro and retroarch packages
-    for p in $(cd $LR_PKG_PATH && ls) ; do
-      PACKAGES_ALL+=" $p "
+    for p in $(cd $LR_PKG_PATH && ls -d */) ; do
+      PACKAGES_ALL+=" ${p//\//} "
     done
-    for p in $(cd $RA_PKG_PATH && ls) ; do
-      PACKAGES_ALL+=" $p "
+    for p in $(cd $RA_PKG_PATH && ls -d */) ; do
+      PACKAGES_ALL+=" ${p//\//} "
     done
     ;;
   -u | --used )
@@ -196,8 +196,9 @@ for f in $ALL_FILES ; do
   PKG_VERSION=`cat $f | sed -En "s/^PKG_VERSION=\"(.*)\"/\1/p"`
   PKG_SITE=`cat $f | sed -En "s/^PKG_SITE=\"(.*)\"/\1/p"`
   PKG_NAME=`cat $f | sed -En "s/^PKG_NAME=\"(.*)\"/\1/p"`
-  PKG_GIT_BRANCH=`cat $f | sed -En "s/^PKG_GIT_CLONE_BRANCH=\"(.*)\"/\1/p"`
+  PKG_GIT_CLONE_BRANCH=`cat $f | sed -En "s/^PKG_GIT_CLONE_BRANCH=\"(.*)\"/\1/p"`
   PKG_LR_UPDATE_TAG=`cat $f | sed -En "s/^PKG_LR_UPDATE_TAG=\"(.*)\"/\1/p"`
+  PKG_LR_UPDATE_TAG_MASK=`cat $f | sed -En "s/^PKG_LR_UPDATE_TAG_MASK=\"(.*)\"/\1/p"`
   if [ -z "$PKG_VERSION" ] || [ -z "$PKG_SITE" ] ; then
     echo "$f: does not have PKG_VERSION or PKG_SITE"
     echo "PKG_VERSION: $PKG_VERSION"
@@ -205,20 +206,28 @@ for f in $ALL_FILES ; do
     echo "Skipping update."
     continue
   fi
+  if [ -n "$PKG_GIT_CLONE_BRANCH" -a "$PKG_LR_UPDATE_TAG" = "yes" ]; then
+    echo "$f: WARNING: both PKG_GIT_CLONE_BRANCH and PKG_LR_UPDATE_TAG are set! Skipping update."
+    continue
+  fi
   UPDATE_INFO=""
-  if [ -n "$PKG_GIT_BRANCH" ]; then
-    GIT_HEAD="heads/$PKG_GIT_BRANCH"
-    UPDATE_INFO="(branch $PKG_GIT_BRANCH"
+  if [ -n "$PKG_GIT_CLONE_BRANCH" ]; then
+    GIT_HEAD="heads/$PKG_GIT_CLONE_BRANCH"
+    UPDATE_INFO="(branch $PKG_GIT_CLONE_BRANCH)"
   else
     GIT_HEAD="HEAD"
   fi
   if [ "$PKG_LR_UPDATE_TAG" = "yes" ]; then
-    UPS_VERSION=`git ls-remote --sort='v:refname' --tags $PKG_SITE '*.*.*' 2>/dev/null | tail -n 1 | awk '{ print $1; }'`
-    [ -z "$UPDATE_INFO" ] && UPDATE_INFO="(latest x.x.x tag" || UPDATE_INFO+=" + latest x.x.x tag"
+    if [ -n "${PKG_LR_UPDATE_TAG_MASK}" ]; then
+      TAG=`git ls-remote --tags $PKG_SITE "${PKG_LR_UPDATE_TAG_MASK}" 2>/dev/null | cut --delimiter='/' --fields=3 | cut --delimiter='^' --fields=1 | sort --version-sort | tail --lines=1`
+    else
+      TAG=`git ls-remote --tags $PKG_SITE 2>/dev/null | cut --delimiter='/' --fields=3 | cut --delimiter='^' --fields=1 | sort --version-sort | tail --lines=1`
+    fi
+    UPS_VERSION=`git ls-remote --tags $PKG_SITE 2>/dev/null | grep refs/tags/$TAG | tail --lines=1 | awk '{ print $1; }'`
+    UPDATE_INFO="(latest tag - $TAG)"
   else
     UPS_VERSION=`git ls-remote $PKG_SITE 2>/dev/null | grep ${GIT_HEAD}$ | awk '{ print $1; }'`
   fi
-  [ -n "$UPDATE_INFO" ] && UPDATE_INFO+=")"
   if [ "$UPS_VERSION" = "$PKG_VERSION" ]; then
     echo "$PKG_NAME is up to date ($UPS_VERSION) $UPDATE_INFO"
   elif [ "$UPS_VERSION" = "" ]; then

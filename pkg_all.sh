@@ -62,6 +62,8 @@ targets="\
 	RPi|RPi4-PiBoyDmg|aarch64| \
 	RPi|RPi4-RetroDreamer|aarch64| \
 	RPi|RPi4-GPICase2|aarch64| \
+	RPi|RPi5|aarch64| \
+	RPi|RPiZero2-GPiCASE2W|aarch64| \
 	Samsung|Exynos|arm| \
 "
 

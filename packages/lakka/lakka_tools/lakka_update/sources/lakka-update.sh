@@ -1,18 +1,23 @@
 #!/bin/bash
 
-source /etc/os-release
+MIRROR=@LAKKA_UPDATE_SERVER_URL@/@LAKKA_TARGET_DEVICE_ARCH@
 
-MIRROR=https://le.builds.lakka.tv
+FILE=`wget $MIRROR/.index -q -O - | head -1`
 
-FILE=`wget $MIRROR/${LIBREELEC_ARCH}/.index -q -O - | head -1`
-URL=$MIRROR/${LIBREELEC_ARCH}/$FILE
+if [ -z "$FILE" ]; then
+	echo "Could not find latest update."
+	exit 1
+fi
 
+URL=$MIRROR/$FILE
+
+# cleanup before downloading
 rm -rf ~/.update/*
 
-echo ":: Downloading upgrade"
+echo ":: Downloading updade"
 wget -P ~/.update/ $URL
 
-if [ -z "~/.update/$FILE" ]; then
+if [ ! -f ~/.update/$FILE ]; then
 	echo "Something went wrong during the download."
 	exit 1
 fi

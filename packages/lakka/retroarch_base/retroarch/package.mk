@@ -1,5 +1,5 @@
 PKG_NAME="retroarch"
-PKG_VERSION="ad8975cb5a0fe45be43438bdbd6c3d745653dd02"
+PKG_VERSION="0792144fe3a7b59908b0afdb2c01722e79040360"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="${PKG_SITE}.git"
@@ -22,6 +22,8 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
 
 PKG_MAKE_OPTS_TARGET="V=1 \
                       HAVE_LAKKA=1 \
+                      HAVE_LAKKA_PROJECT="${DEVICE:-${PROJECT}}.${ARCH}" \
+                      HAVE_LAKKA_SERVER="${LAKKA_UPDATE_SERVER_URL}" \
                       HAVE_CHEEVOS=1 \
                       HAVE_HAVE_ZARCH=0 \
                       HAVE_WIFI=1 \
@@ -31,15 +33,18 @@ PKG_MAKE_OPTS_TARGET="V=1 \
 if [ "${OPENGLES_SUPPORT}" = yes ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
   PKG_CONFIGURE_OPTS_TARGET+=" --enable-opengles"
-  if [[ ${DEVICE} =~ ^RPi4.* ]] || [ ${DEVICE} = "RK3288" ] || [ "${DEVICE}" = "RK3399" ] || [ "${DEVICE}" = "Odin" ] || [ "${DEVICE}" = "RPi5" ]; then
+  if [ ${DEVICE:0:4} = "RPi4" ] || [ ${DEVICE} = "RK3288" ] || [ "${DEVICE}" = "RK3399" ] || [ "${PROJECT}" = "Generic" ] || [ "${DEVICE}" = "Odin" ] || [ "${DEVICE}" = "RPi5" ]; then
     PKG_CONFIGURE_OPTS_TARGET+=" --enable-opengles3 \
                                  --enable-opengles3_1"
+    if [ "${PROJECT}" = "Generic" ]; then
+      PKG_CONFIGURE_OPTS_TARGET+=" --enable-opengles3_2"
+    fi
   fi
 else
   PKG_CONFIGURE_OPTS_TARGET+=" --disable-opengles"
 fi
 
-if [ "${OPENGL_SUPPORT}" = yes -a ! "${OPENGLES_SUPPORT}" = "yes" ]; then
+if [ "${OPENGL_SUPPORT}" = yes ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGL}"
   PKG_CONFIGURE_OPTS_TARGET+=" --enable-opengl"
   PKG_MAKE_OPTS_TARGET+=" HAVE_OPENGL1=1"
@@ -126,12 +131,6 @@ if [ "${PROJECT}" = "L4T" ]; then
   fi
 fi
 
-if [ "${LAKKA_NIGHTLY}" = yes ]; then
-  PKG_MAKE_OPTS_TARGET+=" HAVE_LAKKA_NIGHTLY=1"
-elif [ ! "${LAKKA_CANARY_PATH}" = "" ]; then
-  PKG_MAKE_OPTS_TARGET+=" HAVE_LAKKA_CANARY=\"${LAKKA_CANARY_PATH}\""
-fi
-
 pre_configure_target() {
   TARGET_CONFIGURE_OPTS=""
   cd ${PKG_BUILD}
@@ -155,6 +154,7 @@ make_target() {
 makeinstall_target() {
   mkdir -p ${INSTALL}/usr/bin
     cp -v ${PKG_BUILD}/retroarch ${INSTALL}/usr/bin
+    cp -v ${PKG_DIR}/scripts/lakka-*.sh ${INSTALL}/usr/bin
   mkdir -p ${INSTALL}/usr/share/video_filters
     cp -v ${PKG_BUILD}/gfx/video_filters/*.so ${INSTALL}/usr/share/video_filters
     cp -v ${PKG_BUILD}/gfx/video_filters/*.filt ${INSTALL}/usr/share/video_filters
@@ -183,7 +183,7 @@ makeinstall_target() {
   echo 'rgui_show_start_screen = "false"' >> ${INSTALL}/etc/retroarch.cfg
   echo 'assets_directory = "/tmp/assets"' >> ${INSTALL}/etc/retroarch.cfg
   echo 'overlay_directory = "/tmp/overlays"' >> ${INSTALL}/etc/retroarch.cfg
-  echo 'cheat_database_path = "/tmp/cheats"' >> ${INSTALL}/etc/retroarch.cfg
+  echo 'cheat_database_path = "/tmp/database/cht"' >> ${INSTALL}/etc/retroarch.cfg
   echo 'cursor_directory = "/tmp/database/cursors"' >> ${INSTALL}/etc/retroarch.cfg
   echo 'log_dir = "/storage/logfiles"' >> ${INSTALL}/etc/retroarch.cfg
   echo 'recording_output_directory = "/storage/recordings"' >> ${INSTALL}/etc/retroarch.cfg
@@ -213,7 +213,7 @@ makeinstall_target() {
   echo 'video_smooth = "false"' >> ${INSTALL}/etc/retroarch.cfg
   echo 'video_aspect_ratio_auto = "true"' >> ${INSTALL}/etc/retroarch.cfg
   echo 'video_threaded = "true"' >> ${INSTALL}/etc/retroarch.cfg
-  echo 'video_font_path = "/usr/share/retroarch/assets/xmb/monochrome/font.ttf"' >> ${INSTALL}/etc/retroarch.cfg
+  echo 'video_font_path = "/tmp/assets/xmb/monochrome/font.ttf"' >> ${INSTALL}/etc/retroarch.cfg
   echo 'video_font_size = "32"' >> ${INSTALL}/etc/retroarch.cfg
   echo 'video_filter_dir = "/usr/share/video_filters"' >> ${INSTALL}/etc/retroarch.cfg
   echo 'video_gpu_screenshot = "false"' >> ${INSTALL}/etc/retroarch.cfg
@@ -265,15 +265,15 @@ makeinstall_target() {
     echo 'menu_widget_scale_factor = "2.25"' >> ${INSTALL}/etc/retroarch.cfg
   fi
 
-  # GPICase
-  if [ "${PROJECT}" = "RPi" ] && [ "${DEVICE}" = "GPICase" -o "${DEVICE}" = "Pi02GPi" ]; then
+  # GPICase (1st Gen Retroflag GPiCASE)
+  if [ "${DEVICE}" = "GPICase" -o "${DEVICE}" = "Pi02GPi" ]; then
     sed -i -e 's|^input_menu_toggle_gamepad_combo =.*|input_menu_toggle_gamepad_combo = "4"|' ${INSTALL}/etc/retroarch.cfg
     sed -i -e 's|^menu_driver =.*|menu_driver = "rgui"|' ${INSTALL}/etc/retroarch.cfg
-    echo 'audio_device = "default:CARD=Headphones"' >> ${INSTALL}/etc/retroarch.cfg
-    echo 'menu_timedate_enable = "false"' >> ${INSTALL}/etc/retroarch.cfg
-    echo 'menu_enable_widgets = "false"' >> ${INSTALL}/etc/retroarch.cfg
     echo 'aspect_ratio_index = "21"' >> ${INSTALL}/etc/retroarch.cfg
+    echo 'audio_device = "default:CARD=Headphones"' >> ${INSTALL}/etc/retroarch.cfg
     echo 'audio_out_rate = "44100"' >> ${INSTALL}/etc/retroarch.cfg
+    echo 'menu_enable_widgets = "false"' >> ${INSTALL}/etc/retroarch.cfg
+    echo 'menu_timedate_enable = "false"' >> ${INSTALL}/etc/retroarch.cfg
     echo 'video_font_size = "16"' >> ${INSTALL}/etc/retroarch.cfg
 
     if [ "${DEVICE}" = "GPICase" ]; then
@@ -285,8 +285,19 @@ makeinstall_target() {
       echo 'input_player1_analog_dpad_mode = "3"' >> $INSTALL/etc/retroarch.cfg
     fi
   fi
-  if [ "${PROJECT}" = "RPi" ] && [ "${DEVICE}" = "RPi4-GPICase2" ]; then
+
+  # GPICase2 (2nd Gen Retroflag GPiCASE)
+  if [ "${DEVICE}" = "RPi4-GPICase2" ]; then
     echo 'audio_device = "default:CARD=Device"' >> ${INSTALL}/etc/retroarch.cfg
+    echo 'audio_out_rate = "44100"' >> ${INSTALL}/etc/retroarch.cfg
+    echo 'xmb_layout = "2"' >> ${INSTALL}/etc/retroarch.cfg
+  fi
+
+  # GPICase2W (3rd Gen Retroflag GPiCASE)
+  if [ "${DEVICE}" = "RPiZero2-GPiCASE2W" ]; then
+    echo 'audio_device = "default:CARD=Headphones"' >> ${INSTALL}/etc/retroarch.cfg
+    echo 'audio_out_rate = "44100"' >> ${INSTALL}/etc/retroarch.cfg
+    echo 'xmb_layout = "2"' >> ${INSTALL}/etc/retroarch.cfg
   fi
 
   # PiBoy DMG / RetroDreamer
@@ -337,6 +348,16 @@ makeinstall_target() {
   # sort the options in config file
   sort ${INSTALL}/etc/retroarch.cfg > ${INSTALL}/etc/retroarch-sorted.cfg
   mv ${INSTALL}/etc/retroarch-sorted.cfg ${INSTALL}/etc/retroarch.cfg
+
+  # create default environment file
+  echo "HOME=/storage" >> ${INSTALL}/usr/lib/retroarch/retroarch-env.conf
+  if [ "${DISPLAYSERVER}" = "x11" ]; then
+    echo "DISPLAY=:0.0" >> ${INSTALL}/usr/lib/retroarch/retroarch-env.conf
+  elif [ "${DISPLAYSERVER}" = "wl" ]; then
+    echo "WAYLAND_DISPLAY='wayland-1'" >> ${INSTALL}/usr/lib/retroarch/retroarch-env.conf
+    echo "SWAYSOCK='/var/run/0-runtime-dir/sway-ipc.0.sock'" >> ${INSTALL}/usr/lib/retroarch/retroarch-env.conf
+    echo "XDG_RUNTIME_DIR='/var/run/0-runtime-dir'" >> ${INSTALL}/usr/lib/retroarch/retroarch-env.conf
+  fi
 }
 
 post_install() {

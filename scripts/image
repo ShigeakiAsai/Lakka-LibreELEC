@@ -38,6 +38,7 @@ function do_mkimage() {
     PROJECT="${PROJECT}" \
     DEVICE="${DEVICE}" \
     DISTRO="${DISTRO}" \
+    DISTRO_DIR="${DISTRO_DIR}" \
     TARGET_IMG="${TARGET_IMG}" \
     BUILD_NAME="${IMAGE_NAME}" \
     IMAGE_NAME="${1:-${IMAGE_NAME}}" \
@@ -56,8 +57,7 @@ function do_mkimage() {
     STORAGE_SIZE="${STORAGE_SIZE:-32}" \
     OVA_SIZE="${OVA_SIZE}" \
     SKIP_VIRTUAL_APPLIANCE="${SKIP_VIRTUAL_APPLIANCE}" \
-    LAKKA_DEVBUILD="${LAKKA_DEVBUILD:-no}" \
-    LAKKA_NIGHTLY="${LAKKA_NIGHTLY:-no}" \
+    LAKKA_BUILD_TYPE="${LAKKA_BUILD_TYPE:-release}" \
     ${SCRIPTS}/mkimage
 }
 
@@ -528,10 +528,6 @@ if [ "${1}" = "release" -o "${1}" = "mkimage" -o "${1}" = "noobs" ]; then
         cp -PR "${INSTALL}/usr/share/bootloader/$f" "${RELEASE_DIR}/${NOOBS_DISTRO}/System/"
       fi
     done
-
-    cp -PR ${INSTALL}/usr/share/bootloader/bootcode.bin ${RELEASE_DIR}/${NOOBS_DISTRO}/System/
-    cp -PR ${INSTALL}/usr/share/bootloader/fixup.dat ${RELEASE_DIR}/${NOOBS_DISTRO}/System/
-    cp -PR ${INSTALL}/usr/share/bootloader/start.elf ${RELEASE_DIR}/${NOOBS_DISTRO}/System/
 
     # Copy system files
     cp ${TARGET_IMG}/${IMAGE_NAME}.system ${RELEASE_DIR}/${NOOBS_DISTRO}/System/SYSTEM

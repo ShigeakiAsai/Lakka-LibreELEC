@@ -1,5 +1,5 @@
 PKG_NAME="retro8"
-PKG_VERSION="bc388ec7d217a08265d116aaa74afc0ca3f204f5"
+PKG_VERSION="95b40e58c29b829d96f37c85833f9e51730c5534"
 PKG_LICENSE="GPL3"
 PKG_SITE="https://github.com/libretro/retro8"
 PKG_URL="${PKG_SITE}.git"

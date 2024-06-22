@@ -6,6 +6,8 @@ PKG_URL="${PKG_SITE}.git"
 PKG_DEPENDS_TARGET="toolchain libzip libpng zlib"
 PKG_LONGDESC="mGBA Game Boy Advance Emulator"
 PKG_TOOLCHAIN="cmake"
+PKG_LR_UPDATE_TAG="yes"
+PKG_LR_UPDATE_TAG_MASK="*.*.*"
 
 PKG_CMAKE_OPTS_TARGET="-DCMAKE_BUILD_TYPE=Release \
                        -DBUILD_LIBRETRO=ON \
@@ -13,8 +15,6 @@ PKG_CMAKE_OPTS_TARGET="-DCMAKE_BUILD_TYPE=Release \
                        -DBUILD_QT=OFF \
                        -DBUILD_SDL=OFF \
                        -DUSE_DISCORD_RPC=OFF \
-                       -DUSE_GDB_STUB=OFF \
-                       -DUSE_DEBUGGERS=OFF \
                        -DUSE_EDITLINE=OFF \
                        -DUSE_EPOXY=OFF"
 
@@ -27,12 +27,14 @@ fi
 
 if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
-fi
 
-if [ "${GRAPHIC_DRIVER}" = panfrost ] && !listcontains "${MALI_FAMILY}" "(t720)"; then
-  PKG_CMAKE_OPTS_TARGET+=" -DBUILD_GLES3=ON -DBUILD_GLES2=OFF"
-elif [ "${GRAPHIC_DRIVER}" = lima ] || listcontains "${MALI_FAMILY}" "4[0-9]+|t720"; then
-  PKG_CMAKE_OPTS_TARGET+=" -DBUILD_GLES3=OFF -DBUILD_GLES2=ON"
+  get_graphicdrivers
+
+  if listcontains "${GRAPHIC_DRIVERS}" "(panfrost|vc4)" && ! listcontains "${MALI_FAMILY}" "(t720)"; then
+    PKG_CMAKE_OPTS_TARGET+=" -DBUILD_GLES3=ON -DBUILD_GLES2=OFF"
+  else
+    PKG_CMAKE_OPTS_TARGET+=" -DBUILD_GLES3=OFF -DBUILD_GLES2=ON"
+  fi
 fi
 
 makeinstall_target() {

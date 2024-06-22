@@ -1,5 +1,5 @@
 PKG_NAME="ep128emu"
-PKG_VERSION="9eca2e7b3703679909e769f4b5dd74d52f087e41"
+PKG_VERSION="0747110b5a98b4c36dc8784780f5ae436a94a1bd"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/ep128emu-core"
 PKG_URL="${PKG_SITE}.git"

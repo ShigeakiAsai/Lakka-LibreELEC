@@ -92,7 +92,7 @@ dd if="${DISK}" of="${LE_TMP}/part2.ext4" bs=512 count=0 seek="${STORAGE_PART_CO
 
 # create filesystem on part2
 echo "image: creating filesystem on part2..."
-mke2fs -F -q -t ext4 -O ^orphan_file -m 0 "${LE_TMP}/part2.ext4"
+mke2fs -b 4096 -F -q -t ext4 -O ^orphan_file -m 0 "${LE_TMP}/part2.ext4"
 tune2fs -L "${DISTRO_DISKLABEL}" -U ${UUID_STORAGE} "${LE_TMP}/part2.ext4" >"${SAVE_ERROR}" 2>&1 || show_error
 e2fsck -n "${LE_TMP}/part2.ext4" >"${SAVE_ERROR}" 2>&1 || show_error
 sync
@@ -193,7 +193,7 @@ SAY =======
 SAY live: boot ${DISTRO} using this USB memory device for storage
 SAY installer: permanently install ${DISTRO} to HDD/SSD
 EOF
-    if [ "${LAKKA_DEVBUILD}" = "yes" -o "${LAKKA_NIGHTLY}" = "yes" ]; then
+    if [ ! "${LAKKA_BUILD_TYPE}" = "release" ]; then
       cat << EOF >> "${LE_TMP}/syslinux.cfg"
 SAY debug: boot ${DISTRO} to console for debugging
 EOF
@@ -212,7 +212,7 @@ LABEL installer
   KERNEL /${KERNEL_NAME}
   APPEND boot=UUID=${UUID_SYSTEM} installer quiet systemd.debug_shell vga=current
 EOF
-    if [ "${LAKKA_DEVBUILD}" = "yes" -o "${LAKKA_NIGHTLY}" = "yes" ]; then
+    if [ ! "${LAKKA_BUILD_TYPE}" = "release" ]; then
       cat << EOF >> "${LE_TMP}/syslinux.cfg"
 
 LABEL debug
@@ -235,7 +235,7 @@ menuentry "Install ${DISTRO} to HDD/SSD" {
 	linux /KERNEL boot=UUID=${UUID_SYSTEM} installer quiet systemd.debug_shell vga=current
 }
 EOF
-      if [ "${LAKKA_DEVBUILD}" = "yes" -o "${LAKKA_NIGHTLY}" = "yes" ]; then
+      if [ ! "${LAKKA_BUILD_TYPE}" = "release" ]; then
         cat << EOF >> "${LE_TMP}/grub.cfg"
 menuentry "Debug ${DISTRO} (console)" {
 	search --set -f /KERNEL
@@ -262,9 +262,8 @@ EOF
   # EFI only for x86_64
   if [ "${ARCH}" = "x86_64" ]; then
     mmd EFI EFI/BOOT >"${SAVE_ERROR}" 2>&1 || show_error
-    mcopy "${TOOLCHAIN}/share/syslinux/bootx64.efi" ::/EFI/BOOT >"${SAVE_ERROR}" 2>&1 || show_error
-    mcopy "${TOOLCHAIN}/share/syslinux/ldlinux.e64" ::/EFI/BOOT >"${SAVE_ERROR}" 2>&1 || show_error
     mcopy "${TOOLCHAIN}/share/grub/bootia32.efi" ::/EFI/BOOT >"${SAVE_ERROR}" 2>&1 || show_error
+    mcopy "${TOOLCHAIN}/share/grub/bootx64.efi" ::/EFI/BOOT >"${SAVE_ERROR}" 2>&1 || show_error
     mcopy "${LE_TMP}/grub.cfg" ::/EFI/BOOT >"${SAVE_ERROR}" 2>&1 || show_error
   fi
 
@@ -356,6 +355,39 @@ elif [ "${BOOTLOADER}" = "u-boot" ]; then
   cleanup
   exit
 fi # bootloader
+
+# add firstboot script
+if [ -f "${DISTRO_DIR}/${DISTRO}/config/firstboot.sh" ]; then
+  mcopy "${DISTRO_DIR}/${DISTRO}/config/firstboot.sh" ::/firstboot.sh >"${SAVE_ERROR}" 2>&1 || show_error
+
+  cat << EOF > "${LE_TMP}/wifi-config.txt"
+# Uncomment following lines and set your Wi-Fi name (SSID) and password (PSK) below.
+# SSID/PSK must not inlcude space / quotes / special character. If you have to use
+# them, escape them and hope for best.
+# COUNTRY is an optional field, which sets the Wi-Fi adapter country. The value should follow ISO/IEC 3166-1 alpha2.
+#SSID=
+#PSK=
+#COUNTRY=
+EOF
+  mcopy "${LE_TMP}/wifi-config.txt" ::/wifi-config.txt >"${SAVE_ERROR}" 2>&1 || show_error
+
+  cat << EOF > "${LE_TMP}/retroarch-overrides.txt"
+# Add overrides for RetroArch default configuration in
+# following form:
+#
+# key_name = "value"
+# other_key = 42
+#
+# These will be then added to / replace existing ones in
+# default retroarch.cfg
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!  Overrides / settings from this file are used  !!!
+# !!! only during the very first boot after flashing !!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+EOF
+  mcopy "${LE_TMP}/retroarch-overrides.txt" ::/retroarch-overrides.txt >"${SAVE_ERROR}" 2>&1 || show_error
+fi
 
 # run fsck
 echo "image: checking filesystem on part1..."

@@ -7,6 +7,13 @@
 
 # Where are the tarballs hosted
 URL="https://nightly.builds.lakka.tv"
+PKGPATHS="\
+	packages/lakka/retroarch_base \
+	packages/lakka/libretro_cores \
+	"
+PRG="\
+	wget \
+	"
 
 # Check arguments and print usage
 [ $# -ne 1 ] && {
@@ -21,15 +28,18 @@ PKG=${1}
 PKG_PATH=""
 
 # Check if there is such package
-for FINDPATH in packages/lakka/retroarch_base/${PKG} packages/lakka/libretro_cores/${PKG} ; do
-	if [ -d ${FINDPATH} ] ; then
-		PKG_PATH=${FINDPATH}
+for FINDPATH in ${PKGPATHS} ; do
+	if [ -d ${FINDPATH}/${PKG} ] ; then
+		PKG_PATH=${FINDPATH}/${PKG}
 		break
 	fi
 done
 
 [ -z "${PKG_PATH}" ] && {
-	echo "There is no package '${PKG}' in packages/lakka/retroarch_base and package/lakka/libretro_cores"
+	echo "There is no package '${PKG}' in"
+	for FINDPATH in ${PKGPATHS} ; do
+		echo "- ${FINDPATH}"
+	done
 	exit 2
 }
 
@@ -58,19 +68,22 @@ source ${PKG_PATH}/package.mk 2>&1 >/dev/null
 	exit 4
 }
 
-LINK=${URL}/sources/${PKG}/${PKG}-${PKG_VERSION}.tar.xz
-FILENAME=sources/${PKG}/${PKG}-${PKG_VERSION}.tar.xz
+FILENAME=${PKG}-${PKG_VERSION}.tar.xz
+FILEPATH=sources/${PKG}/${FILENAME}
 STAMPFILE=${FILENAME}.gitstamp
+STAMPPATH=sources/${PKG}/${STAMPFILE}
+LINKFILE=${URL}/sources/${PKG}/${FILENAME}
+LINKSTAMP=${URL}/sources/${PKG}/${STAMPFILE}
 
 # Do not continue when a tarball is already present in the sources folder
 # (also safety catch in case this script is started on the server, where the tarballs are hosted)
-[ -f ${FILENAME} ] && {
-	echo "There is already ${FILENAME} - remove it and try again"
+[ -f ${FILEPATH} ] && {
+	echo "There is already ${FILEPATH} - remove it and try again"
 	exit 5
 }
 
-[ -f ${STAMPFILE} ] && {
-	echo "There is already ${STAMPFILE} - remove it and try again"
+[ -f ${STAMPPATH} ] && {
+	echo "There is already ${STAMPPATH} - remove it and try again"
 	exit 5
 }
 
@@ -81,31 +94,32 @@ then
 	then
 		mkdir -p sources/${PKG}
 	else
-		echo "Cannot create folder sources/$PKG - file exists"
+		echo "Cannot create folder sources/${PKG} - file exists"
 		exit 6
 	fi
 fi
 
-# Check if we have wget
+# Check if we have programs
 [ -z "$(which ${PRG} 2>/dev/null)" ] && {
 	echo "Please install ${PRG}"
 	exit 7
 }
 
 # Download the tarball
-echo "Downloading to ${FILENAME} ..."
-wget --quiet -O ${FILENAME} ${LINK}
+echo -e "Downloading archive\n\tfrom\n${LINKFILE}\n\tto\n${FILEPATH}"
+wget --quiet -O ${FILEPATH} ${LINKFILE}
 
 [ ${?} -gt 0 ] && {
-	echo "Error downloading ${LINK}"
+	echo "Error downloading ${LINKFILE}"
 	exit 8
 }
 
-echo "Creating ${STAMPFILE} ..."
-echo "${PKG_URL}|${PKG_VERSION}" > ${STAMPFILE}
+# Download the stamp file
+echo -e "\nDownload stamp file\n\tfrom\n${LINKSTAMP}\n\tto\n${STAMPPATH}"
+wget --quiet -O ${STAMPPATH} ${LINKSTAMP}
 
 [ ${?} -gt 0 ] && {
-	echo "Error creating ${STAMPFILE}"
+	echo "Error downloading ${LINKSTAMP}"
 	exit 8
 }
 

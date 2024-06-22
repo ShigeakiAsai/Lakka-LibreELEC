@@ -1,26 +1,29 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2647565..5961fb0 100644
+index b6d498c..86bd78e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -966,67 +966,14 @@ endif()
+@@ -1287,72 +1287,14 @@ endif()
  
  # manpage
  # Handled as extra target "man"
 -set(MAN_NAME easyrpg-player.6)
--find_program(A2X_EXECUTABLE NAMES a2x a2x.py)
+-find_program(ASCIIDOCTOR_EXECUTABLE asciidoctor)
  set(MANUAL_STATUS "Unavailable")
--if(A2X_EXECUTABLE)
--	add_custom_command(OUTPUT resources/${MAN_NAME}
--		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/resources
--		COMMAND ${A2X_EXECUTABLE} -a player_version="${PROJECT_VERSION}" -f manpage -D ${CMAKE_CURRENT_BINARY_DIR}/resources ${CMAKE_CURRENT_SOURCE_DIR}/resources/${MAN_NAME}.adoc
--		DEPENDS resources/${MAN_NAME}.adoc
+-if(ASCIIDOCTOR_EXECUTABLE)
+-	add_custom_command(OUTPUT resources/unix/${MAN_NAME}
+-		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/resources/unix
+-		COMMAND ${ASCIIDOCTOR_EXECUTABLE} -a player_version="${PLAYER_VERSION}"
+-			-b manpage -D ${CMAKE_CURRENT_BINARY_DIR}/resources/unix
+-			${CMAKE_CURRENT_SOURCE_DIR}/resources/unix/${MAN_NAME}.adoc
+-		DEPENDS resources/unix/${MAN_NAME}.adoc
 -		COMMENT "(Re-)building manpage ${MAN_NAME}"
 -		VERBATIM)
 -	if(UNIX)
--		add_custom_target(player_man ALL DEPENDS resources/${MAN_NAME})
--		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/resources/${MAN_NAME} DESTINATION ${CMAKE_INSTALL_MANDIR}/man6)
+-		add_custom_target(player_man ALL DEPENDS resources/unix/${MAN_NAME})
+-		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/resources/unix/${MAN_NAME}
+-			DESTINATION ${CMAKE_INSTALL_MANDIR}/man6)
 -	else()
--		add_custom_target(player_man DEPENDS resources/${MAN_NAME})
+-		add_custom_target(player_man DEPENDS resources/unix/${MAN_NAME})
 -	endif()
 -	if(NOT TARGET man)
 -		add_custom_target(man)
@@ -28,9 +31,9 @@ index 2647565..5961fb0 100644
 -	add_dependencies(man player_man)
 -	set(MANUAL_STATUS "Generated")
 -else()
--	# no a2x, distribution archive?
--	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/resources/${MAN_NAME})
--		install(FILES resources/${MAN_NAME} DESTINATION share/man/man6)
+-	# no asciidoctor, distribution archive?
+-	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/resources/unix/${MAN_NAME})
+-		install(FILES resources/unix/${MAN_NAME} DESTINATION share/man/man6)
 -		set(MANUAL_STATUS "Bundled")
 -	endif()
 -endif()
@@ -50,9 +53,11 @@ index 2647565..5961fb0 100644
 -if(DOXYGEN_FOUND)
 -	set(DOXYGEN_STATUS "Available (target \"doc\")")
 -	# fake autotools variables
+-	set(PACKAGE_VERSION ${PLAYER_VERSION})
 -	set(DX_DOCDIR ${CMAKE_CURRENT_BINARY_DIR}/doc)
 -	set(srcdir ${CMAKE_CURRENT_SOURCE_DIR})
 -	configure_file(resources/Doxyfile.in resources/Doxyfile @ONLY)
+-	unset(PACKAGE_VERSION)
 -	unset(DX_DOCDIR)
 -	unset(srcdir)
 -

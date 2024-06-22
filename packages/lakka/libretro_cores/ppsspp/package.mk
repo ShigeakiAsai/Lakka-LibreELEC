@@ -3,7 +3,7 @@ PKG_VERSION="d479b74ed9c3e321bc3735da29bc125a2ac3b9b2"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/hrydgard/ppsspp"
 PKG_URL="${PKG_SITE}.git"
-PKG_DEPENDS_TARGET="toolchain linux glibc libzip libpng zstd zlib bzip2 openssl speex"
+PKG_DEPENDS_TARGET="toolchain glibc libzip libpng zstd zlib bzip2 openssl speex"
 PKG_LONGDESC="Libretro port of PPSSPP"
 PKG_TOOLCHAIN="cmake"
 PKG_LR_UPDATE_TAG="yes"
@@ -49,7 +49,6 @@ if [ "${TARGET_ARCH}" = "arm" ]; then
     PKG_CMAKE_OPTS_TARGET+=" -DFORCED_CPU=armv7"
   fi
 elif [ "${TARGET_ARCH}" = "aarch64" ]; then
-  "${TARGET_ARCH}" = "arm64"
   PKG_CMAKE_OPTS_TARGET+=" -DFORCED_CPU=aarch64"
 fi
 

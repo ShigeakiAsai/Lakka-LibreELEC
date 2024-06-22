@@ -155,7 +155,7 @@
 # additional packages to install:
 # Space separated list is supported,
 # e.g. ADDITIONAL_PACKAGES="PACKAGE1 PACKAGE2"
-  ADDITIONAL_PACKAGES="rsync xpadneo"
+  ADDITIONAL_PACKAGES="rsync"
 
 # Lakka specific mirror
   LAKKA_MIRROR="http://sources.lakka.tv"
@@ -235,6 +235,7 @@
                   gearsystem \
                   genesis_plus_gx \
                   genesis_plus_gx_wide \
+                  geolith \
                   gme \
                   gpsp \
                   gw_libretro \
@@ -248,6 +249,7 @@
                   lowres_nx \
                   lutro \
                   mame \
+                  mame2000 \
                   mame2003_plus \
                   mame2010 \
                   mame2015 \
@@ -256,6 +258,7 @@
                   mesen \
                   mesen_s \
                   mgba \
+                  mgba_fork \
                   mojozork \
                   mrboom \
                   mu \
@@ -310,6 +313,7 @@
                   vbam \
                   vecx \
                   vice \
+                  vircon32 \
                   virtualjaguar \
                   vitaquake2 \
                   vitaquake3 \
@@ -320,8 +324,13 @@
                   yabause \
                  "
 
+# list of cores that should be moved in front of the build line,
+# as they take longer to build, so they are built earlier
+  LR_PRIORITY_CORES="scummvm mame"
+
 # disable some cores
-    if [ "${PROJECT}" = "RPi" -a "${DEVICE}" = "RPi" -o "${DEVICE}" = "GPICase" -o "${DEVICE}" = "Pi02GPi" ]; then
+  if [ "${PROJECT}" = "RPi" ]; then
+    if [ "${DEVICE}" = "RPi" -o "${DEVICE}" = "GPICase" ]; then
       EXCLUDE_LIBRETRO_CORES+="\
                                beetle_bsnes \
                                beetle_psx \
@@ -365,25 +374,25 @@
                                uae4arm \
                                vbam \
                                virtualjaguar \
+                               vircon32 \
                                vitaquake2 \
                                yabause \
                                yabasanshiro \
                               "
+    elif [ "${DEVICE}" = "Pi02GPi" ]; then
+      EXCLUDE_LIBRETRO_CORES+=" flycast kronos openlara play ppsspp vircon32 yabasanshiro"
     elif [ "${DEVICE}" = "RPi2" ]; then
       EXCLUDE_LIBRETRO_CORES+=" play"
-    elif [ "${DEVICE}" = "Pi02GPi" ]; then
-      EXCLUDE_LIBRETRO_CORES+=" kronos openlara play swanstation"
+    elif [ "${DEVICE}" = "RPi3" ]; then
+      EXCLUDE_LIBRETRO_CORES+=" yabasanshiro"
     fi
-  if [ "${PROJECT}" = "RPi" -a "${DEVICE}" = "RPi3" ]; then
-    EXCLUDE_LIBRETRO_CORES+=" yabasanshiro"
-  fi
-  if [ "${PROJECT}" = "Amlogic" -o "${PROJECT}" = "Rockchip" -o "${PROJECT}" = "Allwinner" ]; then
+  elif [ "${PROJECT}" = "Amlogic" -o "${PROJECT}" = "Rockchip" -o "${PROJECT}" = "Allwinner" ]; then
     EXCLUDE_LIBRETRO_CORES+=" yabasanshiro"
   elif [ "${PROJECT}" = "Generic" -a "${ARCH}" = "i386" ]; then
     EXCLUDE_LIBRETRO_CORES+=" fake_08 openlara"
   elif [ "${PROJECT}" = "L4T" -a "${DEVICE}" = "Switch" ]; then
     #Remove xpadneo from L4T builds
-    EXCLUDE_LIBRETRO_CORES+=" cap32"
+    EXCLUDE_LIBRETRO_CORES+=" cap32 stella"
     ADDITIONAL_PACKAGES="${ADDITIONAL_PACKAGES//xpadneo/}"
   elif [ "${PROJECT}" = "Ayn" -a "${DEVICE}" = "Odin" ]; then
     EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
@@ -406,10 +415,17 @@
   if [ "${PROJECT}" != "L4T" -a "${DEVICE}" != "Switch" ]; then
     EXCLUDE_LIBRETRO_CORES+=" boom3 vitaquake3"
   fi
-
   # lr_moonlight only for Switch
   if [ "${PROJECT}" != "L4T" -a "${DEVICE}" != "Switch" ]; then
     EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
+  fi
+  # kronos currently builds only for gbm and x11 x86_64 arch (does not work on GLES)
+  if [ "${PROJECT}" != "Generic" ]; then
+    EXCLUDE_LIBRETRO_CORES+=" kronos"
+  elif [ "${ARCH}" != "x86_64" ]; then
+    EXCLUDE_LIBRETRO_CORES+=" kronos"
+  elif [ "${DEVICE}" != "Generic" -a "${DEVICE}" != "x11" ]; then
+    EXCLUDE_LIBRETRO_CORES+=" kronos"
   fi
 
   # lr_moonlight does not currently build for Switch because of newer OpenSSL package (older package is not compatible with ffmpeg)
@@ -427,4 +443,30 @@
 # override above with custom list
   if [ -n "${CUSTOM_LIBRETRO_CORES}" ]; then
     LIBRETRO_CORES="${CUSTOM_LIBRETRO_CORES}"
+  fi
+
+# put priority cores in front of the build queue
+  if [ -n "${LR_PRIORITY_CORES}" ]; then
+    for core in ${LR_PRIORITY_CORES} ; do
+      if [[ "${LIBRETRO_CORES}" =~ " ${core} " ]]; then
+        LIBRETRO_CORES="${core} ${LIBRETRO_CORES// ${core} /}"
+      fi
+    done
+  fi
+
+# Update server
+  LAKKA_BUILD_TYPE="${LAKKA_BUILD_TYPE:-release}"
+
+  if [ -z "${LAKKA_UPDATE_SERVER_URL}" ]; then
+    case ${LAKKA_BUILD_TYPE} in
+      release)
+        LAKKA_UPDATE_SERVER_URL="http://le.builds.lakka.tv"
+        ;;
+      nightly)
+        LAKKA_UPDATE_SERVER_URL="http://nightly.builds.lakka.tv/.updater"
+        ;;
+      devel)
+        LAKKA_UPDATE_SERVER_URL="http://nightly.builds.lakka.tv/.devbuild"
+        ;;
+    esac
   fi

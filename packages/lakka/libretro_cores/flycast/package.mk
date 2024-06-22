@@ -1,5 +1,5 @@
 PKG_NAME="flycast"
-PKG_VERSION="c1f0a5a15f07ba82ccb974e5c7dc82206324b0a3"
+PKG_VERSION="021249c321826ecb6b0a0ed6e5d2af9044e973a3"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/flyinghead/flycast"
 PKG_URL="${PKG_SITE}.git"
@@ -17,13 +17,7 @@ fi
 
 if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
-  if [[ ${DEVICE} =~ ^RPi4.* ]] || [ ${DEVICE} = "RK3288" ] || [ "${DEVICE}" = "RK3399" ]; then
-    # enable GLES3
-    PKG_CMAKE_OPTS_TARGET+=" -DUSE_GLES=ON"
-  else
-    # enable GLES2
-    PKG_CMAKE_OPTS_TARGET+=" -DUSE_GLES2=ON"
-  fi
+  PKG_CMAKE_OPTS_TARGET+=" -DUSE_GLES=ON -DUSE_GLES2=OFF"
 fi
 
 if [ "${VULKAN_SUPPORT}" = yes ]; then

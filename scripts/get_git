@@ -6,9 +6,11 @@
 # PKG_URL (mandatory) must point to a git repository (git://... or https://example.com/repo.git)
 # PKG_VERSION (mandatory) must point to a full commit SHA
 # PKG_GIT_CLONE_BRANCH (optional) clone specific branch (used here only for stamp, but can be used by other scripts to update the PKG_VERSION)
+# PKG_GIT_SKIP_SUBMODULE (optional) do not pull submodules
 
 GIT_STAMP="${PKG_URL}|${PKG_VERSION}"
 [ -n "${PKG_GIT_CLONE_BRANCH}" ] && GIT_STAMP+="|${PKG_GIT_CLONE_BRANCH}"
+[ -n "${PKG_GIT_SKIP_SUBMODULE}" ] && GIT_STAMP+="|${PKG_GIT_SKIP_SUBMODULE}"
 
 GIT_TARBALL="${PACKAGE}.tar.xz"
 GIT_STAMP_FILE="${GIT_TARBALL}.gitstamp"
@@ -45,7 +47,7 @@ build_msg "CLR_GET" "GIT FETCH" "${1}"
 git -C "${PACKAGE}" fetch --depth 1 origin ${PKG_VERSION}
 git -C "${PACKAGE}" checkout FETCH_HEAD
 
-if [ "${GET_SKIP_SUBMODULE}" != "yes" ]; then
+if [ "${PKG_GIT_SKIP_SUBMODULE}" != "yes" ]; then
   build_msg "CLR_GET" "GIT SUBMODULE" "${1}"
   git -C "${PACKAGE}" submodule update --init --recursive --depth 1
 fi
