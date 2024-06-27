@@ -52,8 +52,7 @@
     WINDOWMANAGER="sway"
 
   # additional packages to install
-  # ADDITIONAL_PACKAGES+=" odroidgo2-utils odroidgoa-volkeys"
-    ADDITIONAL_PACKAGES+=" odroidgo2-utils"
+    ADDITIONAL_PACKAGES+=" odroidgo2-utils odroidgoa-volkeys"
 
   # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
   # Space separated list is supported,
