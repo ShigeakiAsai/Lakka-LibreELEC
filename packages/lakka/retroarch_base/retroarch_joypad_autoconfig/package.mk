@@ -16,6 +16,13 @@ makeinstall_target() {
   rm -v "${INSTALL}/etc/retroarch-joypad-autoconfig/udev/Nintendo-Switch-Online_NES-Controller_Right.cfg"
   rm -v "${INSTALL}/etc/retroarch-joypad-autoconfig/udev/Nintendo Switch Left Joy-Con.cfg"
   rm -v "${INSTALL}/etc/retroarch-joypad-autoconfig/udev/Nintendo Switch Right Joy-Con.cfg"
+
+  if [ "${DEVICE}" = "RK3326" ]; then
+    rm -v "${INSTALL}/etc/retroarch-joypad-autoconfig/udev/OpenSimHardware_OSH_PB_Controller.cfg"
+  else
+    rm -v "${INSTALL}/etc/retroarch-joypad-autoconfig/udev/ANBERNIC_RG351M_joypad.cfg"
+  fi
+
   #Place Working configs
   cp -Prv ${PKG_DIR}/joypad_configs/* ${INSTALL}/etc/retroarch-joypad-autoconfig/
 
