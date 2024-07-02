@@ -64,7 +64,6 @@
 
   # kernel serial console
     EXTRA_CMDLINE="console=tty0 net.iframes=0 ssh fbcon=rotate:3"
-    EXTRA_CMDLINE_NO_ROTATE="console=tty0 net.iframes=0 ssh"
 
   # set the addon project
     ADDON_PROJECT="ARMv8"
