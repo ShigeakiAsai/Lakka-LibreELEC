@@ -14,4 +14,6 @@ PKG_TOOLCHAIN="manual"
 makeinstall_target() {
   mkdir -p ${INSTALL}/$(get_kernel_overlay_dir)/lib/firmware
     cp -av eagle_fw*.bin ${INSTALL}/$(get_kernel_overlay_dir)/lib/firmware
+    # For ANBERNIC RG351M wifi firmware
+    cp -av mt7601u.bin ${INSTALL}/$(get_kernel_overlay_dir)/lib/firmware
 }
