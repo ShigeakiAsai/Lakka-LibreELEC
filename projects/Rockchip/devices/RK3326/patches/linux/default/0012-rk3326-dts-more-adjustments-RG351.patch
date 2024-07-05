@@ -145,7 +145,7 @@ diff -r -u a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351v.dts b/arch/arm6
 +               mmc1 = &sdmmc;
 +       };
 +
-+        gpio-keys-vol {
++        gpio_keys: odroidgo3-keys {
 +                compatible = "gpio-keys";
 +                autorepeat;
 +                pinctrl-0 = <&btn_pins_vol>;
@@ -153,13 +153,13 @@ diff -r -u a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351v.dts b/arch/arm6
 +
 +                button-vol-down {
 +                        gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_LOW>;
-+                        label = "VOLUMEDOWN";
++                        label = "GPIO BTN-VOLDN";
 +                        linux,code = <KEY_VOLUMEDOWN>;
 +                };
 +
 +                button-volume-up {
 +                        gpios = <&gpio2 RK_PA0 GPIO_ACTIVE_LOW>;
-+                        label = "VOLUMEUP";
++                        label = "GPIO BTN-VOLUP";
 +                        linux,code = <KEY_VOLUMEUP>;
 +                };
 +        };
