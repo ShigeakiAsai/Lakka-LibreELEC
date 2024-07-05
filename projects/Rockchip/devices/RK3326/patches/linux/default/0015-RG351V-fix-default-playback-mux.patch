@@ -1,0 +1,41 @@
+diff -ur a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351v.dts b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351v.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351v.dts	2024-07-05 18:58:15.493507200 +0900
++++ b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351v.dts	2024-07-05 19:46:06.237721507 +0900
+@@ -55,6 +55,37 @@
+                                        <3574170 0>;
+        };
+ 
++	rk817-sound {
++		compatible = "simple-audio-card";
++		pinctrl-names = "default";
++		pinctrl-0 = <&hp_det>;
++
++		simple-audio-card,name = "rk817_int";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,mclk-fs = <256>;
++		
++		simple-audio-card,hp-det-gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_LOW>;
++		simple-audio-card,hp-pin-name = "Headphones";
++		
++		simple-audio-card,widgets =
++			"Microphone", "Mic Jack",
++			"Headphone", "Headphones",
++			"Speaker", "Speaker";
++		simple-audio-card,routing =
++			"MICL", "Mic Jack",
++			"Headphones", "HPOL",
++			"Headphones", "HPOR",
++			"Speaker", "SPKO";
++
++		simple-audio-card,codec {
++			sound-dai = <&rk817>;
++		};
++
++		simple-audio-card,cpu {
++			sound-dai = <&i2s1_2ch>;
++		};
++	};
++
+ 	vibrator {
+ 		compatible = "pwm-vibrator";
+ 		pwms = <&pwm0 0 1000000 0>;
