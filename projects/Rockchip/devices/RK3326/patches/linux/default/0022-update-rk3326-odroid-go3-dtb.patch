@@ -1,0 +1,61 @@
+diff -ur a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts	2024-07-06 21:56:43.167610000 +0900
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts	2024-07-06 23:07:46.871725729 +0900
+@@ -12,23 +12,6 @@
+ 	model = "ODROID-GO Super";
+ 	compatible = "hardkernel,rk3326-odroid-go3", "rockchip,rk3326";
+ 
+-	gpio_keys: odroidgo3-keys {
+-		compatible = "gpio-keys";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		autorepeat;
+-		button@0 {
+-			label = "GPIO BTN-VOLUP";
+-			linux,code = <KEY_VOLUMEUP>;
+-			gpios = <&gpio2 RK_PA0 GPIO_ACTIVE_LOW>;
+-		};
+-		button@1 {
+-			label = "GPIO BTN-VOLDN";
+-			linux,code = <KEY_VOLUMEDOWN>;
+-			gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_LOW>;
+-		};
+-	};
+-
+ 	joypad: odroidgo3-joypad {
+ 			compatible = "odroidgo3-joypad";
+ 
+@@ -243,6 +226,25 @@
+ 					<3649470 20>, <3635260 15>, <3616920 10>, <3592440 5>,
+ 					<3574170 0>;
+ 	};
++
++	gpio_keys: odroidgo3-keys {
++		compatible = "gpio-keys";
++		autorepeat;
++		pinctrl-0 = <&btn_pins_vol>;
++		pinctrl-names = "default";
++
++		button-vol-down {
++			gpios = <&gpio2 RK_PA0 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-VOLUP";
++			linux,code = <KEY_VOLUMEUP>;
++		};
++
++		button-volume-up {
++			gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-VOLDN";
++			linux,code = <KEY_VOLUMEDOWN>;
++		};
++	};
+ };
+ 
+ &internal_display {
+@@ -250,6 +252,7 @@
+ 	reset-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_HIGH>;
+ 	IOVCC-supply = <&vcc_lcd>;
+ 	VCC-supply = <&vcc_lcd>;
++	rotation = <270>;
+ };
+ 
+ &rk817_charger {

@@ -1,0 +1,11 @@
+diff -ur a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts	2024-07-06 23:44:03.131980700 +0900
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2-v11.dts	2024-07-06 23:53:09.918918955 +0900
+@@ -225,6 +225,7 @@
+ 	compatible = "elida,kd35t133";
+ 	iovcc-supply = <&vcc_lcd>;
+ 	vdd-supply = <&vcc_lcd>;
++	rotation = <270>;
+ };
+ 
+ &rk817 {
