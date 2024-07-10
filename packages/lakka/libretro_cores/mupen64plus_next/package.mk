@@ -55,7 +55,7 @@ pre_make_target() {
       PKG_MAKE_OPTS_TARGET+=" platform=rpi4_64-mesa FORCE_GLES3=1"
       ;;
     RPi5)
-      PKG_MAKE_OPTS_TARGET+=" platform=rpi-mesa FORCE_GLES3=1 CPUFLAGS="
+      PKG_MAKE_OPTS_TARGET+=" platform=rpi5"
       ;;
     Exynos)
       PKG_MAKE_OPTS_TARGET+=" platform=odroid BOARD=ODROID-XU"
