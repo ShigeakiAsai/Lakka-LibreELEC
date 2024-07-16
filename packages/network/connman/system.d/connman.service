@@ -3,8 +3,9 @@ Description=Connection service
 DefaultDependencies=false
 Conflicts=shutdown.target
 Before=network.target multi-user.target shutdown.target
-After=dbus.service network-base.service
+After=dbus.service network-base.service iwd.service
 Wants=network.target
+Requires=iwd.service
 ConditionPathExists=!/dev/.kernel_ipconfig
 
 [Service]
@@ -12,7 +13,7 @@ Type=dbus
 BusName=net.connman
 Restart=on-failure
 EnvironmentFile=-/run/libreelec/debug/connman.conf
-ExecStart=/bin/sh -c ". /usr/lib/connman/connman-setup; exec /usr/sbin/connmand -nr $CONNMAN_MAIN $CONNMAN_DEBUG"
+ExecStart=/bin/sh -c ". /usr/lib/connman/connman-setup; exec /usr/sbin/connmand --wifi=iwd_agent -nr $CONNMAN_MAIN $CONNMAN_DEBUG"
 StandardOutput=null
 RestartSec=2
 StartLimitInterval=0
