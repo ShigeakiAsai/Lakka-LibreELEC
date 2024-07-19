@@ -13,7 +13,7 @@ PKG_DEPENDS_TARGET="toolchain openssl:host pkg-config:host Python3:host swig:hos
 PKG_LONGDESC="Das U-Boot is a cross-platform bootloader for embedded systems."
 
 if [ "${PROJECT}" = "Rockchip" -a "${DEVICE}" != "RK3326" ]; then
-  PKG_PATCH_DIRS="NonRK3326"
+  PKG_PATCH_DIRS="default"
 fi
 
 PKG_STAMP="${UBOOT_SYSTEM} ${UBOOT_TARGET}"
