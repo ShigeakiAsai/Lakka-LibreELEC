@@ -17,6 +17,10 @@ PKG_TOOLCHAIN="manual"
 if [ "${ATF_PLATFORM}" = "rk3399" ]; then
   PKG_DEPENDS_TARGET+=" gcc-arm-none-eabi:host"
   export M0_CROSS_COMPILE="${TOOLCHAIN}/bin/arm-none-eabi-"
+elif [ "${ATF_PLATFORM}" = "sun50i_h616" ]; then
+  PKG_URL="${PKG_SITE}.git"
+  PKG_VERSION="742d0e6ef32d7d0257cf030bc9766cf39a29f145"
+  PKG_SHA256=""
 fi
 
 make_target() {

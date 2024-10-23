@@ -1,0 +1,96 @@
+From: Chris Morgan <macroalpha82@gmail.com>
+To: u-boot@lists.denx.de
+Cc: sjg@chromium.org, jernej.skrabec@gmail.com,
+	neil.armstrong@linaro.org, hdegoede@redhat.com,
+	andre.przywara@arm.com, jagan@amarulasolutions.com,
+	trini@konsulko.com, ryan@testtoast.com, iuncuim@gmail.com,
+	sumit.garg@linaro.org, Chris Morgan <macromorgan@hotmail.com>
+Subject: [PATCH V3 2/9] sunxi: H616: DRAM: Add alternative pin mapping
+Date: Fri, 30 Aug 2024 10:55:07 -0500	[thread overview]
+Message-ID: <20240830155514.481410-3-macroalpha82@gmail.com> (raw)
+In-Reply-To: <20240830155514.481410-1-macroalpha82@gmail.com>
+
+From: Chris Morgan <macromorgan@hotmail.com>
+
+It seems that different dies need different PHY pin mapping. Select
+alternatives at compile time.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+[adapted to switch from runtime to compile time config]
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ arch/arm/mach-sunxi/Kconfig            | 17 +++++++++++++++++
+ arch/arm/mach-sunxi/dram_sun50i_h616.c | 22 +++++++++++++++++++++-
+ 2 files changed, 38 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
+index 17666814c5..078f8c19fa 100644
+--- a/arch/arm/mach-sunxi/Kconfig
++++ b/arch/arm/mach-sunxi/Kconfig
+@@ -108,6 +108,23 @@ config DRAM_SUN50I_H616_TPR12
+ 	default 0x0
+ 	help
+ 	  TPR12 value from vendor DRAM settings.
++
++choice
++	prompt "H616 PHY pin mapping selection"
++	default DRAM_SUN50I_H616_PHY_ADDR_MAP_0
++
++config DRAM_SUN50I_H616_PHY_ADDR_MAP_0
++	bool "H313/H616/H618"
++	help
++	  The pin mapping selection used by the H313, H616, H618, and
++	  possibly other dies which use the H616 DRAM controller.
++
++config DRAM_SUN50I_H616_PHY_ADDR_MAP_1
++	bool "H700"
++	help
++	  The pin mapping selection used by the H700 and possibly other
++	  dies which use the H616 DRAM controller.
++endchoice
+ endif
+ 
+ config SUN6I_PRCM
+diff --git a/arch/arm/mach-sunxi/dram_sun50i_h616.c b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+index 5be2887a06..52f7799173 100644
+--- a/arch/arm/mach-sunxi/dram_sun50i_h616.c
++++ b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+@@ -225,6 +225,26 @@ static void mctl_set_addrmap(const struct dram_config *config)
+ 	mctl_ctl->addrmap[8] = 0x3F3F;
+ }
+ 
++#ifdef CONFIG_DRAM_SUN50I_H616_PHY_ADDR_MAP_1
++static const u8 phy_init[] = {
++#ifdef CONFIG_SUNXI_DRAM_H616_DDR3_1333
++	0x08, 0x02, 0x12, 0x05, 0x15, 0x17, 0x18, 0x0b,
++	0x14, 0x07, 0x04, 0x13, 0x0c, 0x00, 0x16, 0x1a,
++	0x0a, 0x11, 0x03, 0x10, 0x0e, 0x01, 0x0d, 0x19,
++	0x06, 0x09, 0x0f
++#elif defined(CONFIG_SUNXI_DRAM_H616_LPDDR3)
++	0x18, 0x00, 0x04, 0x09, 0x06, 0x05, 0x02, 0x19,
++	0x17, 0x03, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
++	0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x07,
++	0x08, 0x01, 0x1a
++#elif defined(CONFIG_SUNXI_DRAM_H616_LPDDR4)
++	0x03, 0x00, 0x17, 0x05, 0x02, 0x19, 0x06, 0x07,
++	0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
++	0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x01,
++	0x18, 0x04, 0x1a
++#endif
++};
++#else /* CONFIG_DRAM_SUN50I_H616_PHY_ADDR_MAP_0 */
+ static const u8 phy_init[] = {
+ #ifdef CONFIG_SUNXI_DRAM_H616_DDR3_1333
+ 	0x07, 0x0b, 0x02, 0x16, 0x0d, 0x0e, 0x14, 0x19,
+@@ -243,7 +263,7 @@ static const u8 phy_init[] = {
+ 	0x18, 0x03, 0x1a
+ #endif
+ };
+-
++#endif /* CONFIG_DRAM_SUN50I_H616_PHY_ADDR_MAP_0 */
+ #define MASK_BYTE(reg, nr) (((reg) >> ((nr) * 8)) & 0x1f)
+ static void mctl_phy_configure_odt(const struct dram_para *para)
+ {
+-- 
+2.34.1
+

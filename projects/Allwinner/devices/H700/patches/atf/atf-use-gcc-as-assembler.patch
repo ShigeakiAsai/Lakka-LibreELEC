@@ -1,0 +1,12 @@
+diff -uNr a/make_helpers/toolchains/aarch64.mk b/make_helpers/toolchains/aarch64.mk
+--- a/make_helpers/toolchains/aarch64.mk	2024-10-21 22:23:34.000000000 +0900
++++ b/make_helpers/toolchains/aarch64.mk	2024-10-21 22:45:49.797353239 +0900
+@@ -16,7 +16,7 @@
+ aarch64-cpp-default := $(or $(CROSS_COMPILE),aarch64-none-elf-)gcc
+ aarch64-cpp-default += $(if $(CROSS_COMPILE),,aarch64-linux-gnu-gcc)
+ 
+-aarch64-as-parameter := AS
++aarch64-as-parameter := CC
+ aarch64-as-default-id := gnu-gcc
+ aarch64-as-default := $(or $(CROSS_COMPILE),aarch64-none-elf-)gcc
+ aarch64-as-default += $(if $(CROSS_COMPILE),,aarch64-linux-gnu-gcc)

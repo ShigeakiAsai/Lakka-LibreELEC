@@ -47,12 +47,16 @@ case "${LINUX}" in
     PKG_SHA256=${L4T_COMBINED_KERNEL_SHA256}
     ;;
   ayn-odin)
-   PKG_SHA256="9aa25bf492928bc7a4542e87d28919c9ac36d27c"
-   PKG_VERSION="${PKG_SHA256}"
-   PKG_URL="https://gitlab.com/sdm845-mainline/linux.git"
-   PKG_PATCH_DIRS="ayn-odin"
-   PKG_GIT_CLONE_BRANCH="sdm845-5.19.16"
-   ;;
+    PKG_SHA256="9aa25bf492928bc7a4542e87d28919c9ac36d27c"
+    PKG_VERSION="${PKG_SHA256}"
+    PKG_URL="https://gitlab.com/sdm845-mainline/linux.git"
+    PKG_PATCH_DIRS="ayn-odin"
+    PKG_GIT_CLONE_BRANCH="sdm845-5.19.16"
+    ;;
+  allwinner-h700)
+    PKG_VERSION="6.12-rc3"
+    PKG_URL="https://git.kernel.org/torvalds/t/linux-${PKG_VERSION}.tar.gz"
+    ;;
   *)
     PKG_VERSION="6.6.30"
     PKG_SHA256="b66a5b863b0f8669448b74ca83bd641a856f164b29956e539bbcb5fdeeab9cc6"

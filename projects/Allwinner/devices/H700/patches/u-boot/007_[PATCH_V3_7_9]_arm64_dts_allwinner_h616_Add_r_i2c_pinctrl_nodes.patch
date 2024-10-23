@@ -1,0 +1,57 @@
+From: Chris Morgan <macroalpha82@gmail.com>
+To: u-boot@lists.denx.de
+Cc: sjg@chromium.org, jernej.skrabec@gmail.com,
+	neil.armstrong@linaro.org, hdegoede@redhat.com,
+	andre.przywara@arm.com, jagan@amarulasolutions.com,
+	trini@konsulko.com, ryan@testtoast.com, iuncuim@gmail.com,
+	sumit.garg@linaro.org, Chris Morgan <macromorgan@hotmail.com>
+Subject: [PATCH V3 7/9] arm64: dts: allwinner: h616: Add r_i2c pinctrl nodes
+Date: Fri, 30 Aug 2024 10:55:12 -0500	[thread overview]
+Message-ID: <20240830155514.481410-8-macroalpha82@gmail.com> (raw)
+In-Reply-To: <20240830155514.481410-1-macroalpha82@gmail.com>
+
+From: Chris Morgan <macromorgan@hotmail.com>
+
+Add pinctrl nodes for the r_i2c node. Without the pinmux defined the
+r_i2c bus may fail to work, possibly if the bootloader uses rsb mode
+for the PMIC.
+
+Link: https://lore.kernel.org/linux-sunxi/172252952262.1669767.7675865282122079154.b4-ty@csie.org/
+
+[ upstream commit: 7c9ea4ab76176f65f4f55aa144f9145a4bccaacb ]
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ arch/arm/dts/sun50i-h616.dtsi                     | 2 ++
+ dts/upstream/src/arm64/allwinner/sun50i-h616.dtsi | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/arch/arm/dts/sun50i-h616.dtsi b/arch/arm/dts/sun50i-h616.dtsi
+index 921d5f61d8..41f2c23e07 100644
+--- a/arch/arm/dts/sun50i-h616.dtsi
++++ b/arch/arm/dts/sun50i-h616.dtsi
+@@ -836,6 +836,8 @@
+ 			clocks = <&r_ccu CLK_R_APB2_I2C>;
+ 			dmas = <&dma 48>, <&dma 48>;
+ 			dma-names = "rx", "tx";
++			pinctrl-names = "default";
++			pinctrl-0 = <&r_i2c_pins>;
+ 			resets = <&r_ccu RST_R_APB2_I2C>;
+ 			status = "disabled";
+ 			#address-cells = <1>;
+diff --git a/dts/upstream/src/arm64/allwinner/sun50i-h616.dtsi b/dts/upstream/src/arm64/allwinner/sun50i-h616.dtsi
+index 921d5f61d8..41f2c23e07 100644
+--- a/dts/upstream/src/arm64/allwinner/sun50i-h616.dtsi
++++ b/dts/upstream/src/arm64/allwinner/sun50i-h616.dtsi
+@@ -836,6 +836,8 @@
+ 			clocks = <&r_ccu CLK_R_APB2_I2C>;
+ 			dmas = <&dma 48>, <&dma 48>;
+ 			dma-names = "rx", "tx";
++			pinctrl-names = "default";
++			pinctrl-0 = <&r_i2c_pins>;
+ 			resets = <&r_ccu RST_R_APB2_I2C>;
+ 			status = "disabled";
+ 			#address-cells = <1>;
+-- 
+2.34.1
+

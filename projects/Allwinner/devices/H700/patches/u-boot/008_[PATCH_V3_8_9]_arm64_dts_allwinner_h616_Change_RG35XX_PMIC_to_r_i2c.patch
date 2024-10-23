@@ -1,0 +1,72 @@
+From: Chris Morgan <macroalpha82@gmail.com>
+To: u-boot@lists.denx.de
+Cc: sjg@chromium.org, jernej.skrabec@gmail.com,
+	neil.armstrong@linaro.org, hdegoede@redhat.com,
+	andre.przywara@arm.com, jagan@amarulasolutions.com,
+	trini@konsulko.com, ryan@testtoast.com, iuncuim@gmail.com,
+	sumit.garg@linaro.org, Chris Morgan <macromorgan@hotmail.com>
+Subject: [PATCH V3 8/9] arm64: dts: allwinner: h616: Change RG35XX PMIC to r_i2c
+Date: Fri, 30 Aug 2024 10:55:13 -0500	[thread overview]
+Message-ID: <20240830155514.481410-9-macroalpha82@gmail.com> (raw)
+In-Reply-To: <20240830155514.481410-1-macroalpha82@gmail.com>
+
+From: Chris Morgan <macromorgan@hotmail.com>
+
+Change the Anbernic RG35XX series to use the r_i2c bus for the PMIC
+instead of the r_rsb bus. This is to keep the device tree consistent
+as there are at least 3 devices (the RG35XX-SP, RG28XX, and RG40XX-H)
+that have an external RTC on the r_i2c bus.
+
+Link: https://lore.kernel.org/linux-sunxi/172252952262.1669767.7675865282122079154.b4-ty@csie.org/
+
+[ upstream commit: c712e5d0985628b1df13930489b49b740e610a2b ]
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ arch/arm/dts/sun50i-h700-anbernic-rg35xx-2024.dts           | 6 +++---
+ .../arm64/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts    | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/dts/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm/dts/sun50i-h700-anbernic-rg35xx-2024.dts
+index ee30584b6a..e2bbd22bd8 100644
+--- a/arch/arm/dts/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm/dts/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -201,12 +201,12 @@
+ 	vcc-pi-supply = <&reg_cldo3>;
+ };
+ 
+-&r_rsb {
++&r_i2c {
+ 	status = "okay";
+ 
+-	axp717: pmic@3a3 {
++	axp717: pmic@34 {
+ 		compatible = "x-powers,axp717";
+-		reg = <0x3a3>;
++		reg = <0x34>;
+ 		interrupt-controller;
+ 		#interrupt-cells = <1>;
+ 		interrupt-parent = <&nmi_intc>;
+diff --git a/dts/upstream/src/arm64/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/dts/upstream/src/arm64/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index ee30584b6a..e2bbd22bd8 100644
+--- a/dts/upstream/src/arm64/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/dts/upstream/src/arm64/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -201,12 +201,12 @@
+ 	vcc-pi-supply = <&reg_cldo3>;
+ };
+ 
+-&r_rsb {
++&r_i2c {
+ 	status = "okay";
+ 
+-	axp717: pmic@3a3 {
++	axp717: pmic@34 {
+ 		compatible = "x-powers,axp717";
+-		reg = <0x3a3>;
++		reg = <0x34>;
+ 		interrupt-controller;
+ 		#interrupt-cells = <1>;
+ 		interrupt-parent = <&nmi_intc>;
+-- 
+2.34.1
+

@@ -12,6 +12,16 @@ PKG_URL="https://ftp.denx.de/pub/u-boot/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
 PKG_DEPENDS_TARGET="toolchain openssl:host pkg-config:host Python3:host swig:host pyelftools:host"
 PKG_LONGDESC="Das U-Boot is a cross-platform bootloader for embedded systems."
 
+if [ "${PROJECT}" = "Allwinner" ]; then
+  if [ "${DEVICE}" = "H700" ]; then
+    PKG_VERSION="2024.10-rc4"
+    PKG_URL="https://ftp.denx.de/pub/u-boot/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
+    PKG_SHA256="7547a5d5147b748094dc88c6d6f196519e97cca3eb66137a4acb92e9e63e0626"
+  else
+    PKG_PATCH_DIRS="default"
+  fi
+fi
+
 PKG_STAMP="${UBOOT_SYSTEM} ${UBOOT_TARGET}"
 
 [ -n "${KERNEL_TOOLCHAIN}" ] && PKG_DEPENDS_TARGET+=" gcc-${KERNEL_TOOLCHAIN}:host"
@@ -41,6 +51,11 @@ make_target() {
     echo "UBOOT_SYSTEM must be set to build an image"
     echo "see './scripts/uboot_helper' for more information"
   else
+
+    if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+      export BL31="$(get_build_dir atf)/build/${ATF_PLATFORM}/release/bl31.bin"
+    fi
+
     [ "${BUILD_WITH_DEBUG}" = "yes" ] && PKG_DEBUG=1 || PKG_DEBUG=0
     DEBUG=${PKG_DEBUG} CROSS_COMPILE="${TARGET_KERNEL_PREFIX}" LDFLAGS="" ARCH=arm make mrproper
     [ -n "${UBOOT_FIRMWARE}" ] && find_file_path bootloader/firmware && . ${FOUND_PATH}
