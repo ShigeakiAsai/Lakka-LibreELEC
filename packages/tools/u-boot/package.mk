@@ -14,9 +14,9 @@ PKG_LONGDESC="Das U-Boot is a cross-platform bootloader for embedded systems."
 
 if [ "${PROJECT}" = "Allwinner" ]; then
   if [ "${DEVICE}" = "H700" ]; then
-    PKG_VERSION="2024.10-rc4"
+    PKG_VERSION="2025.01-rc1"
     PKG_URL="https://ftp.denx.de/pub/u-boot/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
-    PKG_SHA256="7547a5d5147b748094dc88c6d6f196519e97cca3eb66137a4acb92e9e63e0626"
+    PKG_SHA256="2d84dcef628cf602be340ea8466c9d2bb38ea7553467d4a13139bfe9cdffc3e0"
   else
     PKG_PATCH_DIRS="default"
   fi
