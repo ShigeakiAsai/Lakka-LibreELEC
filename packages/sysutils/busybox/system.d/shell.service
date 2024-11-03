@@ -11,7 +11,7 @@ ExecStart=/bin/sh -c 'clear; lsb_release; . /etc/profile; exec /bin/sh'
 Restart=always
 RestartSec=0
 StandardInput=tty
-TTYPath=/dev/tty1
+TTYPath=/dev/ttyS0
 TTYReset=yes
 TTYVHangup=yes
 KillMode=process
@@ -20,4 +20,4 @@ IgnoreSIGPIPE=no
 KillSignal=SIGHUP
 
 [Install]
-WantedBy=textmode.target
+WantedBy=multi-user.target
