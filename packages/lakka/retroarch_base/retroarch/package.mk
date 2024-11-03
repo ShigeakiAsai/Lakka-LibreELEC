@@ -344,6 +344,11 @@ makeinstall_target() {
     sed -i -e 's|^video_windowed_fullscreen =.*|video_windowed_fullscreen = "true"|' ${INSTALL}/etc/retroarch.cfg
   fi
 
+  # ANBERNIC RG35XX 2024, RG35XX Plus, RG35XX H, RG35XX SP (Allwinner H700)
+  if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+    echo 'xmb_layout = "2"' >> ${INSTALL}/etc/retroarch.cfg
+  fi
+
   # sort the options in config file
   sort ${INSTALL}/etc/retroarch.cfg > ${INSTALL}/etc/retroarch-sorted.cfg
   mv ${INSTALL}/etc/retroarch-sorted.cfg ${INSTALL}/etc/retroarch.cfg
