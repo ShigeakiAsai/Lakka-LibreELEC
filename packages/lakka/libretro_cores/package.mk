@@ -249,9 +249,6 @@ if [ "${DEVICE}" = "Switch" ]; then
 fi
 
 if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
-  # For initial support
-  #  LIBRETRO_CORES="ppsspp"
-  # temp remove
   EXCLUDE_LIBRETRO_CORES+=" dolphin vircon32 vitaquake2"
 fi
 
