@@ -173,10 +173,10 @@ devices = \
         'dtb' : 'sun50i-h700-anbernic-rg35xx-sp.dtb',
         'config' : 'anbernic_rg35xx_h700_defconfig',
       },
-      'anbernic-rg28xx' : {
-        'dtb' : 'sun50i-h700-anbernic-rg28xx.dtb',
-        'config' : 'anbernic_rg35xx_h700_defconfig',
-      },
+      # 'anbernic-rg28xx' : {
+      #   'dtb' : 'sun50i-h700-anbernic-rg28xx.dtb',
+      #   'config' : 'anbernic_rg35xx_h700_defconfig',
+      # },
       'anbernic-rg40xx-hv' : {
         'dtb' : 'sun50i-h700-anbernic-rg40xx-hv.dtb',
         'config' : 'anbernic_rg35xx_h700_defconfig',
