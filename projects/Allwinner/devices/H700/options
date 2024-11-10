@@ -47,6 +47,9 @@
   # Windowmanager to use (weston / no)
     WINDOWMANAGER="sway"
 
+  # additional packages to install
+    ADDITIONAL_PACKAGES+=" H700-volkeys"
+
   # set the addon project
     ADDON_PROJECT="ARMv8"
 
