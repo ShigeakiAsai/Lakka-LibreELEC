@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="mesa"
-PKG_VERSION="24.0.9"
-PKG_SHA256="51aa686ca4060e38711a9e8f60c8f1efaa516baf411946ed7f2c265cd582ca4c"
+PKG_VERSION="24.2.6"
+PKG_SHA256="2b68c4a6f204c1999815a457299f81c41ba7bf48c4674b0b2d1d8864f41f3709"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.mesa3d.org/"
 PKG_URL="https://mesa.freedesktop.org/archive/mesa-${PKG_VERSION}.tar.xz"
@@ -15,6 +15,11 @@ get_graphicdrivers
 
 if [ "${DEVICE}" = "Dragonboard" ]; then
   PKG_DEPENDS_TARGET+=" libarchive libxml2 lua54"
+fi
+
+if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+  PKG_DEPENDS_TARGET+=" pyyaml:host"
+  GALLIUM_DRIVERS=${GALLIUM_DRIVERS//"kmsro "/}
 fi
 
 PKG_MESON_OPTS_TARGET="-Dgallium-drivers=${GALLIUM_DRIVERS// /,} \
@@ -53,6 +58,10 @@ elif [ "${DISPLAYSERVER}" = "wl" ]; then
   PKG_MESON_OPTS_TARGET+=" -Dplatforms=wayland \
                            -Ddri3=disabled \
                            -Dglx=disabled"
+  if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+    PKG_DEPENDS_TARGET+=" libglvnd"
+    PKG_MESON_OPTS_TARGET+=" -Dglvnd=true"
+  fi
 elif [ "${DISTRO}" = "Lakka" -o "${PROJECT}" = "L4T" ]; then
   PKG_DEPENDS_TARGET+=" libglvnd"
   PKG_MESON_OPTS_TARGET+=" -Dplatforms="" -Ddri3=enabled -Dglx=disabled -Dglvnd=true"
