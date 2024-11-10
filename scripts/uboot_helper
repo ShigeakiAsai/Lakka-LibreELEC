@@ -181,6 +181,10 @@ devices = \
         'dtb' : 'sun50i-h700-anbernic-rg40xx-hv.dtb',
         'config' : 'anbernic_rg35xx_h700_defconfig',
       },
+      'anbernic-rgcubexx' : {
+        'dtb' : 'sun50i-h700-anbernic-rgcubexx.dtb',
+        'config' : 'anbernic_rg35xx_h700_defconfig',
+      },
     },
     'R40' : {
       'bananapi-m2u' : {
