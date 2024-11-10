@@ -248,11 +248,6 @@ if [ "${DEVICE}" = "Switch" ]; then
   EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
 fi
 
-if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" dolphin vircon32 vitaquake2"
-  # Above 3 cores are disabled because these need the "libglvnd" package.
-fi
-
 # disable cores that do not build for OPENGLES
 if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   EXCLUDE_LIBRETRO_CORES+=" kronos"
