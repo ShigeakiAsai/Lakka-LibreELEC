@@ -50,6 +50,12 @@
   # additional packages to install
     ADDITIONAL_PACKAGES+=" H700-volkeys"
 
+  # additional drivers to install:
+  # for a list of additional drivers see packages/linux-drivers
+  # Space separated list is supported,
+  # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
+    ADDITIONAL_DRIVERS="rocknix-joypad"
+
   # set the addon project
     ADDON_PROJECT="ARMv8"
 
