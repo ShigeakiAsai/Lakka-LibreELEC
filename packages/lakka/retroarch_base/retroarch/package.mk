@@ -346,6 +346,7 @@ makeinstall_target() {
 
   # ANBERNIC RG35XX 2024, RG35XX Plus, RG35XX H, RG35XX SP (Allwinner H700)
   if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+    echo 'audio_out_rate = "44100"' >> ${INSTALL}/etc/retroarch.cfg
     echo 'input_menu_toggle_btn = "10"' >> ${INSTALL}/etc/retroarch.cfg
     echo 'xmb_layout = "2"' >> ${INSTALL}/etc/retroarch.cfg
   fi
