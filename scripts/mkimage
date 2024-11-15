@@ -331,6 +331,9 @@ elif [ "${BOOTLOADER}" = "u-boot" -a -n "${UBOOT_SYSTEM}" ]; then
     [ "${DISTRO}" = "Lakka" -a "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H3" -a \
       "${UBOOT_SYSTEM}" = "capcom-home-arcade" ] && EXTRA_CMDLINE+=" cma=128MB"
 
+    [ "${DISTRO}" = "Lakka" -a "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" -a \
+      "${UBOOT_SYSTEM}" = "anbernic-rg28xx" ] && EXTRA_CMDLINE+=" fbcon=rotate:3"
+
     cat << EOF > "${LE_TMP}/extlinux/extlinux.conf"
 LABEL ${DISTRO}
   LINUX /${KERNEL_NAME}
