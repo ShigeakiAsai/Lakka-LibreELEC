@@ -5,13 +5,13 @@ diff -uNr a/arch/arm64/boot/dts/allwinner/Makefile b/arch/arm64/boot/dts/allwinn
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h618-orangepi-zero3.dtb
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h618-transpeed-8k618-t.dtb
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-2024.dtb
-+dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-2024-rev2-panel.dtb
++dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-2024-rev6-panel.dtb
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-plus.dtb
-+dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-plus-rev2-panel.dtb
++dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-plus-rev6-panel.dtb
 +dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-h.dtb
-+dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-h-rev2-panel.dtb
++dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-h-rev6-panel.dtb
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-sp.dtb
-+dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-sp-rev2-panel.dtb
++dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg35xx-sp-rev6-panel.dtb
  dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg28xx.dtb
 +dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg40xx-hv.dtb
 +dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rgcubexx.dtb
