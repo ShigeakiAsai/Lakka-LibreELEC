@@ -18,9 +18,9 @@ if [ "${ATF_PLATFORM}" = "rk3399" ]; then
   PKG_DEPENDS_TARGET+=" gcc-arm-none-eabi:host"
   export M0_CROSS_COMPILE="${TOOLCHAIN}/bin/arm-none-eabi-"
 elif [ "${ATF_PLATFORM}" = "sun50i_h616" ]; then
-  PKG_URL="${PKG_SITE}.git"
-  PKG_VERSION="742d0e6ef32d7d0257cf030bc9766cf39a29f145"
-  PKG_SHA256=""
+  PKG_VERSION="2.12-rc0"
+  PKG_URL="https://github.com/ARM-software/arm-trusted-firmware/archive/v${PKG_VERSION}.tar.gz"
+  PKG_SHA256="b841830626904b35ba033d7cd7a774d1548830d9ad47d2c085cfde64430396bf"
 fi
 
 make_target() {
