@@ -370,7 +370,7 @@ if [ -f "${DISTRO_DIR}/${DISTRO}/config/firstboot.sh" ]; then
 
   cat << EOF > "${LE_TMP}/wifi-config.txt"
 # Uncomment following lines and set your Wi-Fi name (SSID) and password (PSK) below.
-# SSID/PSK must not inlcude space / quotes / special character. If you have to use
+# SSID/PSK must not include space / quotes / special character. If you have to use
 # them, escape them and hope for best.
 # COUNTRY is an optional field, which sets the Wi-Fi adapter country. The value should follow ISO/IEC 3166-1 alpha2.
 #SSID=
