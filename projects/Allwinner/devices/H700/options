@@ -68,6 +68,6 @@
 
   # additional kernel parameters
   # EXTRA_CMDLINE="earlycon=uart,mmio32,0x5000000 systemd.debug_shell=ttyS0 console=ttyS0,115200 console=tty1"
-    EXTRA_CMDLINE="systemd.debug_shell=ttyS0 console=ttyS0,115200 console=tty1"
+    EXTRA_CMDLINE="systemd.debug_shell=ttyS0 console=ttyS0,115200 console=tty0"
   # Above "EXTRA_CMDLINE" is for initial porting. please remove when it finished.
   # EXTRA_CMDLINE="console=tty1"
