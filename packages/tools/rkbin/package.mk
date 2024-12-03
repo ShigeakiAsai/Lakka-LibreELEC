@@ -38,6 +38,9 @@ make_target() {
   PKG_TRUST_INI="RKTRUST/${PKG_SOC}TRUST.ini"
   if [ ! -f "${PKG_TRUST_INI}" ]; then
     PKG_TRUST_INI="RKTRUST/${DEVICE}TRUST.ini"
+    if [ ! -f "${PKG_TRUST_INI}" ] && [ "${PKG_SOC}" = "RK3566" ]; then
+      PKG_TRUST_INI="RKTRUST/RK3568TRUST.ini"
+    fi
   fi
   if [ -f "${PKG_TRUST_INI}" ]; then
     PKG_FILE=$(sed -nr "/^\[BL31_OPTION\]/ { :l /^PATH[ ]*=/ { s/[^=]*=[ ]*//; p; q;}; n; b l;}" "${PKG_TRUST_INI}")
