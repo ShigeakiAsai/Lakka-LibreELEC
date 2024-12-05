@@ -1,0 +1,15 @@
+diff -uNr a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2024-12-05 13:41:07.436899300 +0900
++++ b/CMakeLists.txt	2024-12-05 13:49:20.465024903 +0900
+@@ -244,11 +244,6 @@
+ 		$<$<BOOL:${WINDOWS_STORE}>:NOCRYPT>
+ 		$<$<OR:$<BOOL:${MINGW}>,$<BOOL:${MSVC}>>:_USE_MATH_DEFINES>)
+ 
+-if(UNIX AND NOT ANDROID AND NOT APPLE)
+-	execute_process(COMMAND getconf PAGESIZE OUTPUT_VARIABLE PAGE_SIZE OUTPUT_STRIP_TRAILING_WHITESPACE)
+-	target_compile_definitions(${PROJECT_NAME} PRIVATE PAGE_SIZE=${PAGE_SIZE})
+-endif()
+-
+ if(NOT "${SENTRY_UPLOAD_URL}" STREQUAL "")
+ 	target_compile_definitions(${PROJECT_NAME} PRIVATE SENTRY_UPLOAD="${SENTRY_UPLOAD_URL}")
+ endif()
