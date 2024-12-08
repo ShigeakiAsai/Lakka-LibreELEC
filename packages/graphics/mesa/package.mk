@@ -135,7 +135,7 @@ fi
 makeinstall_host() {
   mkdir -p "${TOOLCHAIN}/bin"
     cp -a src/intel/compiler/intel_clc "${TOOLCHAIN}/bin"
-
+}
 post_makeinstall_target() {
   if [ "${PROJECT}" = "L4T" ]; then
     safe_remove ${INSTALL}/usr/lib/libgbm.so.1
