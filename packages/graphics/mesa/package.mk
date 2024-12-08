@@ -62,7 +62,7 @@ elif [ "${DISPLAYSERVER}" = "wl" ]; then
                            -Dglx=disabled"
 elif [ "${DISTRO}" = "Lakka" -o "${PROJECT}" = "L4T" ]; then
   PKG_DEPENDS_TARGET+=" libglvnd"
-  PKG_MESON_OPTS_TARGET+=" -Dplatforms="" -Ddri3=enabled -Dglx=disabled -Dglvnd=true"
+  PKG_MESON_OPTS_TARGET+=" -Dplatforms="" -Dglx=disabled -Dglvnd=true"
 else
   PKG_MESON_OPTS_TARGET+=" -Dplatforms="" \
                            -Dglx=disabled"
