@@ -72,6 +72,7 @@ LIBRETRO_CORES="\
                 hatari \
                 higan_sfc \
                 higan_sfc_balanced \
+                holani \
                 jaxe \
                 jumpnbump \
                 kronos \
