@@ -47,12 +47,18 @@ case "${LINUX}" in
     PKG_SHA256=${L4T_COMBINED_KERNEL_SHA256}
     ;;
   ayn-odin)
-   PKG_SHA256="9aa25bf492928bc7a4542e87d28919c9ac36d27c"
-   PKG_VERSION="${PKG_SHA256}"
-   PKG_URL="https://gitlab.com/sdm845-mainline/linux.git"
-   PKG_PATCH_DIRS="ayn-odin"
-   PKG_GIT_CLONE_BRANCH="sdm845-5.19.16"
-   ;;
+    PKG_SHA256="9aa25bf492928bc7a4542e87d28919c9ac36d27c"
+    PKG_VERSION="${PKG_SHA256}"
+    PKG_URL="https://gitlab.com/sdm845-mainline/linux.git"
+    PKG_PATCH_DIRS="ayn-odin"
+    PKG_GIT_CLONE_BRANCH="sdm845-5.19.16"
+    ;;
+  rockchip-rk356x)
+    PKG_VERSION="6.12"
+    PKG_SHA256="b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb"
+    PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+    PKG_PATCH_DIRS="default"
+    ;;
   *)
     PKG_VERSION="6.6.57"
     PKG_SHA256="66ce426ef96f99b8e1ef7ac72e780c730ef8b970f7aa5708501c4274d7abb7b3"
