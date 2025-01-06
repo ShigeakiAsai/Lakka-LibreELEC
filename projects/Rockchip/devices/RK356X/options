@@ -32,3 +32,6 @@
 
   # additional packages
     ADDITIONAL_PACKAGES+=" pciutils"
+
+  # Kernel to build
+    LINUX="rockchip-rk356x"
