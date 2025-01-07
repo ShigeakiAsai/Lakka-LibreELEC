@@ -28,7 +28,7 @@ post_patch() {
   if [ -n "${UBOOT_SYSTEM}" ] && find_file_path bootloader/config; then
     PKG_CONFIG_FILE="${PKG_BUILD}/configs/$(${ROOT}/${SCRIPTS}/uboot_helper ${PROJECT} ${DEVICE} ${UBOOT_SYSTEM} config)"
     if [ -f "${PKG_CONFIG_FILE}" ]; then
-      cat ${FOUND_PATH} >>"${PKG_CONFIG_FILE}"
+      cat "${FOUND_PATH}" >>"${PKG_CONFIG_FILE}"
     fi
   fi
 }
@@ -42,37 +42,28 @@ make_target() {
     echo "see './scripts/uboot_helper' for more information"
   else
     [ "${BUILD_WITH_DEBUG}" = "yes" ] && PKG_DEBUG=1 || PKG_DEBUG=0
-    DEBUG=${PKG_DEBUG} CROSS_COMPILE="${TARGET_KERNEL_PREFIX}" LDFLAGS="" ARCH=arm make mrproper
-    [ -n "${UBOOT_FIRMWARE}" ] && find_file_path bootloader/firmware && . ${FOUND_PATH}
-    DEBUG=${PKG_DEBUG} CROSS_COMPILE="${TARGET_KERNEL_PREFIX}" LDFLAGS="" ARCH=arm make HOSTCC="${HOST_CC}" HOSTCFLAGS="-I${TOOLCHAIN}/include" HOSTLDFLAGS="${HOST_LDFLAGS}" $(${ROOT}/${SCRIPTS}/uboot_helper ${PROJECT} ${DEVICE} ${UBOOT_SYSTEM} config)
-    # DEBUG=${PKG_DEBUG} CROSS_COMPILE="${TARGET_KERNEL_PREFIX}" LDFLAGS="" ARCH=arm _python_sysroot="${TOOLCHAIN}" _python_prefix=/ _python_exec_prefix=/ make ${UBOOT_TARGET} HOSTCC="${HOST_CC}" HOSTCFLAGS="-I${TOOLCHAIN}/include" HOSTLDFLAGS="${HOST_LDFLAGS}" HOSTSTRIP="true" CONFIG_MKIMAGE_DTC_PATH="scripts/dtc/dtc"
-    
-    # debug code start
-    echo "u-boot: make_target(): UBOOT_TARGET is ${UBOOT_TARGET}" 2>&1
-    echo "u-boot: make_target(): BL31 is ${BL31}" 2>&1
-    echo "u-boot: make_target(): ROCKCHIP_TPL is ${ROCKCHIP_TPL}" 2>&1
-    # debug code end
-    
-    DEBUG=${PKG_DEBUG} CROSS_COMPILE="${TARGET_KERNEL_PREFIX}" LDFLAGS="" ARCH=arm _python_sysroot="${TOOLCHAIN}" _python_prefix=/ _python_exec_prefix=/ make spl/u-boot-spl.bin BL31="${BL31}"     ROCKCHIP_TPL="${ROCKCHIP_TPL}" HOSTCC="${HOST_CC}" HOSTCFLAGS="-I${TOOLCHAIN}/include" HOSTLDFLAGS="${HOST_LDFLAGS}" HOSTSTRIP="true" CONFIG_MKIMAGE_DTC_PATH="scripts/dtc/dtc"
-    #                                                                                                                                                    make                    BL31="${PKG_BL31}" ROCKCHIP_TPL="${PKG_DDR_BIN}"  HOSTCC="${HOST_CC}" HOSTCFLAGS="-I${TOOLCHAIN}/include" HOSTLDFLAGS="${HOST_LDFLAGS}" HOSTSTRIP="true" CONFIG_MKIMAGE_DTC_PATH="scripts/dtc/dtc"
+    DEBUG="${PKG_DEBUG}" CROSS_COMPILE="${TARGET_KERNEL_PREFIX}" LDFLAGS="" ARCH=arm make mrproper
+    [ -n "${UBOOT_FIRMWARE}" ] && find_file_path bootloader/firmware && . "${FOUND_PATH}"
+    DEBUG="${PKG_DEBUG}" CROSS_COMPILE="${TARGET_KERNEL_PREFIX}" LDFLAGS="" ARCH=arm make HOSTCC="${HOST_CC}" HOSTCFLAGS="-I${TOOLCHAIN}/include" HOSTLDFLAGS="${HOST_LDFLAGS}" $("${ROOT}/${SCRIPTS}/uboot_helper" "${PROJECT}" "${DEVICE}" "${UBOOT_SYSTEM}" config)
+    DEBUG="${PKG_DEBUG}" CROSS_COMPILE="${TARGET_KERNEL_PREFIX}" LDFLAGS="" ARCH=arm _python_sysroot="${TOOLCHAIN}" _python_prefix=/ _python_exec_prefix=/ make "${UBOOT_TARGET}" HOSTCC="${HOST_CC}" HOSTCFLAGS="-I${TOOLCHAIN}/include" HOSTLDFLAGS="${HOST_LDFLAGS}" HOSTSTRIP="true" CONFIG_MKIMAGE_DTC_PATH="scripts/dtc/dtc"
   fi
 }
 
 makeinstall_target() {
-  mkdir -p ${INSTALL}/usr/share/bootloader
+  mkdir -p "${INSTALL}/usr/share/bootloader"
 
     # Only install u-boot.img et al when building a board specific image
     if [ -n "${UBOOT_SYSTEM}" ]; then
-      find_file_path bootloader/install && . ${FOUND_PATH}
+      find_file_path bootloader/install && . "${FOUND_PATH}"
     fi
 
     # Always install the update script
-    find_file_path bootloader/update.sh && cp -av ${FOUND_PATH} ${INSTALL}/usr/share/bootloader
+    find_file_path bootloader/update.sh && cp -av "${FOUND_PATH}" "${INSTALL}/usr/share/bootloader"
 
     # Always install the canupdate script
     if find_file_path bootloader/canupdate.sh; then
-      cp -av ${FOUND_PATH} ${INSTALL}/usr/share/bootloader
+      cp -av "${FOUND_PATH}" "${INSTALL}/usr/share/bootloader"
       sed -e "s/@PROJECT@/${DEVICE:-${PROJECT}}/g" \
-          -i ${INSTALL}/usr/share/bootloader/canupdate.sh
+          -i "${INSTALL}/usr/share/bootloader/canupdate.sh"
     fi
 }
