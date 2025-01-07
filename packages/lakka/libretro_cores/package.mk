@@ -242,6 +242,11 @@ if [ "${PROJECT}" != "L4T" -a "${DEVICE}" != "Switch" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 vitaquake3 lr_moonlight"
 fi
 
+# RK356X
+if [ "${DEVICE}" = "RK356X" ]; then
+  EXCLUDE_LIBRETRO_CORES+=" melonds vircon32 vitaquake2"
+fi
+
 # disable cores that do not build for OPENGLES
 if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   EXCLUDE_LIBRETRO_CORES+=" kronos"
