@@ -40,7 +40,7 @@
     ADDON_PROJECT="ARMv8"
 
   # additional packages
-    ADDITIONAL_PACKAGES+=" pciutils"
+    ADDITIONAL_PACKAGES+=" generic-dsi pciutils RK356X-volkeys rocknix-joypad"
 
   # Kernel to build
     LINUX="rockchip-rk356x"
