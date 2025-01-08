@@ -11,7 +11,7 @@ if [ -z "${DTB}" ]; then
   cat <<EOF >"${LE_TMP}/extlinux/extlinux.conf"
 LABEL ${DISTRO}
   LINUX /${KERNEL_NAME}
-  FDTDIR /
+  FDTDIR /rockchip/
   APPEND boot=UUID=${UUID_SYSTEM} disk=UUID=${UUID_STORAGE} quiet ${EXTRA_CMDLINE}
 EOF
   mcopy -s "${LE_TMP}/extlinux" :: >"${SAVE_ERROR}" 2>&1 || show_error
