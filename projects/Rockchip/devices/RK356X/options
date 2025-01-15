@@ -39,8 +39,17 @@
   # set the addon project
     ADDON_PROJECT="ARMv8"
 
+  # additional Firmware to use (dvb-firmware, misc-firmware, wlan-firmware)
+  # Space separated list is supported,
+  # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
+  # FIRMWARE+=" orangepi3b-wifi-firmware"
+
   # additional packages
-    ADDITIONAL_PACKAGES+=" generic-dsi pciutils RK356X-volkeys rocknix-joypad"
+  # ADDITIONAL_PACKAGES+=" generic-dsi pciutils RK356X-volkeys rocknix-joypad"
+    ADDITIONAL_PACKAGES+=" generic-dsi pciutils RK356X-volkeys"
 
   # Kernel to build
     LINUX="rockchip-rk356x"
+
+  # Temp remove CEC_FRAMEWORK_SUPPORT
+    CEC_FRAMEWORK_SUPPORT="no"
