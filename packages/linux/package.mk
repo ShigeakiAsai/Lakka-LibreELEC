@@ -54,10 +54,10 @@ case "${LINUX}" in
     PKG_GIT_CLONE_BRANCH="sdm845-5.19.16"
     ;;
   rockchip-rk356x)
-    PKG_VERSION="6.12"
-    PKG_SHA256="b1a2562be56e42afb3f8489d4c2a7ac472ac23098f1ef1c1e40da601f54625eb"
+    PKG_VERSION="6.12.9"
+    PKG_SHA256="87be0360df0931b340d2bac35161a548070fbc3a8c352c49e21e96666c26aeb4"
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
-    PKG_PATCH_DIRS="default"
+    PKG_PATCH_DIRS=" "
     ;;
   *)
     PKG_VERSION="6.6.63"
