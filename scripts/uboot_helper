@@ -423,7 +423,7 @@ devices = \
         'dtb': '',
         'soc': 'RK3566'
       },
-      'rg-arc-d': {
+      'anbernic-rg-rk3566': {
         'config': 'anbernic-rgxx3-rk3566_defconfig',
         'dtb': '',
         'soc': 'RK3566'
