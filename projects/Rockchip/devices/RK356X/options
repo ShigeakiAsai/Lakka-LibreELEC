@@ -42,6 +42,9 @@
   # additional drivers
     ADDITIONAL_DRIVERS+=" rocknix-joypad"
 
+  # additional Firmware
+    FIRMWARE+=" rk3566-devices-firmware"
+
   # additional packages
     ADDITIONAL_PACKAGES+=" generic-dsi pciutils RK356X-volkeys"
 
