@@ -1,0 +1,33 @@
+diff -uNr a/meson.build b/meson.build
+--- a/meson.build	2025-01-20 17:59:47.693586600 +0900
++++ b/meson.build	2025-01-20 18:12:59.204785722 +0900
+@@ -109,11 +109,9 @@
+ conf_data.set10('HAVE_LIBELOGIND', sdbus.found() and sdbus.name() == 'libelogind')
+ conf_data.set10('HAVE_BASU', sdbus.found() and sdbus.name() == 'basu')
+ conf_data.set10('HAVE_TRAY', have_tray)
+-conf_data.set10('HAVE_LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM', cc.has_header_symbol(
+-	'libinput.h',
+-	'LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM',
+-	dependencies: libinput,
+-))
++foreach sym : ['LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM', 'LIBINPUT_CONFIG_DRAG_LOCK_ENABLED_STICKY']
++	conf_data.set10('HAVE_' + sym, cc.has_header_symbol('libinput.h', sym, dependencies: libinput))
++endforeach
+ 
+ scdoc = dependency('scdoc', version: '>=1.9.2', native: true, required: get_option('man-pages'))
+ if scdoc.found()
+diff -uNr a/sway/ipc-json.c b/sway/ipc-json.c
+--- a/sway/ipc-json.c	2024-10-28 05:44:01.000000000 +0900
++++ b/sway/ipc-json.c	2025-01-20 18:14:44.784915930 +0900
+@@ -931,6 +931,11 @@
+ 		case LIBINPUT_CONFIG_DRAG_LOCK_DISABLED:
+ 			drag_lock = "disabled";
+ 			break;
++#if HAVE_LIBINPUT_CONFIG_DRAG_LOCK_ENABLED_STICKY
++		case LIBINPUT_CONFIG_DRAG_LOCK_ENABLED_STICKY:
++			drag_lock = "enabled_sticky";
++			break;
++#endif
+ 		}
+ 		json_object_object_add(object, "tap_drag_lock",
+ 				json_object_new_string(drag_lock));
