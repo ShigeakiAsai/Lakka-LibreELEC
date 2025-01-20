@@ -17,6 +17,7 @@ Restart=always
 RestartSec=2
 StartLimitInterval=0
 Type=notify
+NotifyAccess=all
 
 [Install]
 WantedBy=retroarch.target
