@@ -3,14 +3,14 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="librespot"
-PKG_VERSION="0.6.0"
+PKG_VERSION="0e9a3def83b4adb216b353eef3348c29de4edf69"
 PKG_VERSION_DATE="2023-12-06"
-PKG_SHA256="9ec881edb11e37d31a2b41dd30d56a3413445eedb720e1b0d278567dccfca8fc"
-PKG_REV="2"
+PKG_SHA256="08c027dde27802a77e887968d50ae5794a6e23beb1ebf67f5cef729ad30d742d"
+PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="MIT"
 PKG_SITE="https://github.com/librespot-org/librespot/"
-PKG_URL="https://github.com/librespot-org/librespot/archive/v${PKG_VERSION}.tar.gz"
+PKG_URL="https://github.com/librespot-org/librespot/archive/${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain alsa-lib avahi pulseaudio bindgen-cli:host cargo:host cmake:host"
 PKG_SECTION="service"
 PKG_SHORTDESC="Librespot: play Spotify through Kodi using a Spotify app as a remote"
