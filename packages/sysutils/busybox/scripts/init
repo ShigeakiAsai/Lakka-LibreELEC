@@ -664,7 +664,7 @@ check_out_of_space() {
     echo "free space on /storage to complete the update!"
     echo ""
     echo "Please free up space on your /storage partition"
-    echo "by deleting unecessary files, then try again."
+    echo "by deleting unnecessary files, then try again."
     echo ""
     return 0
   else

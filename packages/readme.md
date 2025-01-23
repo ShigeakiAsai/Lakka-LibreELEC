@@ -98,7 +98,7 @@ But not always. To select a specific toolchain, you only need to set the `PKG_TO
 | configure   | preconfigured [GNU Build System](https://en.wikipedia.org/wiki/GNU_Build_System) |
 | ninja       | [Ninja Build](https://ninja-build.org/) |
 | make        | [Makefile Based](https://www.gnu.org/software/make/) |
-| manual      | only runs self writen build steps, see [Functions](#functions) |
+| manual      | only runs self written build steps, see [Functions](#functions) |
 
 ###### Auto-Detection
 The auto-detections looks for specific files in the source path.
@@ -158,8 +158,8 @@ Full list of overwrittable functions.
 | pre_build_\[stage]      | yes    | Runs before of the start of the build |
 | pre_configure<br>pre_configure_\[stage]<br>configure_\[stage]<br>post_configure_\[stage] | yes | Configure the package for the compile. This is only relevant for toolchain, that supports it (e.g. meson, cmake, configure, manual) |
 | make_\[stage]<br>pre_make_\[stage]<br>post_make_\[stage] | yes | Build of the package |
-| makeinstall_\[stage]<br>pre_makeinstall_\[stage]<br>post_makeinstall_\[stage] | yes | Installation of the files in the correct pathes<br>host: TOOLCHAIN<br>target: SYSROOT and IMAGE<br>bootstrap and init: temporary destination
-| addon                   | -      | Copy all files together for addon creation. This is requiered for addons |
+| makeinstall_\[stage]<br>pre_makeinstall_\[stage]<br>post_makeinstall_\[stage] | yes | Installation of the files in the correct paths<br>host: TOOLCHAIN<br>target: SYSROOT and IMAGE<br>bootstrap and init: temporary destination
+| addon                   | -      | Copy all files together for addon creation. This is required for addons |
 | post_install_addon      | -      | Post processing of installed addon files in `${INSTALL}` directory |
 
 ## Directory structure
@@ -271,7 +271,7 @@ Issue | Level | Meaning |
     * new kernel driver
     * ...
 2. Find a place in the packages tree
-    * look into the package tree structure, which is generally self explaind.
+    * look into the package tree structure, which is generally self explanitory.
     * do not place it in an existing package (directory that includes a `package.mk`)
     * when you found a place, create a directory with the name of your package (use same value for `PKG_NAME`!!)
 3. Create an initial `package.mk`
@@ -295,7 +295,7 @@ PKG_LICENSE="LGPL"
 PKG_SITE="https://mariadb.org/"
 PKG_URL="https://github.com/MariaDB/mariadb-connector-c/archive/v$PKG_VERSION.tar.gz"
 PKG_DEPENDS_TARGET="toolchain zlib openssl"
-PKG_LONGDESC="mariadb-connector: library to conntect to mariadb/mysql database server"
+PKG_LONGDESC="mariadb-connector: library to connect to mariadb/mysql database server"
 PKG_BUILD_FLAGS="-gold"
 
 PKG_CMAKE_OPTS_TARGET="-DWITH_EXTERNAL_ZLIB=ON \

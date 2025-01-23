@@ -173,7 +173,7 @@ class Generator:
             self.check_no_deps = False
 
         # Process remaining jobs, trying to schedule
-        # only those jobs with all their dependencies satisifed
+        # only those jobs with all their dependencies satisfied
         for i, job in enumerate(self.work):
             if self.canBuildJob(job):
                 self.building[job["name"]] = True

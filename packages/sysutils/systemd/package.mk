@@ -128,7 +128,7 @@ post_makeinstall_target() {
   safe_remove ${INSTALL}/usr/lib/tmpfiles.d/home.conf
   safe_remove ${INSTALL}/usr/share/factory
 
-  # remove Network adaper renaming rule, this is confusing
+  # remove Network adapter renaming rule, this is confusing
   safe_remove ${INSTALL}/usr/lib/udev/rules.d/80-net-setup-link.rules
 
   safe_remove ${INSTALL}/usr/lib/udev/rules.d/71-seat.rules
