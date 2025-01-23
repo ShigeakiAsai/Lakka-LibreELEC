@@ -94,7 +94,7 @@ get_device_unmount() {
 }
 
 get_partition() {
-  # get all partitions of a specifed device
+  # get all partitions of a specified device
   # usage:    get_partitions /dev/sda
   # uses:     -
   # provides: PARTITIONS

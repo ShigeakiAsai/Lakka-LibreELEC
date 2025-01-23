@@ -9,7 +9,7 @@ PKG_LICENSE="OSS"
 PKG_SITE="https://www.X.org"
 PKG_URL="https://xorg.freedesktop.org/archive/individual/lib/${PKG_NAME}-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain util-macros xorgproto"
-PKG_LONGDESC="X authorization file management libary"
+PKG_LONGDESC="X authorization file management library"
 PKG_BUILD_FLAGS="+pic"
 
 PKG_MESON_OPTS_TARGET="-Ddefault_library=static \

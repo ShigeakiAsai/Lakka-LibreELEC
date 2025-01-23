@@ -16,7 +16,7 @@ if [ -e $ADDON_HOME/env ]; then
   . $ADDON_HOME/env
 fi
 
-# fix file permissons (zip packaging)
+# fix file permissions (zip packaging)
 chmod +x $ADDON_DIR/chrome-bin/chrome
 chmod 4755 $ADDON_DIR/chrome-bin/chrome-sandbox
 

@@ -59,6 +59,6 @@ pre_make_target() {
 }
 
 post_makeinstall_target() {
-  # Clean up - two graphic test tools are superflous
+  # Clean up - two graphic test tools are superfluous
   safe_remove ${INSTALL}/usr/bin/vkcubepp
 }

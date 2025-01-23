@@ -64,7 +64,7 @@ show_config() {
     config_message+="\n - Include firmware:\t\t\t ${config_firmware}"
   done
 
-  # Image Filsystem
+  # Image Filesystem
 
   config_message+="\n\n Image Filesystems:"
   config_message+="\n ${dashes}${dashes}"

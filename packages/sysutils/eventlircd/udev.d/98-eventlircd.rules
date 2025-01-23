@@ -2,7 +2,7 @@
 # An example udev rules file for eventlircd.
 #
 # This rules file does not start eventlircd. Many applications only check for
-# the lircd socket at application lauch. Therefore, it is better to start
+# the lircd socket at application launch. Therefore, it is better to start
 # eventlircd in an init script so that eventlircd creates the lircd socket
 # before any applications that use LIRC launch.
 ################################################################################

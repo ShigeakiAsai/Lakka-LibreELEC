@@ -20,7 +20,7 @@ if [ -e /storage/.please_resize_me ] ; then
   date -Iseconds >>$LOG
 
   # this sh** was never intended to be used
-  # on already installed and runing system
+  # on an already installed and running system
   if [ -d /storage/.kodi -o -d /storage/.config -o -d /storage/.cache ] ; then
     rm -f /storage/.please_resize_me
     sync

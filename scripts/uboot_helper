@@ -7,7 +7,7 @@ import argparse
 
 # When adding new devices to the list please keep them in alphabetical order
 # board-name should contain 'dashes' (-) not 'underscores' (_) and shouldn't contain capitals
-# you can check the formating using an online tool such as https://codebeautify.org/python-formatter-beautifier
+# you can check the formatting using an online tool such as https://codebeautify.org/python-formatter-beautifier
 
 #  'project' : {
 #    'device' : {

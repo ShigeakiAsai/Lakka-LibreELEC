@@ -8,7 +8,7 @@ PKG_LICENSE="LGPL"
 PKG_SITE="https://mariadb.org/"
 PKG_URL="https://github.com/mariadb-corporation/mariadb-connector-c/archive/v${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain zlib openssl"
-PKG_LONGDESC="mariadb-connector: library to conntect to mariadb/mysql database server"
+PKG_LONGDESC="mariadb-connector: library to connect to mariadb/mysql database server"
 PKG_BUILD_FLAGS="-gold"
 
 PKG_CMAKE_OPTS_TARGET="-DWITH_EXTERNAL_ZLIB=ON
