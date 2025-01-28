@@ -413,11 +413,11 @@ devices = \
       #   'dtb': '',
       #   'soc': 'RK3568'
       # },
-      # 'rock-3c': {
-      #   'config': 'rock-3c-rk3566_defconfig',
-      #   'dtb': '',
-      #   'soc': 'RK3566'
-      # },
+      'rock-3c': {
+        'config': 'rock-3c-rk3566_defconfig',
+        'dtb': '',
+        'soc': 'RK3566'
+      },
       'powkiddy-rgb10max3': {
         'config': 'anbernic-rgxx3-rk3566_defconfig',
         'dtb': '',
