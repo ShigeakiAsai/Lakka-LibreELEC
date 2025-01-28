@@ -46,7 +46,7 @@
     FIRMWARE+=" rk3566-devices-firmware"
 
   # additional packages
-    ADDITIONAL_PACKAGES+=" generic-dsi pciutils RK356X-volkeys"
+    ADDITIONAL_PACKAGES+=" disable_wifi_powersave generic-dsi pciutils RK356X-volkeys"
 
   # Kernel to build
     LINUX="rockchip-rk356x"
