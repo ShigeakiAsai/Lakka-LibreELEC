@@ -40,7 +40,7 @@
     ADDON_PROJECT="ARMv8"
 
   # additional drivers
-    ADDITIONAL_DRIVERS+=" rocknix-joypad"
+    ADDITIONAL_DRIVERS+=" aic8800 rocknix-joypad"
 
   # additional Firmware
     FIRMWARE+=" rk3566-devices-firmware"
