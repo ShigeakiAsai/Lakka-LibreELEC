@@ -2,8 +2,8 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="rust"
-PKG_VERSION="1.79.0"
-PKG_SHA256="172ecf3c7d1f9d9fb16cd2a628869782670416ded0129e524a86751f961448c0"
+PKG_VERSION="1.84.0"
+PKG_SHA256="15cee7395b07ffde022060455b3140366ec3a12cbbea8f1ef2ff371a9cca51bf"
 PKG_LICENSE="MIT"
 PKG_SITE="https://www.rust-lang.org"
 PKG_URL="https://static.rust-lang.org/dist/rustc-${PKG_VERSION}-src.tar.gz"
@@ -27,13 +27,16 @@ configure_host() {
       # the arm target is special because we specify the subarch. ie armv8a
       cp -a ${PKG_DIR}/targets/arm-libreelec-linux-gnueabihf.json ${PKG_BUILD}/targets/${TARGET_NAME}.json
       ;;
-    "aarch64"|"x86_64")
+    "aarch64" | "x86_64")
       cp -a ${PKG_DIR}/targets/${TARGET_NAME}.json ${PKG_BUILD}/targets/${TARGET_NAME}.json
       ;;
   esac
 
-  cat > ${PKG_BUILD}/config.toml <<END
+  cat >${PKG_BUILD}/config.toml  <<END
 change-id = 102579
+
+[llvm]
+download-ci-llvm = false
 
 [target.${TARGET_NAME}]
 llvm-config = "${TOOLCHAIN}/bin/llvm-config"
@@ -50,6 +53,7 @@ rpath = true
 channel = "stable"
 codegen-tests = false
 optimize = true
+download-rustc = false
 
 [build]
 submodules = false
@@ -80,10 +84,10 @@ mandir = "${TOOLCHAIN}/share/man"
 
 END
 
-CARGO_HOME="${PKG_BUILD}/cargo_home"
-mkdir -p "${CARGO_HOME}"
+  CARGO_HOME="${PKG_BUILD}/cargo_home"
+  mkdir -p "${CARGO_HOME}"
 
-cat > ${CARGO_HOME}/config << END
+  cat >${CARGO_HOME}/config.toml <<END
 [target.${TARGET_NAME}]
 linker = "${TARGET_PREFIX}gcc"
 
@@ -99,7 +103,6 @@ progress.when = 'always'
 progress.width = 80
 
 END
-
 }
 
 make_host() {

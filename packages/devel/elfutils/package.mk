@@ -3,16 +3,16 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="elfutils"
-PKG_VERSION="0.191"
-PKG_SHA256="df76db71366d1d708365fc7a6c60ca48398f14367eb2b8954efc8897147ad871"
+PKG_VERSION="0.192"
+PKG_SHA256="616099beae24aba11f9b63d86ca6cc8d566d968b802391334c91df54eab416b4"
 PKG_LICENSE="GPL"
 PKG_SITE="https://sourceware.org/elfutils/"
 PKG_URL="https://sourceware.org/elfutils/ftp/${PKG_VERSION}/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
 PKG_DEPENDS_HOST="autoconf:host automake:host m4:host make:host zlib:host"
-PKG_DEPENDS_TARGET="toolchain zlib elfutils:host"
+PKG_DEPENDS_TARGET="toolchain zlib elfutils:host libarchive"
 PKG_LONGDESC="A collection of utilities to handle ELF objects."
 PKG_TOOLCHAIN="autotools"
-PKG_BUILD_FLAGS="+pic"
+PKG_BUILD_FLAGS="+pic -cfg-libs -cfg-libs:host"
 
 if [ "${LIBREELEC_VERSION}" = "devel" ]; then
   PKG_PROGRAMS="--enable-programs --program-prefix="
@@ -40,12 +40,8 @@ PKG_CONFIGURE_OPTS_TARGET="utrace_cv_cc_biarch=false \
                            --without-bzlib \
                            --without-lzma"
 
-pre_configure_host() {
-  HOST_CONFIGURE_OPTS=$(echo ${HOST_CONFIGURE_OPTS} | sed -e "s|--disable-static||" -e "s|--enable-shared||")
-}
-
 pre_configure_target() {
-  TARGET_CONFIGURE_OPTS=$(echo ${TARGET_CONFIGURE_OPTS} | sed -e "s|--disable-static||" -e "s|--enable-shared||")
+  export PKG_CONFIG="${PKG_CONFIG} --static"
 }
 
 post_makeinstall_target() {

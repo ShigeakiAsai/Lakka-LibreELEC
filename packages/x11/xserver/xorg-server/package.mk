@@ -3,13 +3,13 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="xorg-server"
-PKG_VERSION="21.1.13"
-PKG_SHA256="b45a02d5943f72236a360d3cc97e75134aa4f63039ff88c04686b508a3dc740c"
+PKG_VERSION="21.1.15"
+PKG_SHA256="841c82901282902725762df03adbbcd68153d4cdfb0d61df0cfd73ad677ae089"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.X.org"
 PKG_URL="https://www.x.org/releases/individual/xserver/${PKG_NAME}-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain util-macros font-util xorgproto libpciaccess libX11 libXfont2 libXinerama libxcvt libxshmfence libxkbfile libdrm openssl freetype pixman systemd xorg-launch-helper"
-PKG_NEED_UNPACK="$(get_pkg_directory xf86-video-nvidia) $(get_pkg_directory xf86-video-nvidia-legacy)"
+PKG_NEED_UNPACK="$(get_pkg_directory xf86-video-nvidia)"
 PKG_LONGDESC="X.Org Server is the free and open-source implementation of the X Window System display server."
 
 get_graphicdrivers
@@ -115,7 +115,6 @@ post_makeinstall_target() {
   mkdir -p ${INSTALL}/usr/lib/xorg
     cp -P ${PKG_DIR}/scripts/xorg-configure ${INSTALL}/usr/lib/xorg
       sed -i -e "s|@NVIDIA_VERSION@|$(get_pkg_version xf86-video-nvidia)|g" ${INSTALL}/usr/lib/xorg/xorg-configure
-      sed -i -e "s|@NVIDIA_LEGACY_VERSION@|$(get_pkg_version xf86-video-nvidia-legacy)|g" ${INSTALL}/usr/lib/xorg/xorg-configure
 
   if [ ! "${OPENGL}" = "no" ]; then
     if [ ! "${PROJECT}" = "L4T" ] || [ ! "${DEVICE}" = "Odin" ]; then

@@ -2,8 +2,8 @@
 # Copyright (C) 2022-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="hwdata"
-PKG_VERSION="0.383"
-PKG_SHA256="97f328f85e51ea78ad14620705dba269cbbb47911e56bdd8b35360e6cdccc00c"
+PKG_VERSION="0.391"
+PKG_SHA256="620fe1c22922a3d1bd1062424e9cc6b954acea2f83b72ff0cb45144981cb1975"
 PKG_LICENSE="GPL-2.0"
 PKG_SITE="https://github.com/vcrhonek/hwdata"
 PKG_URL="https://github.com/vcrhonek/hwdata/archive/refs/tags/v${PKG_VERSION}.tar.gz"
@@ -11,7 +11,7 @@ PKG_DEPENDS_TARGET="toolchain"
 PKG_LONGDESC="hwdata contains various hardware identification and configuration data, such as the pci.ids and usb.ids databases"
 
 pre_configure_target() {
-# hwdata fails to build in subdirs
+  # hwdata fails to build in subdirs
   cd ${PKG_BUILD}
     rm -rf .${TARGET_NAME}
 

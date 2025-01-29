@@ -5,19 +5,19 @@
 # with 1.0.0 repeat delay is broken. test on upgrade
 
 PKG_NAME="v4l-utils"
-PKG_VERSION="1.26.1"
-PKG_SHA256="4a71608c0ef7df2931176989e6d32b445c0bdc1030a2376d929c8ca6e550ec4e"
+PKG_VERSION="1.28.1"
+PKG_SHA256="0fa075ce59b6618847af6ea191b6155565ccaa44de0504581ddfed795a328a82"
 PKG_LICENSE="GPL"
-PKG_SITE="http://linuxtv.org/"
-PKG_URL="http://linuxtv.org/downloads/v4l-utils/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+PKG_SITE="https://linuxtv.org/"
+PKG_URL="https://linuxtv.org/downloads/v4l-utils/${PKG_NAME}-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain alsa-lib elfutils ir-bpf-decoders libbpf systemd zlib"
 PKG_LONGDESC="Linux V4L2 and DVB API utilities and v4l libraries (libv4l)."
 
-PKG_MESON_OPTS_TARGET="-Ddefault_library=static \
-                       -Dprefer_static=true \
-                       -Dbpf=enabled \
+PKG_MESON_OPTS_TARGET="-Dbpf=enabled \
                        -Dgconv=disabled \
                        -Djpeg=disabled \
+                       -Dqvidcap=disabled \
+                       -Dqv4l2=disabled \
                        -Ddoxygen-doc=disabled"
 
 create_multi_keymap() {
@@ -29,7 +29,7 @@ create_multi_keymap() {
       map="${INSTALL}/usr/lib/udev/rc_keymaps/${f}.toml"
       [ -e "${map}" ] && cat "${map}"
     done
-  ) > ${INSTALL}/usr/lib/udev/rc_keymaps/${name}.toml
+  ) >${INSTALL}/usr/lib/udev/rc_keymaps/${name}.toml
 }
 
 post_makeinstall_target() {
@@ -43,7 +43,6 @@ post_makeinstall_target() {
 
   rm -rf ${INSTALL}/usr/include
   rm -rf ${INSTALL}/usr/lib/gconv
-  rm -rf ${INSTALL}/usr/lib/lib*
   rm -rf ${INSTALL}/usr/lib/pkgconfig
 
   rm -rf ${INSTALL}/etc/rc_keymaps
@@ -62,7 +61,7 @@ post_makeinstall_target() {
     for f in ${PKG_DIR}/keymaps/*; do
       if [ -e ${f} ]; then
         keymap=$(basename ${f})
-        cat ${f} > ${INSTALL}/usr/lib/udev/rc_keymaps/${keymap}
+        cat ${f} >${INSTALL}/usr/lib/udev/rc_keymaps/${keymap}
       fi
     done
   )
@@ -74,7 +73,7 @@ post_makeinstall_target() {
     # use multi-keymap instead of default one
     sed -i '/^\*\s*rc-rc6-mce\s*rc6_mce/d' ${INSTALL}/etc/rc_maps.cfg
 
-    cat << EOF >> ${INSTALL}/etc/rc_maps.cfg
+    cat <<EOF  >>${INSTALL}/etc/rc_maps.cfg
 #
 # Custom LibreELEC configuration starts here
 #

@@ -2,9 +2,9 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="minisatip"
-PKG_VERSION="1.3.6"
-PKG_SHA256="17a3317baa1b9c8ffa2a5b877d38099e626921e12dda838cd254f35a7e721599"
-PKG_REV="0"
+PKG_VERSION="1.3.37"
+PKG_SHA256="680a18b266a04dd27ecfee2bc284039f8dc4276b569640c5b4504605cf122b6e"
+PKG_REV="4"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/catalinii/minisatip"
@@ -13,7 +13,7 @@ PKG_DEPENDS_TARGET="toolchain libdvbcsa libxml2 openssl"
 PKG_SECTION="service"
 PKG_SHORTDESC="minisatip: a Sat>IP streaming server for Linux"
 PKG_LONGDESC="minisatip(${PKG_VERSION_NUMBER}): is a Sat>IP streaming server for Linux supporting DVB-C, DVB-S/S2, DVB-T/T2, ATSC and ISDB-T"
-PKG_BUILD_FLAGS="-sysroot"
+PKG_BUILD_FLAGS="-sysroot -cfg-libs"
 
 PKG_IS_ADDON="yes"
 PKG_ADDON_NAME="Minisatip"
@@ -22,7 +22,6 @@ PKG_ADDON_TYPE="xbmc.service"
 PKG_CONFIGURE_OPTS_TARGET="--enable-static \
                            --disable-netcv \
                            --enable-dvbca \
-                           --enable-dvbaes \
                            --enable-dvbcsa \
                            --with-xml2=$(get_install_dir libxml2)/usr/include/libxml2"
 

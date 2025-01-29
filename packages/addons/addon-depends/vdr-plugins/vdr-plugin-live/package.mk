@@ -3,8 +3,8 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="vdr-plugin-live"
-PKG_VERSION="3.3.5"
-PKG_SHA256="8b41fe5c885e9f2e4fab470feda89742885567885d93b6435692ce1c7c320fee"
+PKG_VERSION="3.4.0"
+PKG_SHA256="ab3e40103cc102c0c6c18ab86c89ef0bcfadbf04f5972f76f32caef5224bb8ec"
 PKG_LICENSE="GPL"
 PKG_SITE="http://live.vdr-developer.org/en/index.php"
 PKG_URL="https://github.com/MarkusEh/vdr-plugin-live/archive/v${PKG_VERSION}.tar.gz"

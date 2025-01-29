@@ -8,11 +8,12 @@ PKG_ARCH="x86_64"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://www.gnu.org/software/grub/index.html"
 PKG_URL="http://git.savannah.gnu.org/cgit/grub.git/snapshot/${PKG_NAME}-${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_HOST="toolchain flex freetype:host gettext:host"
-PKG_DEPENDS_TARGET="${PKG_NAME}:host"
+PKG_DEPENDS_HOST="toolchain:host"
+PKG_DEPENDS_TARGET="toolchain flex freetype:host gettext:host grub:host"
 PKG_DEPENDS_UNPACK="gnulib"
 PKG_LONGDESC="GRUB is a Multiboot boot loader."
-PKG_TOOLCHAIN="manual"
+PKG_TOOLCHAIN="configure"
+PKG_BUILD_FLAGS="-cfg-libs -cfg-libs:host"
 
 configure_host() {
   for _grub_target in x86_64-pc-linux i386-pc-linux ; do
@@ -40,6 +41,10 @@ configure_host() {
   done
 }
 
+configure_target() {
+  :
+}
+
 make_host() {
   for _grub_target in x86_64-pc-linux i386-pc-linux ; do
 
@@ -53,6 +58,14 @@ make_host() {
     )
 
   done
+}
+
+make_target() {
+  :
+}
+
+makeinstall_host() {
+  :
 }
 
 makeinstall_target() {

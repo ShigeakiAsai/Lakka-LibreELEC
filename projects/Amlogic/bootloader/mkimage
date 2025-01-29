@@ -50,7 +50,7 @@ mkimage_extlinux_fdtdir(){
   cat << EOF > "${LE_TMP}/extlinux/extlinux.conf"
 LABEL ${DISTRO}
   LINUX /${KERNEL_NAME}
-  FDTDIR /amlogic/
+  FDTDIR /
   APPEND boot=LABEL=${DISTRO_BOOTLABEL} disk=LABEL=${DISTRO_DISKLABEL} quiet ${EXTRA_CMDLINE}
 EOF
   mcopy -s -o "${LE_TMP}/extlinux" ::

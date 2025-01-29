@@ -1,7 +1,7 @@
-From 9bc892b8d6af3441bbc7129818b370555830afff Mon Sep 17 00:00:00 2001
+From 528d75a3dfe9427f1d12af981a5dc9af7aad7174 Mon Sep 17 00:00:00 2001
 From: Christian Hewitt <christianshewitt@gmail.com>
 Date: Thu, 5 Jan 2023 15:16:46 +0000
-Subject: [PATCH 10/52] LOCAL: media: meson: vdec: disable MPEG1/MPEG2 hardware
+Subject: [PATCH 10/58] LOCAL: media: meson: vdec: disable MPEG1/MPEG2 hardware
  decoding
 
 The MPEG1/2 decoder is broken and nobody has volunteered to poke
@@ -15,7 +15,7 @@ Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
  1 file changed, 110 deletions(-)
 
 diff --git a/drivers/staging/media/meson/vdec/vdec_platform.c b/drivers/staging/media/meson/vdec/vdec_platform.c
-index 70c9fd7c8bc5..f1df637681e5 100644
+index 66bb307db85a..75d295fdb5f8 100644
 --- a/drivers/staging/media/meson/vdec/vdec_platform.c
 +++ b/drivers/staging/media/meson/vdec/vdec_platform.c
 @@ -26,28 +26,6 @@ static const struct amvdec_format vdec_formats_gxbb[] = {
@@ -76,7 +76,7 @@ index 70c9fd7c8bc5..f1df637681e5 100644
  	},
  };
  
-@@ -126,28 +82,6 @@ static const struct amvdec_format vdec_formats_gxm[] = {
+@@ -164,28 +120,6 @@ static const struct amvdec_format vdec_formats_gxm[] = {
  		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
  		.flags = V4L2_FMT_FLAG_COMPRESSED |
  			 V4L2_FMT_FLAG_DYN_RESOLUTION,
@@ -105,7 +105,7 @@ index 70c9fd7c8bc5..f1df637681e5 100644
  	},
  };
  
-@@ -176,28 +110,6 @@ static const struct amvdec_format vdec_formats_g12a[] = {
+@@ -214,28 +148,6 @@ static const struct amvdec_format vdec_formats_g12a[] = {
  		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
  		.flags = V4L2_FMT_FLAG_COMPRESSED |
  			 V4L2_FMT_FLAG_DYN_RESOLUTION,
@@ -134,7 +134,7 @@ index 70c9fd7c8bc5..f1df637681e5 100644
  	},
  };
  
-@@ -226,28 +138,6 @@ static const struct amvdec_format vdec_formats_sm1[] = {
+@@ -264,28 +176,6 @@ static const struct amvdec_format vdec_formats_sm1[] = {
  		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
  		.flags = V4L2_FMT_FLAG_COMPRESSED |
  			 V4L2_FMT_FLAG_DYN_RESOLUTION,

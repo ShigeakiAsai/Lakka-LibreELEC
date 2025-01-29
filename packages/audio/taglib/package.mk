@@ -3,12 +3,12 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="taglib"
-PKG_VERSION="1.13.1"
-PKG_SHA256="c8da2b10f1bfec2cd7dbfcd33f4a2338db0765d851a50583d410bacf055cfd0b"
+PKG_VERSION="2.0.2"
+PKG_SHA256="0de288d7fe34ba133199fd8512f19cc1100196826eafcb67a33b224ec3a59737"
 PKG_LICENSE="LGPL"
 PKG_SITE="https://taglib.org"
 PKG_URL="https://taglib.org/releases/${PKG_NAME}-${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain cmake:host zlib"
+PKG_DEPENDS_TARGET="toolchain cmake:host utfcpp zlib"
 PKG_LONGDESC="TagLib is a library for reading and editing the meta-data of several popular audio formats."
 
 PKG_CMAKE_OPTS_TARGET="-DBUILD_EXAMPLES=OFF \

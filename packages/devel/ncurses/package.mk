@@ -9,7 +9,7 @@ PKG_LICENSE="MIT"
 PKG_SITE="http://www.gnu.org/software/ncurses/"
 PKG_URL="http://invisible-mirror.net/archives/ncurses/ncurses-${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_HOST="ccache:host"
-PKG_DEPENDS_TARGET="toolchain zlib ncurses:host"
+PKG_DEPENDS_TARGET="autotools:host gcc:host zlib ncurses:host"
 PKG_LONGDESC="A library is a free software emulation of curses in System V Release 4.0, and more."
 PKG_BUILD_FLAGS="+pic"
 
@@ -59,13 +59,21 @@ PKG_CONFIGURE_OPTS_TARGET="--without-ada \
                            --disable-home-terminfo \
                            --disable-assertions \
                            --enable-leaks \
-                           --enable-sigwinch"
+                           --enable-sigwinch \
+                           --cache-file=config.cache"
 
 PKG_CONFIGURE_OPTS_HOST="--enable-termcap \
                          --with-termlib \
                          --with-shared \
                          --enable-pc-files \
                          --without-manpages"
+
+pre_configure_target() {
+  cat >config.cache <<EOF
+cf_cv_builtin_bool=1
+cf_cv_header_stdbool_h=1
+EOF
+}
 
 post_makeinstall_target() {
   local f

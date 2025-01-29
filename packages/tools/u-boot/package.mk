@@ -3,8 +3,8 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="u-boot"
-PKG_VERSION="2024.04"
-PKG_SHA256="18a853fe39fad7ad03a90cc2d4275aeaed6da69735defac3492b80508843dd4a"
+PKG_VERSION="2025.01"
+PKG_SHA256="cdef7d507c93f1bbd9f015ea9bc21fa074268481405501945abc6f854d5b686f"
 PKG_ARCH="arm aarch64"
 PKG_LICENSE="GPL"
 PKG_SITE="https://www.denx.de/wiki/U-Boot"
@@ -28,7 +28,7 @@ post_patch() {
   if [ -n "${UBOOT_SYSTEM}" ] && find_file_path bootloader/config; then
     PKG_CONFIG_FILE="${PKG_BUILD}/configs/$(${ROOT}/${SCRIPTS}/uboot_helper ${PROJECT} ${DEVICE} ${UBOOT_SYSTEM} config)"
     if [ -f "${PKG_CONFIG_FILE}" ]; then
-      cat ${FOUND_PATH} >> "${PKG_CONFIG_FILE}"
+      cat ${FOUND_PATH} >>"${PKG_CONFIG_FILE}"
     fi
   fi
 }

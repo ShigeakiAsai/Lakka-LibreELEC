@@ -18,9 +18,9 @@ if [ -z "${SYSTEM_SIZE}" -o -z "${SYSTEM_PART_START}" ]; then
   exit 1
 fi
 
-DISK_START_PADDING=$(( (${SYSTEM_PART_START} + 2048 - 1) / 2048 ))
+DISK_START_PADDING=$(((${SYSTEM_PART_START} + 2048 - 1) / 2048))
 DISK_GPT_PADDING=1
-DISK_SIZE=$(( ${DISK_START_PADDING} + ${SYSTEM_SIZE} + ${STORAGE_SIZE} + ${DISK_GPT_PADDING} ))
+DISK_SIZE=$((${DISK_START_PADDING} + ${SYSTEM_SIZE} + ${STORAGE_SIZE} + ${DISK_GPT_PADDING}))
 DISK_BASENAME="${TARGET_IMG}/${IMAGE_NAME}"
 DISK="${DISK_BASENAME}.img"
 
@@ -63,17 +63,17 @@ sync
 # create partitions
 echo "image: creating partitions..."
 
-SYSTEM_PART_END=$(( ${SYSTEM_PART_START} + (${SYSTEM_SIZE} * 1024 * 1024 / 512) - 1 ))
-STORAGE_PART_START=$(( ${SYSTEM_PART_END} + 1 ))
-STORAGE_PART_END=$(( ${STORAGE_PART_START} + (${STORAGE_SIZE} * 1024 * 1024 / 512) - 1 ))
+SYSTEM_PART_END=$((${SYSTEM_PART_START} + (${SYSTEM_SIZE} * 1024 * 1024 / 512) - 1))
+STORAGE_PART_START=$((${SYSTEM_PART_END} + 1))
+STORAGE_PART_END=$((${STORAGE_PART_START} + (${STORAGE_SIZE} * 1024 * 1024 / 512) - 1))
 
 if [ "${DISK_LABEL}" = "gpt" ]; then
-  parted -s "${DISK}" -a min unit s mkpart system  fat32 ${SYSTEM_PART_START}  ${SYSTEM_PART_END}
-  parted -s "${DISK}" -a min unit s mkpart storage ext4  ${STORAGE_PART_START} ${STORAGE_PART_END}
+  parted -s "${DISK}" -a min unit s mkpart system fat32 ${SYSTEM_PART_START} ${SYSTEM_PART_END}
+  parted -s "${DISK}" -a min unit s mkpart storage ext4 ${STORAGE_PART_START} ${STORAGE_PART_END}
   parted -s "${DISK}" set 1 legacy_boot on
 else
-  parted -s "${DISK}" -a min unit s mkpart primary fat32 ${SYSTEM_PART_START}  ${SYSTEM_PART_END}
-  parted -s "${DISK}" -a min unit s mkpart primary ext4  ${STORAGE_PART_START} ${STORAGE_PART_END}
+  parted -s "${DISK}" -a min unit s mkpart primary fat32 ${SYSTEM_PART_START} ${SYSTEM_PART_END}
+  parted -s "${DISK}" -a min unit s mkpart primary ext4 ${STORAGE_PART_START} ${STORAGE_PART_END}
   parted -s "${DISK}" set 1 boot on
 fi
 sync
@@ -86,7 +86,7 @@ fi
 
 # create part2 to format and copy files
 echo "image: creating sparse file for part2..."
-STORAGE_PART_COUNT=$(( ${STORAGE_PART_END} - ${STORAGE_PART_START} + 1 ))
+STORAGE_PART_COUNT=$((${STORAGE_PART_END} - ${STORAGE_PART_START} + 1))
 sync
 dd if="${DISK}" of="${LE_TMP}/part2.ext4" bs=512 count=0 seek="${STORAGE_PART_COUNT}" conv=fsync >"${SAVE_ERROR}" 2>&1 || show_error
 
@@ -118,11 +118,11 @@ fi
 
 # create part1 to format and copy files
 echo "image: creating sparse file for part1..."
-SYSTEM_PART_COUNT=$(( ${SYSTEM_PART_END} - ${SYSTEM_PART_START} + 1 ))
+SYSTEM_PART_COUNT=$((${SYSTEM_PART_END} - ${SYSTEM_PART_START} + 1))
 sync
 dd if=/dev/zero of="${LE_TMP}/part1.fat" bs=512 count=0 seek="${SYSTEM_PART_COUNT}" conv=fsync >"${SAVE_ERROR}" 2>&1 || show_error
 
-shopt -s expand_aliases  # enables alias expansion in script
+shopt -s expand_aliases # enables alias expansion in script
 alias mcopy='mcopy -i "${LE_TMP}/part1.fat" -o'
 alias mmd='mmd -i "${LE_TMP}/part1.fat"'
 
@@ -137,7 +137,7 @@ sync
 if [ "${BOOTLOADER}" = "syslinux" ]; then
   # create bootloader configuration
   echo "image: creating bootloader configuration..."
-  cat << EOF > "${LE_TMP}/syslinux.cfg"
+  cat <<EOF >"${LE_TMP}/syslinux.cfg"
 SAY Wait for installer mode to start automatically in 5 seconds...
 SAY
 SAY Options
@@ -163,7 +163,7 @@ LABEL run
   APPEND boot=UUID=${UUID_SYSTEM} disk=UUID=${UUID_STORAGE} portable quiet
 EOF
 
-  cat << EOF > "${LE_TMP}/grub.cfg"
+  cat <<EOF >"${LE_TMP}/grub.cfg"
 set timeout="25"
 set default="Installer"
 menuentry "Installer" {
@@ -182,7 +182,7 @@ EOF
 
   # Lakka - default = live = use medium for storage
   if [ "$DISTRO" = "Lakka" ]; then
-    cat << EOF > "${LE_TMP}/syslinux.cfg"
+    cat <<EOF > "${LE_TMP}/syslinux.cfg"
 SAY
 SAY ${DISTRO} Boot Menu
 SAY
@@ -194,11 +194,11 @@ SAY live: boot ${DISTRO} using this USB memory device for storage
 SAY installer: permanently install ${DISTRO} to HDD/SSD
 EOF
     if [ ! "${LAKKA_BUILD_TYPE}" = "release" ]; then
-      cat << EOF >> "${LE_TMP}/syslinux.cfg"
+      cat <<EOF >> "${LE_TMP}/syslinux.cfg"
 SAY debug: boot ${DISTRO} to console for debugging
 EOF
     fi
-    cat << EOF >> "${LE_TMP}/syslinux.cfg"
+    cat <<EOF >> "${LE_TMP}/syslinux.cfg"
 SAY
 DEFAULT live
 TIMEOUT 50
@@ -213,7 +213,7 @@ LABEL installer
   APPEND boot=UUID=${UUID_SYSTEM} installer quiet systemd.debug_shell vga=current
 EOF
     if [ ! "${LAKKA_BUILD_TYPE}" = "release" ]; then
-      cat << EOF >> "${LE_TMP}/syslinux.cfg"
+      cat <<EOF >> "${LE_TMP}/syslinux.cfg"
 
 LABEL debug
   KERNEL /${KERNEL_NAME}
@@ -223,7 +223,7 @@ EOF
 
     # grub is installed only for x86_64
     if [ "${ARCH}" = "x86_64" ]; then
-      cat << EOF > "${LE_TMP}/grub.cfg"
+      cat <<EOF > "${LE_TMP}/grub.cfg"
 set timeout="25"
 set default="Run ${DISTRO} (live)"
 menuentry "Run ${DISTRO} (live)" {
@@ -236,7 +236,7 @@ menuentry "Install ${DISTRO} to HDD/SSD" {
 }
 EOF
       if [ ! "${LAKKA_BUILD_TYPE}" = "release" ]; then
-        cat << EOF >> "${LE_TMP}/grub.cfg"
+        cat <<EOF >> "${LE_TMP}/grub.cfg"
 menuentry "Debug ${DISTRO} (console)" {
 	search --set -f /KERNEL
 	linux /KERNEL boot=UUID=${UUID_SYSTEM} disk=UUID=${UUID_STORAGE} grub_portable textmode retroarch=0
@@ -270,7 +270,7 @@ EOF
 elif [ "${BOOTLOADER}" = "bcm2835-bootloader" ]; then
   # create bootloader configuration
   echo "image: creating bootloader configuration..."
-  cat << EOF > "${LE_TMP}/cmdline.txt"
+  cat <<EOF >"${LE_TMP}/cmdline.txt"
 boot=UUID=${UUID_SYSTEM} disk=UUID=${UUID_STORAGE} quiet ${EXTRA_CMDLINE}
 EOF
 
@@ -283,20 +283,20 @@ EOF
   mcopy "${RELEASE_DIR}/target/KERNEL.md5" "::/${KERNEL_NAME}.md5" >"${SAVE_ERROR}" 2>&1 || show_error
   mcopy "${RELEASE_DIR}/target/SYSTEM.md5" ::/SYSTEM.md5 >"${SAVE_ERROR}" 2>&1 || show_error
 
-  for f in bootcode.bin fixup.dat start.elf ; do
+  for f in bootcode.bin fixup.dat start.elf; do
     if [ -f "${RELEASE_DIR}/3rdparty/bootloader/$f" ]; then
       mcopy "${RELEASE_DIR}/3rdparty/bootloader/$f" :: >"${SAVE_ERROR}" 2>&1 || show_error
     fi
   done
 
   mcopy "${RELEASE_DIR}/3rdparty/bootloader/config.txt" :: >"${SAVE_ERROR}" 2>&1 || show_error
-  for distro in "${RELEASE_DIR}/3rdparty/bootloader/distroconfig"*.txt ; do
+  for distro in "${RELEASE_DIR}/3rdparty/bootloader/distroconfig"*.txt; do
     if [ -f "${distro}" ]; then
       mcopy "${distro}" ::/"${distro##*/}" >"${SAVE_ERROR}" 2>&1 || show_error
     fi
   done
 
-  for dtb in "${RELEASE_DIR}/3rdparty/bootloader/"*.dtb ; do
+  for dtb in "${RELEASE_DIR}/3rdparty/bootloader/"*.dtb; do
     if [ -f "${dtb}" ]; then
       mcopy "${dtb}" ::/"${dtb##*/}" >"${SAVE_ERROR}" 2>&1 || show_error
     fi
@@ -326,7 +326,7 @@ elif [ "${BOOTLOADER}" = "u-boot" -a -n "${UBOOT_SYSTEM}" ]; then
     [ "${DISTRO}" = "Lakka" -a "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H3" -a \
       "${UBOOT_SYSTEM}" = "capcom-home-arcade" ] && EXTRA_CMDLINE+=" cma=128MB"
 
-    cat << EOF > "${LE_TMP}/extlinux/extlinux.conf"
+    cat <<EOF >"${LE_TMP}/extlinux/extlinux.conf"
 LABEL ${DISTRO}
   LINUX /${KERNEL_NAME}
   FDT /${DTB}
@@ -360,7 +360,7 @@ fi # bootloader
 if [ -f "${DISTRO_DIR}/${DISTRO}/config/firstboot.sh" ]; then
   mcopy "${DISTRO_DIR}/${DISTRO}/config/firstboot.sh" ::/firstboot.sh >"${SAVE_ERROR}" 2>&1 || show_error
 
-  cat << EOF > "${LE_TMP}/wifi-config.txt"
+  cat <<EOF > "${LE_TMP}/wifi-config.txt"
 # Uncomment following lines and set your Wi-Fi name (SSID) and password (PSK) below.
 # SSID/PSK must not inlcude space / quotes / special character. If you have to use
 # them, escape them and hope for best.
@@ -371,7 +371,7 @@ if [ -f "${DISTRO_DIR}/${DISTRO}/config/firstboot.sh" ]; then
 EOF
   mcopy "${LE_TMP}/wifi-config.txt" ::/wifi-config.txt >"${SAVE_ERROR}" 2>&1 || show_error
 
-  cat << EOF > "${LE_TMP}/retroarch-overrides.txt"
+  cat <<EOF > "${LE_TMP}/retroarch-overrides.txt"
 # Add overrides for RetroArch default configuration in
 # following form:
 #
@@ -418,14 +418,14 @@ if [ "${PROJECT}" = "Generic" -a "${ARCH}" = "x86_64" -a "${SKIP_VIRTUAL_APPLIAN
   qemu-img convert -O vmdk -o subformat=streamOptimized "${DISK_BASENAME}.tmp" "${DISK_BASENAME}.vmdk"
   # generate ovf from template
   sed -e "s,@DISTRO@,${DISTRO},g" -e "s,@DISK@,${IMAGE_NAME},g" \
-      -e "s,@OVA_SIZE@,$((${OVA_SIZE}*1024*1024)),g" \
-      "${PROJECT_DIR}/${PROJECT}/config/ovf.template" > "${DISK_BASENAME}.ovf"
+    -e "s,@OVA_SIZE@,$((${OVA_SIZE} * 1024 * 1024)),g" \
+    "${PROJECT_DIR}/${PROJECT}/config/ovf.template" >"${DISK_BASENAME}.ovf"
   # combine ovf and vmdk into official ova
   tar -C "${TARGET_IMG}" -cf "${DISK_BASENAME}.ova" "${IMAGE_NAME}.ovf" "${IMAGE_NAME}.vmdk"
   # create sha256 checksum of ova image
   (
     cd "${TARGET_IMG}"
-    sha256sum "${IMAGE_NAME}.ova" > "${IMAGE_NAME}.ova.sha256"
+    sha256sum "${IMAGE_NAME}.ova" >"${IMAGE_NAME}.ova.sha256"
   )
   echo "image: cleaning up open virtual appliance..."
   # remove tmp ${DISK}, vmdk and ovf
@@ -439,7 +439,7 @@ pigz --best --force "${DISK}"
 # create sha256 checksum of image
 (
   cd "${TARGET_IMG}"
-  sha256sum "${DISK##*/}.gz" > "${DISK##*/}.gz.sha256"
+  sha256sum "${DISK##*/}.gz" >"${DISK##*/}.gz.sha256"
 )
 
 # cleanup

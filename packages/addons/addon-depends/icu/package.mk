@@ -2,8 +2,8 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="icu"
-PKG_VERSION="74-2"
-PKG_SHA256="27b8650a94df6f945cb3b686be3be320c2a32edf3ece2981672bf98bb3baa9e1"
+PKG_VERSION="76-1"
+PKG_SHA256="a2c443404f00098e9e90acf29dc318e049d2dc78d9ae5f46efb261934a730ce2"
 PKG_LICENSE="Custom"
 PKG_SITE="https://icu.unicode.org"
 PKG_URL="https://github.com/unicode-org/icu/archive/release-${PKG_VERSION}.tar.gz"

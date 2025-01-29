@@ -3,12 +3,12 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="samba"
-PKG_VERSION="4.20.1"
-PKG_SHA256="f93c3af5295340d08106c7c0dcfb85e4f85057dfd14587aa8817beb31aff88f7"
+PKG_VERSION="4.21.3"
+PKG_SHA256="ae2179a613e7a5d4088735ab100d4ca1cae0f92374d6307e22eaec13ad90125c"
 PKG_LICENSE="GPLv3+"
 PKG_SITE="https://www.samba.org"
 PKG_URL="https://download.samba.org/pub/samba/stable/${PKG_NAME}-${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain attr heimdal:host e2fsprogs Python3 libunwind zlib readline popt libaio connman gnutls wsdd2"
+PKG_DEPENDS_TARGET="autotools:host gcc:host heimdal:host attr connman e2fsprogs gnutls libaio libunwind popt Python3 readline talloc wsdd2 zlib"
 PKG_NEED_UNPACK="$(get_pkg_directory heimdal) $(get_pkg_directory e2fsprogs)"
 PKG_LONGDESC="A free SMB / CIFS fileserver and client."
 
@@ -77,19 +77,19 @@ configure_package() {
   PKG_SAMBA_TARGET="smbclient,client/smbclient,smbtree,nmblookup,testparm"
 
   if [ "${SAMBA_SERVER}" = "yes" ]; then
-    PKG_SAMBA_TARGET+=",nmbd,rpcd_classic,rpcd_epmapper,rpcd_winreg,samba-dcerpcd,smbpasswd,smbd/smbd"
+    PKG_SAMBA_TARGET+=",nmbd,rpcd_classic,rpcd_epmapper,rpcd_winreg,samba-dcerpcd,smbpasswd,smbd/smbd,vfs_fruit,vfs_catia,vfs_streams_xattr"
   fi
 }
 
 pre_configure_target() {
-# samba uses its own build directory
+  # samba uses its own build directory
   cd ${PKG_BUILD}
     rm -rf .${TARGET_NAME}
 
-# work around link issues
+  # work around link issues
   export LDFLAGS="${LDFLAGS} -lreadline -lncurses"
 
-# support 64-bit offsets and seeks on 32-bit platforms
+  # support 64-bit offsets and seeks on 32-bit platforms
   if [ "${TARGET_ARCH}" = "arm" ]; then
     export CFLAGS+=" -D_FILE_OFFSET_BITS=64 -D_OFF_T_DEFINED_ -Doff_t=off64_t -Dlseek=lseek64"
   fi
@@ -97,7 +97,7 @@ pre_configure_target() {
 
 configure_target() {
   cp ${PKG_DIR}/config/samba4-cache.txt ${PKG_BUILD}/cache.txt
-    echo "Checking uname machine type: \"${TARGET_ARCH}\"" >> ${PKG_BUILD}/cache.txt
+    echo "Checking uname machine type: \"${TARGET_ARCH}\"" >>${PKG_BUILD}/cache.txt
 
   export COMPILE_ET=${TOOLCHAIN}/bin/heimdal_compile_et
   export ASN1_COMPILE=${TOOLCHAIN}/bin/heimdal_asn1_compile
@@ -154,6 +154,10 @@ perform_manual_install() {
       cp -PR bin/default/source3/rpc_server/rpcd_classic ${INSTALL}/usr/libexec/samba
       cp -PR bin/default/source3/rpc_server/rpcd_epmapper ${INSTALL}/usr/libexec/samba
       cp -PR bin/default/source3/rpc_server/rpcd_winreg ${INSTALL}/usr/libexec/samba
+
+    mkdir -p ${INSTALL}/usr/lib/vfs
+      cp ${PKG_BUILD}/bin/modules/vfs/* ${INSTALL}/usr/lib/vfs/
+
   fi
 }
 

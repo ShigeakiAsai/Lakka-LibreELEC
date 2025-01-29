@@ -3,15 +3,15 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="librespot"
-PKG_VERSION="886617e41c2177d0cb184cb761aa64acc8695a88"
+PKG_VERSION="0.6.0"
 PKG_VERSION_DATE="2023-12-06"
-PKG_SHA256="c53fa249e2ff7c75d51f4cbe9867e9ca6a60a0d714c2810fab16a29d113b2144"
-PKG_REV="0"
+PKG_SHA256="9ec881edb11e37d31a2b41dd30d56a3413445eedb720e1b0d278567dccfca8fc"
+PKG_REV="2"
 PKG_ARCH="any"
 PKG_LICENSE="MIT"
 PKG_SITE="https://github.com/librespot-org/librespot/"
-PKG_URL="https://github.com/librespot-org/librespot/archive/${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain alsa-lib avahi pulseaudio cargo:host"
+PKG_URL="https://github.com/librespot-org/librespot/archive/v${PKG_VERSION}.tar.gz"
+PKG_DEPENDS_TARGET="toolchain alsa-lib avahi pulseaudio bindgen-cli:host cargo:host cmake:host"
 PKG_SECTION="service"
 PKG_SHORTDESC="Librespot: play Spotify through Kodi using a Spotify app as a remote"
 PKG_LONGDESC="Librespot (${PKG_VERSION_DATE}) lets you play Spotify through Kodi using a Spotify app as a remote."
@@ -23,6 +23,12 @@ PKG_ADDON_TYPE="xbmc.service"
 PKG_MAINTAINER="Anton Voyl (awiouy)"
 
 make_target() {
+  # build of the crate aws-lc-rs fails when CMAKE is set. Set the required toolchain.
+  unset CMAKE
+  export CMAKE_TOOLCHAIN_FILE="${CMAKE_CONF}"
+  export CMAKE_INSTALL_PREFIX="/usr"
+
+  export BINDGEN_EXTRA_CLANG_ARGS="--sysroot=${SYSROOT_PREFIX}"
   export RUSTC_LINKER=${CC}
   cargo build \
     --target ${TARGET_NAME} \
