@@ -2,11 +2,11 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="snapcast"
-PKG_VERSION="0.28.0"
-PKG_SHA256="7911037dd4b06fe98166db1d49a7cd83ccf131210d5aaad47507bfa0cfc31407"
+PKG_VERSION="6190041e863968d76b6d16140bba90be6dff848f"
+PKG_SHA256="ca13a28abfa3d3d3386875526fa6faa281a4c52f94588924ddadc3369c7fa5cd"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/badaix/snapcast"
-PKG_URL="https://github.com/badaix/snapcast/archive/v${PKG_VERSION}.tar.gz"
+PKG_URL="https://github.com/badaix/snapcast/archive/${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain aixlog alsa-lib asio avahi flac libvorbis popl pulseaudio boost opus"
 PKG_LONGDESC="Synchronous multi-room audio player."
 PKG_BUILD_FLAGS="-sysroot"

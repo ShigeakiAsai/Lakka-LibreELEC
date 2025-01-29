@@ -7,8 +7,8 @@ PKG_SHA256="d34f02e113cf7193a1ebf2770d3ac527088d485d4e047ed10e5d217c6ef5de96"
 PKG_LICENSE="BSD"
 PKG_SITE="http://www.pcre.org/"
 PKG_URL="https://github.com/PCRE2Project/pcre2/releases/download/pcre2-${PKG_VERSION}/pcre2-${PKG_VERSION}.tar.bz2"
-PKG_DEPENDS_HOST="toolchain:host"
-PKG_DEPENDS_TARGET="toolchain pcre2:host"
+PKG_DEPENDS_HOST="cmake:host ninja:host"
+PKG_DEPENDS_TARGET="cmake:host ninja:host gcc:host pcre2:host"
 PKG_LONGDESC="A set of functions that implement regular expression pattern matching using the same syntax."
 PKG_BUILD_FLAGS="+pic"
 
@@ -23,6 +23,7 @@ PKG_CMAKE_OPTS_HOST="-DBUILD_SHARED_LIBS=OFF \
                      -DPCRE2_SUPPORT_LIBREADLINE=OFF"
 
 PKG_CMAKE_OPTS_TARGET="-DBUILD_SHARED_LIBS=OFF \
+                       -DPCRE2_BUILD_PCRE2_8=ON \
                        -DPCRE2_BUILD_PCRE2_16=ON \
                        -DPCRE2_SUPPORT_JIT=ON \
                        -DPCRE2_SUPPORT_LIBEDIT=OFF \

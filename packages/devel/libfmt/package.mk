@@ -2,8 +2,8 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libfmt"
-PKG_VERSION="10.2.1"
-PKG_SHA256="1250e4cc58bf06ee631567523f48848dc4596133e163f02615c97f78bab6c811"
+PKG_VERSION="11.1.3"
+PKG_SHA256="67cd23ea86ccc359693e2ce1ba8d1bab533c02d743c09b15f3131102d0c2fc1c"
 PKG_LICENSE="BSD"
 PKG_SITE="https://github.com/fmtlib/fmt"
 PKG_URL="https://github.com/fmtlib/fmt/archive/${PKG_VERSION}.tar.gz"
@@ -30,8 +30,8 @@ configure_host() {
   # custom cmake build to override the LOCAL_CC/CXX
   cp ${CMAKE_CONF} cmake-ccache.conf
 
-  echo "SET(CMAKE_C_COMPILER   ${CC})"  >> cmake-ccache.conf
-  echo "SET(CMAKE_CXX_COMPILER ${CXX})" >> cmake-ccache.conf
+  echo "SET(CMAKE_C_COMPILER   ${CC})"  >>cmake-ccache.conf
+  echo "SET(CMAKE_CXX_COMPILER ${CXX})" >>cmake-ccache.conf
   cmake -DCMAKE_TOOLCHAIN_FILE=cmake-ccache.conf \
         -DCMAKE_INSTALL_PREFIX=${TOOLCHAIN} \
         ${PKG_CMAKE_OPTS_COMMON} \

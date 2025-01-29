@@ -3,12 +3,12 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="systemd"
-PKG_VERSION="256"
-PKG_SHA256="ca40487e044c9d6b7ad214d453b1cab696e5ccbd5244eca78460972cb0589a17"
+PKG_VERSION="257.2"
+PKG_SHA256="7f2bc3253e4f87578132c5e433ef9ff7e8fee01d9eb5a5b7c64376d617f694d0"
 PKG_LICENSE="LGPL2.1+"
 PKG_SITE="http://www.freedesktop.org/wiki/Software/systemd"
-PKG_URL="https://github.com/systemd/systemd-stable/archive/v${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain libcap kmod util-linux entropy libidn2 wait-time-sync Jinja2:host"
+PKG_URL="https://github.com/systemd/systemd/archive/v${PKG_VERSION}.tar.gz"
+PKG_DEPENDS_TARGET="meson:host ninja:host gcc:host libcap kmod util-linux entropy libidn2 wait-time-sync Jinja2:host"
 PKG_LONGDESC="A system and session manager for Linux, compatible with SysV and LSB init scripts."
 
 PKG_MESON_OPTS_TARGET="--libdir=/usr/lib \
@@ -65,7 +65,8 @@ PKG_MESON_OPTS_TARGET="--libdir=/usr/lib \
                        -Dlocaled=false \
                        -Dmachined=false \
                        -Dportabled=false \
-                       -Duserdb=false \
+                       -Duserdb=true \
+                       -Dnologin-path=/usr/sbin/nologin \
                        -Dhomed=disabled \
                        -Dnetworkd=false \
                        -Dtimedated=false \
@@ -88,7 +89,7 @@ PKG_MESON_OPTS_TARGET="--libdir=/usr/lib \
                        -Dnss-myhostname=false \
                        -Dnss-mymachines=disabled \
                        -Dnss-resolve=disabled \
-                       -Dnss-systemd=false \
+                       -Dnss-systemd=true \
                        -Dman=disabled \
                        -Dhtml=disabled \
                        -Dlink-udev-shared=true \
@@ -133,14 +134,16 @@ post_makeinstall_target() {
   safe_remove ${INSTALL}/usr/lib/udev/rules.d/71-seat.rules
   safe_remove ${INSTALL}/usr/lib/udev/rules.d/73-seat-late.rules
 
-  # remove getty units, we dont want a console
-  safe_remove ${INSTALL}/usr/lib/systemd/system/autovt@.service
-  safe_remove ${INSTALL}/usr/lib/systemd/system/console-getty.service
-  safe_remove ${INSTALL}/usr/lib/systemd/system/container-getty@.service
-  safe_remove ${INSTALL}/usr/lib/systemd/system/getty.target
-  safe_remove ${INSTALL}/usr/lib/systemd/system/getty@.service
-  safe_remove ${INSTALL}/usr/lib/systemd/system/serial-getty@.service
-  safe_remove ${INSTALL}/usr/lib/systemd/system/*.target.wants/getty.target
+  if [ "${LOCAL_LOGIN}" = "no" ]; then
+    # remove getty units, we dont want a console
+    safe_remove ${INSTALL}/usr/lib/systemd/system/autovt@.service
+    safe_remove ${INSTALL}/usr/lib/systemd/system/console-getty.service
+    safe_remove ${INSTALL}/usr/lib/systemd/system/container-getty@.service
+    safe_remove ${INSTALL}/usr/lib/systemd/system/getty.target
+    safe_remove ${INSTALL}/usr/lib/systemd/system/getty@.service
+    safe_remove ${INSTALL}/usr/lib/systemd/system/serial-getty@.service
+    safe_remove ${INSTALL}/usr/lib/systemd/system/*.target.wants/getty.target
+  fi
 
   # remove other notused or nonsense stuff (our /etc is ro)
   safe_remove ${INSTALL}/usr/lib/systemd/systemd-update-done
@@ -183,10 +186,10 @@ post_makeinstall_target() {
 
   # distro preset policy
   safe_remove ${INSTALL}/usr/lib/systemd/system-preset/*
-  echo "disable *" > ${INSTALL}/usr/lib/systemd/system-preset/99-default.preset
+  echo "disable *" >${INSTALL}/usr/lib/systemd/system-preset/99-default.preset
 
   safe_remove ${INSTALL}/usr/lib/systemd/user-preset/*
-  echo "disable *" > ${INSTALL}/usr/lib/systemd/user-preset/90-systemd.preset
+  echo "disable *" >${INSTALL}/usr/lib/systemd/user-preset/90-systemd.preset
 
   # remove networkd
   safe_remove ${INSTALL}/usr/lib/systemd/network
@@ -205,6 +208,10 @@ post_makeinstall_target() {
   sed -e "s,^.*SystemMaxUse=.*$,SystemMaxUse=10M,g" -i ${INSTALL}/etc/systemd/journald.conf
 
   # tune logind.conf
+  if [ "${LOCAL_LOGIN}" = "yes" ]; then
+    sed -e "s,^.*NAutoVTs=.*$,NAutoVTs=2,g" -i ${INSTALL}/etc/systemd/logind.conf
+    sed -e "s,^.*ReserveVT=.*$,ReserveVT=6,g" -i ${INSTALL}/etc/systemd/logind.conf
+  fi
   sed -e "s,^.*HandleLidSwitch=.*$,HandleLidSwitch=ignore,g" -i ${INSTALL}/etc/systemd/logind.conf
   if [ "${DISPLAYSERVER}" = "no" ]; then
     sed -e "s,^.*HandlePowerKey=.*$,HandlePowerKey=poweroff,g" -i ${INSTALL}/etc/systemd/logind.conf
@@ -306,6 +313,10 @@ post_install() {
   enable_service network-base.service
   enable_service systemd-timesyncd.service
   enable_service systemd-timesyncd-setup.service
+  enable_service systemd-userdbd.socket
+  if [ "${LOCAL_LOGIN}" = "yes" ]; then
+    enable_service getty@tty0.service
+  fi
   #Add service to properly remount flash partition when using fat32-boot kernel command line option.
   enable_service remount_flash_ro.service
 

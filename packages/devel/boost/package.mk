@@ -3,11 +3,11 @@
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="boost"
-PKG_VERSION="1.85.0"
-PKG_SHA256="7009fe1faa1697476bdc7027703a2badb84e849b7b0baad5086b087b971f8617"
+PKG_VERSION="1.87.0"
+PKG_SHA256="af57be25cb4c4f4b413ed692fe378affb4352ea50fbe294a11ef548f4d527d89"
 PKG_LICENSE="OSS"
 PKG_SITE="https://www.boost.org/"
-PKG_URL="https://boostorg.jfrog.io/artifactory/main/release/${PKG_VERSION}/source/${PKG_NAME}_${PKG_VERSION//./_}.tar.bz2"
+PKG_URL="https://archives.boost.io/release/${PKG_VERSION}/source/${PKG_NAME}_${PKG_VERSION//./_}.tar.bz2"
 PKG_DEPENDS_HOST="toolchain:host"
 PKG_DEPENDS_TARGET="toolchain boost:host Python3 zlib bzip2"
 PKG_LONGDESC="boost: Peer-reviewed STL style libraries for C++"
@@ -35,10 +35,10 @@ configure_target() {
                   --with-python=${TOOLCHAIN}/bin/python \
                   --with-python-root=${SYSROOT_PREFIX}/usr
 
-  echo "using gcc : $(${CC} -v 2>&1  | tail -n 1 |awk '{print $3}') : ${CC}  : <compileflags>\"${CFLAGS}\" <linkflags>\"${LDFLAGS}\" ;" \
-    > tools/build/src/user-config.jam
-  echo "using python : ${PKG_PYTHON_VERSION/#python} : ${TOOLCHAIN} : ${SYSROOT_PREFIX}/usr/include : ${SYSROOT_PREFIX}/usr/lib ;" \
-    >> tools/build/src/user-config.jam
+  echo "using gcc : $(${CC} -v 2>&1  | tail -n 1 | awk '{print $3}') : ${CC}  : <compileflags>\"${CFLAGS}\" <linkflags>\"${LDFLAGS}\" ;" \
+    >tools/build/src/user-config.jam
+  echo "using python : ${PKG_PYTHON_VERSION#python} : ${TOOLCHAIN} : ${SYSROOT_PREFIX}/usr/include : ${SYSROOT_PREFIX}/usr/lib ;" \
+    >>tools/build/src/user-config.jam
 }
 
 makeinstall_target() {

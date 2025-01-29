@@ -5,12 +5,12 @@ PKG_NAME="tvheadend42"
 PKG_VERSION="5bdcfd8ac97b3337e1c7911ae24127df76fa693a"
 PKG_SHA256="b562a26248cdc02dc94cc62038deea172668fa4c079b2ea4e1b4220f3b1d34f5"
 PKG_VERSION_NUMBER="4.2.8-36"
-PKG_REV="0"
+PKG_REV="4"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.tvheadend.org"
 PKG_URL="https://github.com/tvheadend/tvheadend/archive/${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain avahi comskip curl dvb-apps libdvbcsa libhdhomerun \
+PKG_DEPENDS_TARGET="toolchain argtable2 avahi comskip curl dvb-apps libdvbcsa libhdhomerun \
                     libiconv openssl pngquant:host Python3:host dtv-scan-tables"
 PKG_DEPENDS_CONFIG="ffmpegx"
 PKG_SECTION="service"
@@ -86,15 +86,15 @@ pre_configure_target() {
                              --disable-bintray_cache \
                              --python=${TOOLCHAIN}/bin/python"
 
-# fails to build in subdirs
+  # fails to build in subdirs
   cd ${PKG_BUILD}
   rm -rf .${TARGET_NAME}
 
-# pass ffmpegx to build
+  # pass ffmpegx to build
   CFLAGS+=" -I$(get_install_dir ffmpegx)/usr/local/include"
   LDFLAGS+=" -L$(get_install_dir ffmpegx)/usr/local/lib"
 
-# pass libhdhomerun to build
+  # pass libhdhomerun to build
   CFLAGS+=" -I${SYSROOT_PREFIX}/usr/include/hdhomerun"
 
   export CROSS_COMPILE="${TARGET_PREFIX}"
@@ -125,7 +125,7 @@ addon() {
 
   if [ "${TARGET_ARCH}" = "x86_64" ]; then
     mkdir -p ${ADDON_BUILD}/${PKG_ADDON_ID}/lib.private
-    cp -P $(get_install_dir x265)/usr/lib/libx265.so.209 ${ADDON_BUILD}/${PKG_ADDON_ID}/lib.private
+    cp -P $(get_install_dir x265)/usr/lib/libx265.so.215 ${ADDON_BUILD}/${PKG_ADDON_ID}/lib.private
     patchelf --add-rpath '${ORIGIN}/../lib.private' ${ADDON_BUILD}/${PKG_ADDON_ID}/bin/{comskip,tvheadend}
   fi
 

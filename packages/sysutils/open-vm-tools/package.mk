@@ -4,8 +4,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="open-vm-tools"
-PKG_VERSION="12.4.0"
-PKG_SHA256="ba091c58f0d61c2896418c7d04506a7ea44c7594401209928270576fa018c23a"
+PKG_VERSION="12.5.0"
+PKG_SHA256="a52182c7e6b5df41bb317625e9d8592ecdb9db814d1c2c9b7cdb91a77f8c0640"
 PKG_ARCH="x86_64"
 [ "${DISTRO}" = "Lakka" ] && PKG_ARCH+=" i386" || true
 PKG_LICENSE="GPL"
@@ -24,7 +24,6 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-docs \
                            --without-gtkmm \
                            --without-ssl \
                            --without-x \
-                           --without-xerces \
                            --without-icu \
                            --without-kernel-modules \
                            --with-fuse=fuse3 \

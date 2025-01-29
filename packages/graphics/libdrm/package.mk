@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libdrm"
-PKG_VERSION="2.4.121"
-PKG_SHA256="909084a505d7638887f590b70791b3bbd9069c710c948f5d1f1ce6d080cdfcab"
+PKG_VERSION="2.4.124"
+PKG_SHA256="ac36293f61ca4aafaf4b16a2a7afff312aa4f5c37c9fbd797de9e3c0863ca379"
 PKG_LICENSE="GPL"
 PKG_SITE="https://dri.freedesktop.org"
 PKG_URL="https://dri.freedesktop.org/libdrm/libdrm-${PKG_VERSION}.tar.xz"
@@ -65,9 +65,8 @@ listcontains "${GRAPHIC_DRIVERS}" "nouveau" &&
 
 post_makeinstall_target() {
   # Remove all test programs installed by install-test-programs=true except modetest
-  for PKG_LIBDRM_TEST in \
-    drmdevice modeprint proptest vbltest
-  do
+  PKG_LIBDRM_LIST="drmdevice modeprint proptest vbltest"
+  for PKG_LIBDRM_TEST in ${PKG_LIBDRM_LIST}; do
     safe_remove ${INSTALL}/usr/bin/${PKG_LIBDRM_TEST}
   done
 

@@ -34,7 +34,7 @@ get_graphicdrivers() {
   V4L2_SUPPORT="no"
 
   if [ "${GRAPHIC_DRIVERS}" = "all" ]; then
-    GRAPHIC_DRIVERS="crocus i915 iris r300 r600 radeonsi nvidia nvidia-legacy nvidia-ng vmware virtio vc4"
+    GRAPHIC_DRIVERS="crocus i915 iris r300 r600 radeonsi nvidia nvidia-ng vmware virtio vc4"
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "crocus"; then
@@ -45,7 +45,7 @@ get_graphicdrivers() {
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "etnaviv"; then
-    GALLIUM_DRIVERS+=" etnaviv kmsro"
+    GALLIUM_DRIVERS+=" etnaviv"
     V4L2_SUPPORT="yes"
     VAAPI_SUPPORT="no"
     VDPAU_SUPPORT="no"
@@ -75,11 +75,7 @@ get_graphicdrivers() {
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "lima"; then
-    GALLIUM_DRIVERS+=" kmsro lima"
-    V4L2_SUPPORT="yes"
-  fi
-
-  if listcontains "${GRAPHIC_DRIVERS}" "mali"; then
+    GALLIUM_DRIVERS+=" lima"
     V4L2_SUPPORT="yes"
   fi
 
@@ -89,42 +85,35 @@ get_graphicdrivers() {
     VDPAU_SUPPORT="yes"
   fi
 
-  if listcontains "${GRAPHIC_DRIVERS}" "nvidia-legacy"; then
-    XORG_DRIVERS+=" nvidia-legacy"
-    VDPAU_SUPPORT="yes"
-  fi
-
   if listcontains "${GRAPHIC_DRIVERS}" "nvidia-ng"; then
     VULKAN_DRIVERS_CONFIG+=" nvidia-ng"
     VAAPI_SUPPORT="yes"
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "panfrost"; then
-    GALLIUM_DRIVERS+=" kmsro panfrost"
+    GALLIUM_DRIVERS+=" panfrost"
     VULKAN_DRIVERS_MESA+=" panfrost"
     V4L2_SUPPORT="yes"
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "r300"; then
     GALLIUM_DRIVERS+=" r300"
-    XORG_DRIVERS+=" ati"
     LLVM_SUPPORT="yes"
     COMPOSITE_SUPPORT="yes"
-    VDPAU_SUPPORT="yes"
+    VDPAU_SUPPORT="no"
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "r600"; then
     GALLIUM_DRIVERS+=" r600"
-    XORG_DRIVERS+=" ati"
     LLVM_SUPPORT="yes"
     COMPOSITE_SUPPORT="yes"
-    VDPAU_SUPPORT="yes"
+    VDPAU_SUPPORT="no"
     VAAPI_SUPPORT="yes"
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "radeonsi"; then
     GALLIUM_DRIVERS+=" radeonsi"
-    XORG_DRIVERS+=" ati amdgpu"
+    XORG_DRIVERS+=" amdgpu"
     VULKAN_DRIVERS_MESA+=" amd"
     LLVM_SUPPORT="yes"
     COMPOSITE_SUPPORT="yes"
@@ -133,7 +122,7 @@ get_graphicdrivers() {
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "vc4"; then
-    GALLIUM_DRIVERS+=" vc4 v3d kmsro"
+    GALLIUM_DRIVERS+=" vc4 v3d"
     VULKAN_DRIVERS_MESA+=" broadcom"
     V4L2_SUPPORT="yes"
     VAAPI_SUPPORT="no"

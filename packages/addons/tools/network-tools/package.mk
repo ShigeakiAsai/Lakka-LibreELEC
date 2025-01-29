@@ -3,7 +3,7 @@
 
 PKG_NAME="network-tools"
 PKG_VERSION="1.0"
-PKG_REV="0"
+PKG_REV="2"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://libreelec.tv"
@@ -101,6 +101,6 @@ addon() {
     ln -s iwconfig ${ADDON_BUILD}/${PKG_ADDON_ID}/bin/iwspy
     ln -s iwconfig ${ADDON_BUILD}/${PKG_ADDON_ID}/bin/iwpriv
 
-    find ${ADDON_BUILD}/${PKG_ADDON_ID}/bin -type f | \
+    find ${ADDON_BUILD}/${PKG_ADDON_ID}/bin -type f |
       xargs patchelf --add-rpath '${ORIGIN}/../lib.private'
 }

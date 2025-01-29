@@ -3,11 +3,11 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="ccid"
-PKG_VERSION="1.5.5"
-PKG_SHA256="194708f75fe369d45dd7c15e8b3e8a7db8b49cfc5557574ca2a2e76ef12ca0ca"
+PKG_VERSION="1.6.1"
+PKG_SHA256="2eca8fb07e8fe7c0d39daeaca7b97cd73c40ed9b72738a24ad3dcbdfc918e1ea"
 PKG_LICENSE="LGPL"
 PKG_SITE="https://ccid.apdu.fr"
-PKG_URL="https://ccid.apdu.fr/files/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
+PKG_URL="https://ccid.apdu.fr/files/${PKG_NAME}-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain pcsc-lite"
 PKG_LONGDESC="A generic USB Chip/Smart Card Interface Devices driver."
 PKG_TOOLCHAIN="autotools"

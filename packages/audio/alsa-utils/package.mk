@@ -3,8 +3,8 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="alsa-utils"
-PKG_VERSION="1.2.12"
-PKG_SHA256="98bc6677d0c0074006679051822324a0ab0879aea558a8f68b511780d30cd924"
+PKG_VERSION="1.2.13"
+PKG_SHA256="1702a6b1cdf9ba3e996ecbc1ddcf9171e6808f5961d503d0f27e80ee162f1daa"
 PKG_LICENSE="GPL"
 PKG_SITE="https://www.alsa-project.org/"
 PKG_URL="https://www.alsa-project.org/files/pub/utils/alsa-utils-${PKG_VERSION}.tar.bz2"
@@ -31,8 +31,8 @@ post_makeinstall_target() {
   rm -rf ${INSTALL}/usr/share/sounds
   rm -rf ${INSTALL}/usr/lib/systemd/system
 
-# remove default udev rule to restore mixer configs, we install our own.
-# so we avoid resetting our soundconfig
+  # remove default udev rule to restore mixer configs, we install our own.
+  # so we avoid resetting our soundconfig
   rm -rf ${INSTALL}/usr/lib/udev/rules.d/90-alsa-restore.rules
 
   if [ "${DISTRO}" != "Lakka" ]; then # keep the utils for Lakka

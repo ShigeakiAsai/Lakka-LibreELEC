@@ -11,12 +11,13 @@ PKG_URL="https://github.com/LibreELEC/eventlircd/archive/${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain systemd lirc"
 PKG_LONGDESC="The eventlircd daemon provides four functions for LIRC devices"
 PKG_TOOLCHAIN="autotools"
+PKG_BUILD_FLAGS="-cfg-libs"
 
 PKG_CONFIGURE_OPTS_TARGET="--with-udev-dir=/usr/lib/udev \
                            --with-lircd-socket=/run/lirc/lircd"
 
 post_makeinstall_target() {
-# install our own evmap files and udev rules
+  # install our own evmap files and udev rules
   rm -rf ${INSTALL}/etc/eventlircd.d
   rm -rf ${INSTALL}/usr/lib/udev/rules.d
   rm -rf ${INSTALL}/usr/lib/udev/lircd_helper
