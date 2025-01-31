@@ -2,8 +2,8 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="ffmpegx"
-PKG_VERSION="6.0.1"
-PKG_SHA256="9b16b8731d78e596b4be0d720428ca42df642bb2d78342881ff7f5bc29fc9623"
+PKG_VERSION="7.0"
+PKG_SHA256="4426a94dd2c814945456600c8adfc402bee65ec14a70e8c531ec9a2cd651da7b"
 PKG_LICENSE="GPL-3.0-only"
 PKG_SITE="https://ffmpeg.org"
 PKG_URL="https://ffmpeg.org/releases/ffmpeg-${PKG_VERSION}.tar.xz"
