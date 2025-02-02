@@ -98,6 +98,7 @@ PKG_MESON_OPTS_TARGET="-Dadplug=disabled \
 
 pre_configure_target() {
   export PKG_CONFIG_PATH="$(get_install_dir libnfs5)/usr/lib/pkgconfig:${PKG_CONFIG_PATH}"
+  export TARGET_CXXFLAGS+=" -I$(get_install_dir libnfs5)/usr/include"
 }
 
 addon() {
