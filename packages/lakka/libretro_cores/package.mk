@@ -257,7 +257,7 @@ fi
 
 # temporary disabled due to build error with gcc14  for all targets except Switch (uses older gcc)
 if [ ! "${PROJECT}" = "L4T" -a ! "${DEVICE}" = "Switch" ]; then
-  for core in citra dolphin ecwolf np2kai pcsx2 same_cdi ; do
+  for core in citra np2kai ; do
     LIBRETRO_CORES="${LIBRETRO_CORES// ${core} /}"
   done
 fi
