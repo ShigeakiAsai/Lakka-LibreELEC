@@ -12,7 +12,7 @@ PKG_DEPENDS_TARGET="toolchain"
 PKG_LONGDESC="Another color manipulation library for Python (originally from picamera)."
 PKG_TOOLCHAIN="manual"
 
-[ "${DISTRO}" = "Lakka" ] && PKG_DEPENDS_TARGET+=" Python3 distutilscross:host" || true
+[ "${DISTRO}" = "Lakka" ] && PKG_DEPENDS_TARGET+=" Python3" || true
 
 if [ "${DISTRO}" = "Lakka" ]; then
   PKG_ARCH+=" aarch64"
@@ -27,13 +27,13 @@ pre_make_target() {
 
 make_target() {
   if [ "${DISTRO}" = "Lakka" ]; then
-    python setup.py build --cross-compile
+    python_target_env python setup.py build
   fi
 }
 
 makeinstall_target() {
   if [ "${DISTRO}" = "Lakka" ]; then
-    python setup.py install --root=${INSTALL} --prefix=/usr
+    python_target_env python setup.py install --root=${INSTALL} --prefix=/usr
   fi
 }
 

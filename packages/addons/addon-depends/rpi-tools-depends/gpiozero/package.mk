@@ -25,13 +25,13 @@ pre_make_target() {
 
 make_target() {
   if [ "${DISTRO}" = "Lakka" ]; then
-    python setup.py build --cross-compile
+    python_target_env python setup.py build
   fi
 }
 
 makeinstall_target() {
   if [ "${DISTRO}" = "Lakka" ]; then
-    python setup.py install --root=${INSTALL} --prefix=/usr
+    python_target_env python setup.py install --root=${INSTALL} --prefix=/usr
   fi
 }
 

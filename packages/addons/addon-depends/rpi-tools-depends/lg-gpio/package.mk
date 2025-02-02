@@ -24,3 +24,21 @@ make_target() {
     python_target_env python3 -m build -n -w -x
   )
 }
+
+makeinstall_target() {
+  if [ "${DISTRO}" = "Lakka" ]; then
+    mkdir -p "${INSTALL}/usr/lib"
+    cp -v ./liblgpio.so* "${INSTALL}/usr/lib"
+    (
+      cd PY_LGPIO
+      python setup.py install --root=${INSTALL} --prefix=/usr
+    )
+  fi
+}
+
+post_makeinstall_target() {
+  if [ "${DISTRO}" = "Lakka" ]; then
+    find ${INSTALL}/usr/lib -name "*.py" -exec rm -rf "{}" ";"
+    rm -rf ${INSTALL}/usr/bin
+  fi
+}

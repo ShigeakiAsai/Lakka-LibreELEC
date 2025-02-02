@@ -72,6 +72,7 @@ LIBRETRO_CORES="\
                 hatari \
                 higan_sfc \
                 higan_sfc_balanced \
+                holani \
                 jaxe \
                 jumpnbump \
                 kronos \
@@ -219,7 +220,10 @@ elif [ "${PROJECT}" = "Generic" -a "${ARCH}" = "i386" ]; then
 elif [ "${PROJECT}" = "Ayn" -a "${DEVICE}" = "Odin" ]; then
   EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
 elif [ "${PROJECT}" = "L4T" -a "${DEVICE}" = "Switch" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" stella"
+# lr_moonlight does not currently build for Switch because of newer OpenSSL package. (older package is not compatible with ffmpeg)
+# Stella Doesnt Build.
+# Holani Doesnt Build.
+  EXCLUDE_LIBRETRO_CORES+=" stella holani lr_moonlight"
 fi
 
 # disable cores that are only for specific targets
@@ -229,19 +233,9 @@ if [ "${PROJECT}" != "RPi" ]; then
 elif [ "${DEVICE}" != "RPi" -a "${DEVICE}" != "RPiZero-GPiCase" ]; then
   EXCLUDE_LIBRETRO_CORES+=" fbalpha2012 mame2000"
 fi
-# boom3 and vitaquake for now only for Switch
+# lr_moonlight, boom3, and vitaquake for now only for Switch
 if [ "${PROJECT}" != "L4T" -a "${DEVICE}" != "Switch" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" boom3 vitaquake3"
-fi
-
-# lr_moonlight only for Switch
-if [ "${PROJECT}" != "L4T" -a "${DEVICE}" != "Switch" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
-fi
-
-# lr_moonlight does not currently build for Switch because of newer OpenSSL package (older package is not compatible with ffmpeg)
-if [ "${DEVICE}" = "Switch" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
+  EXCLUDE_LIBRETRO_CORES+=" boom3 vitaquake3 lr_moonlight"
 fi
 
 # disable cores that do not build for OPENGLES
