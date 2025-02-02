@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="pvr.vbox"
-PKG_VERSION="22.2.0-Piers"
-PKG_SHA256="5a5f8fe89cb4ca73694b15226264eceb39b96e9ee5379e1d613870134d67fe17"
+PKG_VERSION="22.2.1-Piers"
+PKG_SHA256="6b330d6286aa197eef86369268e2d6e704eb7b0668bd6544caf104a3b1c640ff"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"

@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="pvr.vdr.vnsi"
-PKG_VERSION="22.2.0-Piers"
-PKG_SHA256="82f02e463ad44460b3a7bed775dff8ea89f52fcc9de5ea5a453cb5db443e7597"
+PKG_VERSION="22.2.1-Piers"
+PKG_SHA256="d5e697b6704c3d1e4aa8a9e52e84af9f04c7cb90019f3d4965362e205aea47ee"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
