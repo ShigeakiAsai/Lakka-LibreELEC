@@ -1,6 +1,7 @@
 PKG_NAME="holani"
 PKG_VERSION="0.9.6"
 PKG_LICENSE="GPLv3"
+PKG_ARCH="x86_64"
 PKG_SITE="https://github.com/LLeny/holani-retro"
 PKG_URL="${PKG_SITE}.git"
 PKG_DEPENDS_TARGET="toolchain cargo:host"
