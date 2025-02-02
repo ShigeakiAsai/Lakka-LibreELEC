@@ -64,7 +64,7 @@ index 7910aa0970..bd4342d124 100755
  #if defined (__GNUC__) && ! defined (__cplusplus)
  typedef unsigned long long t1;typedef t1*t2;
 -void g(){}
-+void g(int,const t1 *,t1,t1 *,const t1 *,int){}
++void g(int i,const t1 *src,t1 n,t1 *got,const t1 *want,int j){}
  void h(){}
  static __inline__ t1 e(t2 rp,t2 up,int n,t1 v0)
  {t1 c,x,r;int i;if(v0){c=1;for(i=1;i<n;i++){x=up[i];r=x+1;rp[i]=r;}}return c;}
