@@ -147,7 +147,7 @@
 # build with MySQL support (mariadb / none)
   KODI_MYSQL_SUPPORT="mariadb"
 
-# build xbmc with optical drive support (yes / no)
+# build Kodi with optical drive support (yes / no)
   KODI_OPTICAL_SUPPORT="yes"
 
 # build with AirPlay support (stream videos from iDevices to KODI) (yes / no)
