@@ -47,3 +47,6 @@
 
   # additional packages
     ADDITIONAL_PACKAGES+=" disable_wifi_powersave pciutils RK356X-volkeys"
+
+  # Temp remove CEC_FRAMEWORK_SUPPORT
+    CEC_FRAMEWORK_SUPPORT="no"
