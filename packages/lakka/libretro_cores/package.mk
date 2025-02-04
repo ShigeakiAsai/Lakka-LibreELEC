@@ -243,6 +243,11 @@ if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   EXCLUDE_LIBRETRO_CORES+=" kronos"
 fi
 
+# disable holani core for other archs than x86_64
+if [ ! "${ARCH}" = "x86_64" ]; then
+  EXCLUDE_LIBRETRO_CORES+=" holani"
+fi
+
 # exclude some cores at build time via env EXCLUDE_LIBRETRO_CORES="..." passed to make
 if [ -n "${EXCLUDE_LIBRETRO_CORES}" ]; then
   for core in ${EXCLUDE_LIBRETRO_CORES} ; do
