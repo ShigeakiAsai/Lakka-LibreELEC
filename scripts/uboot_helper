@@ -430,6 +430,16 @@ devices = \
         'dtb': '',
         'soc': 'RK3566'
       },
+      'powkiddy-rgb10max3': {
+        'config': 'anbernic-rgxx3-rk3566_defconfig',
+        'dtb': '',
+        'soc': 'RK3566'
+      },
+      'anbernic-rg-rk3566': {
+        'config': 'anbernic-rgxx3-rk3566_defconfig',
+        'dtb': '',
+        'soc': 'RK3566'
+      },
     },
     'RK3588': {
       'cm3588-nas': {
