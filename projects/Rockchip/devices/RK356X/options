@@ -46,4 +46,4 @@
     FIRMWARE+=" rk3566-devices-firmware"
 
   # additional packages
-    ADDITIONAL_PACKAGES+=" pciutils RK356X-volkeys"
+    ADDITIONAL_PACKAGES+=" disable_wifi_powersave pciutils RK356X-volkeys"
