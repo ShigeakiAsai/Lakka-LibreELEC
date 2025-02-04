@@ -39,5 +39,8 @@
   # set the addon project
     ADDON_PROJECT="ARMv8"
 
+  # additional drivers
+    ADDITIONAL_DRIVERS+=" generic-dsi rocknix-joypad"
+
   # additional packages
-    ADDITIONAL_PACKAGES+=" generic-dsi pciutils RK356X-volkeys rocknix-joypad"
+    ADDITIONAL_PACKAGES+=" pciutils RK356X-volkeys"
