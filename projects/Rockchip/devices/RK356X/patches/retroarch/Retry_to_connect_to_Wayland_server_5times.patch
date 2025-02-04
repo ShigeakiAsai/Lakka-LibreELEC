@@ -1,0 +1,31 @@
+diff -uNr a/gfx/common/wayland_common.c b/gfx/common/wayland_common.c
+--- a/gfx/common/wayland_common.c	2024-12-03 16:26:10.000000000 +0900
++++ b/gfx/common/wayland_common.c	2025-01-20 21:07:47.851447637 +0900
+@@ -658,12 +658,24 @@
+    wl->floating_width               = SPLASH_WINDOW_WIDTH;
+    wl->floating_height              = SPLASH_WINDOW_HEIGHT;
+ 
+-   if (!wl->input.dpy)
++   for( int retry_cnt = 0 ; retry_cnt < 5 ; retry_cnt++ )
+    {
+-      RARCH_ERR("[Wayland]: Failed to connect to Wayland server.\n");
+-      goto error;
++      if (!wl->input.dpy)
++      {
++         RARCH_ERR("[Wayland]: Failed to connect to Wayland server.\n");
++         RARCH_ERR("[Wayland]: Retry to connect to Wayland server.[%d/5]\n" , retry_cnt+1);
++         sleep(1);
++         wl->input.dpy = wl_display_connect(NULL);
++         continue;
++      }
++      else
++      {
++         break;
++      }
+    }
+ 
++   if (!wl->input.dpy) goto error;
++
+    frontend_driver_install_signal_handler();
+ 
+    wl->registry = wl_display_get_registry(wl->input.dpy);
