@@ -40,4 +40,4 @@
     ADDON_PROJECT="ARMv8"
 
   # additional packages
-    ADDITIONAL_PACKAGES+=" pciutils RK356X-volkeys"
+    ADDITIONAL_PACKAGES+=" generic-dsi pciutils RK356X-volkeys"
