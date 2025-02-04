@@ -216,7 +216,7 @@ if [ "${PROJECT}" = "RPi" ]; then
     EXCLUDE_LIBRETRO_CORES+=" kronos openlara play ppsspp vircon32 swanstation"
   fi
 elif [ "${PROJECT}" = "Generic" -a "${ARCH}" = "i386" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" fake_08 openlara"
+  EXCLUDE_LIBRETRO_CORES+=" fake_08 kronos openlara"
 elif [ "${PROJECT}" = "Ayn" -a "${DEVICE}" = "Odin" ]; then
   EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
 elif [ "${PROJECT}" = "L4T" -a "${DEVICE}" = "Switch" ]; then
