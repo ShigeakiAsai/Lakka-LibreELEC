@@ -1,0 +1,44 @@
+diff -uNr a/debian/patches/fix-linux-6.12-build.patch b/debian/patches/fix-linux-6.12-build.patch
+--- a/debian/patches/fix-linux-6.12-build.patch	1970-01-01 09:00:00.000000000 +0900
++++ b/debian/patches/fix-linux-6.12-build.patch	2025-01-29 00:21:01.687993300 +0900
+@@ -0,0 +1,40 @@
++diff -uNr a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c
++--- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c	2025-01-29 00:01:43.684584200 +0900
+++++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_main.c	2025-01-29 00:19:52.248340466 +0900
++@@ -5432,6 +5432,9 @@
++ 									#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
++ 										, u32 cac_time_ms
++ 									#endif
+++									#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+++										, int link_id
+++									#endif
++ 										)
++ {
++ 	struct rwnx_hw *rwnx_hw = wiphy_priv(wiphy);
++diff -uNr a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_radar.c b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_radar.c
++--- a/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_radar.c	2024-06-24 19:32:14.000000000 +0900
+++++ b/src/SDIO/driver_fw/driver/aic8800/aic8800_fdrv/rwnx_radar.c	2025-01-28 23:53:31.557675458 +0900
++@@ -1399,7 +1399,11 @@
++ 					#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
++ 					   &ctxt->chan_def,
++ 					#endif
+++					#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+++					   NL80211_RADAR_CAC_FINISHED, GFP_KERNEL, 0);
+++					#else
++ 					   NL80211_RADAR_CAC_FINISHED, GFP_KERNEL);
+++					#endif
++ 	rwnx_send_apm_stop_cac_req(rwnx_hw, radar->cac_vif);
++ 	rwnx_chanctx_unlink(radar->cac_vif);
++ 
++@@ -1499,7 +1503,11 @@
++ 						#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
++ 						   &ctxt->chan_def,
++ 						#endif
+++						#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+++						   NL80211_RADAR_CAC_ABORTED, GFP_KERNEL, 0);
+++						#else
++ 						   NL80211_RADAR_CAC_ABORTED, GFP_KERNEL);
+++						#endif
++ 		rwnx_chanctx_unlink(radar->cac_vif);
++ 	}
++ 
