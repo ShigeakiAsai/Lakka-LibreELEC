@@ -1,0 +1,14 @@
+diff -uNr a/board/xunlong/orangepi-3b-rk3566/orangepi-3b-rk3566.c b/board/xunlong/orangepi-3b-rk3566/orangepi-3b-rk3566.c
+--- a/board/xunlong/orangepi-3b-rk3566/orangepi-3b-rk3566.c	2025-01-07 09:54:44.000000000 +0900
++++ b/board/xunlong/orangepi-3b-rk3566/orangepi-3b-rk3566.c	2025-01-31 19:13:24.430834160 +0900
+@@ -10,8 +10,8 @@
+ };
+ 
+ static const struct board_model board_models[] = {
+-	{ 0, "rockchip/rk3566-orangepi-3b-v1.1.dtb", "rk3566-orangepi-3b-v1.1.dtb" },
+-	{ 1, "rockchip/rk3566-orangepi-3b-v2.1.dtb", "rk3566-orangepi-3b-v2.1.dtb" },
++	{ 0, "rk3566-orangepi-3b-v1.1.dtb", "rk3566-orangepi-3b-v1.1.dtb" },
++	{ 1, "rk3566-orangepi-3b-v2.1.dtb", "rk3566-orangepi-3b-v2.1.dtb" },
+ };
+ 
+ static int get_board_value(void)
