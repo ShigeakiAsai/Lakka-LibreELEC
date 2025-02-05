@@ -33,6 +33,9 @@
   # Windowmanager to use (weston / no)
     WINDOWMANAGER="sway"
 
+  # build and install ALSA support (yes / no)
+    ALSA_SUPPORT="yes"
+
   # kernel serial console
     EXTRA_CMDLINE="earlycon console=uart8250,mmio32,0xfe660000 console=tty0 coherent_pool=2M cec.debounce_ms=5000 mem=3838M"
 
