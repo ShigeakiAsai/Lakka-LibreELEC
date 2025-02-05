@@ -21,7 +21,7 @@ make_target() {
   (
     cd PY_LGPIO
     swig -python lgpio.i
-    python_target_env python3 -m build -n -w -x
+    python_target_env python -m build -n -w -x
   )
 }
 
@@ -31,7 +31,7 @@ makeinstall_target() {
     cp -v ./liblgpio.so* "${INSTALL}/usr/lib"
     (
       cd PY_LGPIO
-      python setup.py install --root=${INSTALL} --prefix=/usr
+      python_target_env python setup.py install --root=${INSTALL} --prefix=/usr
     )
   fi
 }
