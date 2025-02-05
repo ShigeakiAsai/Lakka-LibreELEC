@@ -20,14 +20,14 @@ case "${LINUX}" in
     PKG_SHA256="1a140beb8b10ea52e4dd595c5ce4e00995e0176353f980be50aedca4c009c2b7"
     PKG_URL="https://github.com/torvalds/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
-    PKG_PATCH_DIRS="default rtlwifi/6.13 rtlwifi/after-6.13"
+    PKG_PATCH_DIRS="default rtlwifi/6.13 rtlwifi/6.14 rtlwifi/after-6.14"
     ;;
   raspberrypi)
     PKG_VERSION="8d163a94e3dd5af76ea4fa40ff819c546e1b8cb5" # 6.12.13
     PKG_SHA256="6ea0f498cc77203c3d5116b97adba26998a9d76b37a0b9b9210217b3538f44fa"
     PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
-    PKG_PATCH_DIRS="raspberrypi rtlwifi/6.13 rtlwifi/after-6.13"
+    PKG_PATCH_DIRS="raspberrypi rtlwifi/6.13 rtlwifi/6.14 rtlwifi/after-6.14"
     ;;
   L4T)
     if [ -z "${L4T_KERNEL_VERSION}" ]; then
@@ -64,7 +64,7 @@ case "${LINUX}" in
     PKG_VERSION="6.12.13"
     PKG_SHA256="f3ebdeea9e555b4cface44e29670056f4024541e6bd222fbcf776c818974fbba"
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
-    PKG_PATCH_DIRS="default rtlwifi/6.13 rtlwifi/after-6.13"
+    PKG_PATCH_DIRS="default rtlwifi/6.13 rtlwifi/6.14 rtlwifi/after-6.14"
     ;;
 esac
 
