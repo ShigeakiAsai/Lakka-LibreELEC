@@ -78,6 +78,9 @@ pre_make_target() {
     RK3288)
       PKG_MAKE_OPTS_TARGET+=" platform=RK3288"
       ;;
+    RK356X)
+      PKG_MAKE_OPTS_TARGET+=" platform=RK356X FORCE_GLES3=1"
+      ;;
     Generic)
       PKG_MAKE_OPTS_TARGET+=" HAVE_PARALLEL_RDP=1 HAVE_PARALLEL_RSP=1 HAVE_THR_AL=1 LLE=1"
       ;;

@@ -1,0 +1,24 @@
+diff -uNr a/Makefile b/Makefile
+--- a/Makefile	2025-02-04 15:06:48.000000000 +0900
++++ b/Makefile	2025-02-06 09:45:44.234439238 +0900
+@@ -366,6 +366,20 @@
+    COREFLAGS += -DOS_LINUX
+    ASFLAGS = -f elf64 -d ELF_TYPE
+ 
++# Rockchip RK356X - 64-bit userspace
++else ifneq (,$(findstring RK356X,$(platform)))
++   TARGET := $(TARGET_NAME)_libretro.so
++   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined -ldl
++   CPUFLAGS += -mcpu=cortex-a55 -mtune=cortex-a55
++   GLES3 = 1
++   MESA = 1
++   COREFLAGS += -DEGL_NO_X11
++   GL_LIB := -lGLESv2
++   HAVE_NEON = 0
++   WITH_DYNAREC=aarch64
++   COREFLAGS += -DOS_LINUX
++   ASFLAGS = -f elf -d ELF_TYPE
++
+ # Rockchip RK3288 e.g. Asus Tinker Board / RK3328 e.g. PINE64 Rock64 / RK3399 e.g. PINE64 RockPro64 - 32-bit userspace
+ else ifneq (,$(findstring RK,$(platform)))
+    TARGET := $(TARGET_NAME)_libretro.so
