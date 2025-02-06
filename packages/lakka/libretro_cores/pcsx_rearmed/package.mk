@@ -31,7 +31,7 @@ if [ "${ARCH}" = "arm" ]; then
   if [ "${DEVICE}" = "OdroidGoAdvance" ]; then
     sed -e "s|armv8-a|armv8-a+crc|" \
         -i ../Makefile.libretro
-    PKG_MAKE_OPTS_TARGET+=" platfrom=classic_armv8_a35"
+    PKG_MAKE_OPTS_TARGET+=" platform=classic_armv8_a35"
   else
     PKG_MAKE_OPTS_TARGET+=" platform=unix"
   fi
