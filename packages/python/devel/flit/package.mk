@@ -2,8 +2,8 @@
 # Copyright (C) 2024-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="flit"
-PKG_VERSION="3.9.0"
-PKG_SHA256="72ad266176c4a3fcfab5f2930d76896059851240570ce9a98733b658cb786eba"
+PKG_VERSION="3.10.1"
+PKG_SHA256="66e5b87874a0d6e39691f0e22f09306736b633548670ad3c09ec9db03c5662f7"
 PKG_LICENSE="BSD"
 PKG_SITE="https://pypi.org/project/flit-core/"
 PKG_URL="https://files.pythonhosted.org/packages/source/f/flit_core/flit_core-${PKG_VERSION}.tar.gz"
