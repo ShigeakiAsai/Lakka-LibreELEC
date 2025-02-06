@@ -29,6 +29,8 @@ if [ "${ARCH}" = "aarch64" ]; then
     PKG_MAKE_OPTS_TARGET+=" platform=rpi4"
   elif [ "${PROJECT}" = "RPi" -a "${DEVICE}" = "RPi5" ]; then
     PKG_MAKE_OPTS_TARGET+=" platform=rpi5"
+  elif [ "${PROJECT}" = "Rockchip" -a "${DEVICE}" = "RK356X" ]; then
+    PKG_MAKE_OPTS_TARGET+=" platform=rk356x"
   else
     PKG_MAKE_OPTS_TARGET+=" platform=arm64"
   fi

@@ -1,0 +1,24 @@
+diff -uNr a/yabause/src/libretro/Makefile b/yabause/src/libretro/Makefile
+--- a/yabause/src/libretro/Makefile	2025-02-04 15:06:54.000000000 +0900
++++ b/yabause/src/libretro/Makefile	2025-02-05 08:03:13.487060018 +0900
+@@ -127,6 +127,20 @@
+ 	DYNAREC_DEVMIYAX = 1
+ 	FLAGS += -march=armv8-a+crc -mtune=cortex-a73.cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mvectorize-with-neon-quad
+ 
++# Rockchip RK356X - 64-bit userspace
++else ifneq (,$(findstring rk356x,$(platform)))
++	override platform += unix
++	TARGET := $(TARGET_NAME)_libretro.so
++	fpic := -fPIC
++	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
++	LDFLAGS += -lpthread
++	ARCH_IS_LINUX = 1
++	HAVE_SSE = 0
++	FORCE_GLES = 1
++	USE_AARCH64_DRC = 1
++	DYNAREC_DEVMIYAX = 1
++	FLAGS += -DAARCH64 -march=armv8-a+crc+fp+simd -mcpu=cortex-a55 -mtune=cortex-a55
++
+ # Rockchip RK3288 / RK3399 - 32-bit userspace
+ else ifneq (,$(findstring RK,$(platform)))
+ 	override platform += unix
