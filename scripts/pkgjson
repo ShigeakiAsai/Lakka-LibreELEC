@@ -10,12 +10,14 @@
 json_worker() {
   local packages="$@"
   local pkgpath hierarchy exited
+  local clear_pkg_depends
 
   exit() { exited=1; }
 
   for pkgpath in ${packages}; do
     pkgpath="${pkgpath%%@*}"
 
+    clear_pkg_depends=0
     exited=0
     if ! source_package "${pkgpath}/package.mk" &>/dev/null; then
       unset -f exit
@@ -23,6 +25,20 @@ json_worker() {
     fi
 
     [ ${exited} -eq 1 ] && continue
+
+    # check if PKG_ARCH does not exclude the package from the plan
+    if [ -n "${PKG_ARCH}" ]; then
+      listcontains "${PKG_ARCH}" "!${TARGET_ARCH}" && clear_pkg_depends=1 || \
+      listcontains "${PKG_ARCH}" "${TARGET_ARCH}" || listcontains "${PKG_ARCH}" "any" || clear_pkg_depends=1
+    fi
+
+    if [ ${clear_pkg_depends} -eq 1 ]; then
+      PKG_DEPENDS_BOOTSTRAP=""
+      PKG_DEPENDS_INIT=""
+      PKG_DEPENDS_HOST=""
+      PKG_DEPENDS_TARGET=""
+      PKG_DEPENDS_UNPACK=""
+    fi
 
     [[ ${pkgpath} =~ ^${ROOT}/${PACKAGES}/ ]] && hierarchy="global" || hierarchy="local"
 
