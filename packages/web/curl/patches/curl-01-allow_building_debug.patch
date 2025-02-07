@@ -1,0 +1,16 @@
+
+When building debug image avoid:
+
+*/build/curl-8.7.1/lib/easy_lock.h:72:20: error: inlining failed in call to 'curl_simple_lock_lock': function not considered for inlining [-Werror=inline]
+
+
+--- a/CMake/PickyWarnings.cmake.org	2024-03-25 09:48:59.000000000 +0100
++++ b/CMake/PickyWarnings.cmake	2024-05-03 18:27:04.033468758 +0200
+@@ -60,7 +60,6 @@ if(PICKY_COMPILER)
+     list(APPEND WPICKY_ENABLE
+       -Wbad-function-cast                  # clang  2.7  gcc  2.95
+       -Wconversion                         # clang  2.7  gcc  2.95
+-      -Winline                             # clang  1.0  gcc  1.0
+       -Wmissing-declarations               # clang  1.0  gcc  2.7
+       -Wmissing-prototypes                 # clang  1.0  gcc  1.0
+       -Wnested-externs                     # clang  1.0  gcc  2.7
