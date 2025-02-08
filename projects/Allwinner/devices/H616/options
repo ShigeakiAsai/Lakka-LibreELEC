@@ -22,7 +22,7 @@
     KERNEL_TARGET="Image"
 
   # U-Boot firmware package(s) to use
-    UBOOT_FIRMWARE="atf crust"
+    UBOOT_FIRMWARE="atf"
 
   # ATF platform
     ATF_PLATFORM="sun50i_h616"
