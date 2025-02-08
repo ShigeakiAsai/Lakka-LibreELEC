@@ -336,6 +336,10 @@ if [ "${1}" = "release" -o "${1}" = "mkimage" -o "${1}" = "noobs" ]; then
   # Remove any previously created release images
   rm -rf ${TARGET_IMG}/${IMAGE_NAME}.img.gz
 
+  # Disable IPv6 in Lakka, as samba is bound only to IPv6 address
+  # connman notifies ready before IPv4 address is obtained
+  [ "${DISTRO}" = "Lakka" ] && EXTRA_CMDLINE+=" ipv6.disable=1" || true
+
   if [ -n "${BOOTLOADER}" ]; then
 
     BOOTLOADER_DIR="$(get_pkg_directory "${BOOTLOADER}")"
