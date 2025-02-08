@@ -1,6 +1,6 @@
 PKG_NAME="xpadneo"
-PKG_VERSION="0.9.5"
-PKG_SHA256="7518f75d7d30ae1c10ff110e7b066907a7e2c4586a670441d7c4bac9fc7afd52"
+PKG_VERSION="0.9.7"
+PKG_SHA256="0af52aa1e800a49ae6623ef545d9ed541f3a1fcfeac586bf27caf8185524e7c3"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/atar-axis/xpadneo"
 PKG_URL="${PKG_SITE}/archive/refs/tags/v${PKG_VERSION}.tar.gz"
