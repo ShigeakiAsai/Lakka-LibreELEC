@@ -34,7 +34,7 @@ ADDITIONAL_PACKAGES+=" switch-bsp"
 
 #Remove since we include driver in kernel now. Module Config/udev rules
 #Included in switch-bsp package, to match version in kernel(0.9.5).
-ADDITIONAL_PACKAGES="${ADDITIONAL_PACKAGES//xpadneo/}"
+ADDITIONAL_DRIVERS="${ADDITIONAL_DRIVERS//xpadneo/}"
 
 if [ ${PULSEAUDIO_SUPPORT} = "yes" ]; then
   ADDITIONAL_PACKAGES+="  pulseaudio-configs"
