@@ -85,6 +85,7 @@ LIBRETRO_CORES="\
                 mame2010 \
                 mame2015 \
                 melonds \
+                melondsds \
                 meowpc98 \
                 mesen \
                 mesen_s \
@@ -187,6 +188,7 @@ if [ "${PROJECT}" = "RPi" ]; then
                              mame2010 \
                              mame2015 \
                              melonds \
+                             melondsds \
                              meowpc98 \
                              mesen \
                              mesen_s \
