@@ -37,12 +37,6 @@
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap)
     KODIPLAYER_DRIVER="$OPENGLES"
 
-  # Displayserver to use (wl / no)
-    DISPLAYSERVER="wl"
-
-  # Windowmanager to use (weston / no)
-    WINDOWMANAGER="sway"
-
   # set the addon project
     ADDON_PROJECT="ARMv8"
 
