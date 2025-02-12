@@ -54,6 +54,12 @@ case "${LINUX}" in
    PKG_PATCH_DIRS="ayn-odin"
    PKG_GIT_CLONE_BRANCH="sdm845-5.19.16"
    ;;
+  allwinner-h616)
+    PKG_VERSION="6.6.56"
+    PKG_SHA256="f74812f78e88992c416434cb107639e13a551dbaff36bb90d6346ab16ab71a95"
+    PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+    PKG_PATCH_DIRS="h616"
+    ;;
   *)
     PKG_VERSION="6.12.10"
     PKG_SHA256="4a516e5ed748537a73cb42ec47fbbeb6df8b1298e8892c29c0e91de79095b297"

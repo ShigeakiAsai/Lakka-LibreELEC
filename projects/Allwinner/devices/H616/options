@@ -21,6 +21,10 @@
   # Kernel target
     KERNEL_TARGET="Image"
 
+  # Kernel to use. values can be:
+  # default:  default mainline kernel
+    LINUX="allwinner-h616"
+
   # U-Boot firmware package(s) to use
     UBOOT_FIRMWARE="atf"
 
