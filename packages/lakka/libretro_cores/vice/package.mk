@@ -8,7 +8,7 @@ PKG_LONGDESC="Versatile Commodore 8-bit Emulator version"
 PKG_TOOLCHAIN="manual"
 
 make_target() {
-  for LRCORE in x64 x128 xpet xplus4 xvic ; do
+  for LRCORE in x64 x128 xpet xplus4 xvic x64dtv x64sc xcbm2 xscpu64 ; do
     make EMUTYPE=${LRCORE}
     make objectclean
   done
