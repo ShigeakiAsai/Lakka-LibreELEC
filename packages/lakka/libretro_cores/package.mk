@@ -9,6 +9,8 @@ LIBRETRO_CORES="\
                 2048 \
                 81 \
                 a5200 \
+                anarch \
+                ardens
                 atari800 \
                 beetle_bsnes \
                 beetle_lynx \
@@ -46,6 +48,7 @@ LIBRETRO_CORES="\
                 dosbox_core \
                 dosbox_pure \
                 dosbox_svn \
+                doukutsu_rs \
                 easyrpg \
                 emux_sms\
                 ecwolf \
@@ -78,7 +81,9 @@ LIBRETRO_CORES="\
                 kronos \
                 lowres_nx \
                 lr_moonlight \
+                lrps2 \
                 lutro \
+                m2000 \
                 mame \
                 mame2000 \
                 mame2003_plus \
@@ -97,14 +102,15 @@ LIBRETRO_CORES="\
                 mupen64plus_next \
                 neocd \
                 nestopia \
+                noods \
                 np2kai \
                 numero \
                 nxengine \
                 o2em \
                 openlara \
                 opera \
+                panda3ds \
                 parallel_n64 \
-                pcsx2 \
                 pcsx_rearmed \
                 picodrive \
                 play \
@@ -117,6 +123,7 @@ LIBRETRO_CORES="\
                 puae \
                 puae2021 \
                 px68k \
+                pzretro \
                 quasi88 \
                 quicknes \
                 race \
@@ -135,6 +142,7 @@ LIBRETRO_CORES="\
                 stella2014 \
                 superbroswar \
                 swanstation \
+                tamalibretro \
                 tgbdual \
                 theodore \
                 thepowdertoy \
@@ -155,6 +163,11 @@ LIBRETRO_CORES="\
                 yabasanshiro \
                 yabause \
                "
+
+# override above with custom list via env CUSTOM_LIBRETRO_CORES="..." passed to make
+if [ -n "${CUSTOM_LIBRETRO_CORES}" ]; then
+  LIBRETRO_CORES="${CUSTOM_LIBRETRO_CORES}"
+fi
 
 # disable cores based on PROJECT/DEVICE
 if [ "${PROJECT}" = "RPi" ]; then
@@ -195,6 +208,7 @@ if [ "${PROJECT}" = "RPi" ]; then
                              mupen64plus_next \
                              openlara \
                              opera \
+                             panda3ds \
                              parallel_n64 \
                              play \
                              ppsspp \
@@ -217,6 +231,9 @@ if [ "${PROJECT}" = "RPi" ]; then
   elif [ "${DEVICE}" = "RPiZero2-GPiCase" ]; then
     EXCLUDE_LIBRETRO_CORES+=" kronos openlara play ppsspp vircon32 swanstation yabasanshiro"
   fi
+  if [ "${DEVICE}" != "${RPi5}" ]; then
+    EXCLUDE_LIBRETRO_CORES+=" panda3ds"
+  fi
 elif [ "${PROJECT}" = "Generic" -a "${ARCH}" = "i386" ]; then
   EXCLUDE_LIBRETRO_CORES+=" fake_08 kronos openlara"
 elif [ "${PROJECT}" = "Ayn" -a "${DEVICE}" = "Odin" ]; then
@@ -226,6 +243,10 @@ elif [ "${PROJECT}" = "L4T" -a "${DEVICE}" = "Switch" ]; then
 # Stella Doesnt Build.
 # Holani Doesnt Build.
   EXCLUDE_LIBRETRO_CORES+=" stella holani lr_moonlight"
+elif [ "${PROJECT}" = "NXP" -a "${DEVICE}" = "iMX8" ];
+  EXCLUDE_LIBRETRO_CORES+=" panda3ds"
+elif [ "${PROJECT}" = "Amlogic" -a "${DEVICE}" = "AMLGX" ]; then
+  EXCLUDE_LIBRETRO_CORES+=" panda3ds"
 fi
 
 # disable cores that are only for specific targets
@@ -246,15 +267,11 @@ if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
 fi
 
 # exclude some cores at build time via env EXCLUDE_LIBRETRO_CORES="..." passed to make
+# and cores added to the env above
 if [ -n "${EXCLUDE_LIBRETRO_CORES}" ]; then
   for core in ${EXCLUDE_LIBRETRO_CORES} ; do
     LIBRETRO_CORES="${LIBRETRO_CORES// ${core} /}"
   done
-fi
-
-# override above with custom list via env CUSTOM_LIBRETRO_CORES="..." passed to make
-if [ -n "${CUSTOM_LIBRETRO_CORES}" ]; then
-  LIBRETRO_CORES="${CUSTOM_LIBRETRO_CORES}"
 fi
 
 # temporary disabled due to build error with gcc14  for all targets except Switch (uses older gcc)
