@@ -243,7 +243,7 @@ elif [ "${PROJECT}" = "L4T" -a "${DEVICE}" = "Switch" ]; then
 # Stella Doesnt Build.
 # Holani Doesnt Build.
   EXCLUDE_LIBRETRO_CORES+=" stella holani lr_moonlight"
-elif [ "${PROJECT}" = "NXP" -a "${DEVICE}" = "iMX8" ];
+elif [ "${PROJECT}" = "NXP" -a "${DEVICE}" = "iMX8" ]; then
   EXCLUDE_LIBRETRO_CORES+=" panda3ds"
 elif [ "${PROJECT}" = "Amlogic" -a "${DEVICE}" = "AMLGX" ]; then
   EXCLUDE_LIBRETRO_CORES+=" panda3ds"
