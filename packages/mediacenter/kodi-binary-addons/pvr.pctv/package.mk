@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="pvr.pctv"
-PKG_VERSION="22.2.0-Piers"
-PKG_SHA256="3d84929f6fedfb2fffe55034a042f4d9db27e76e0e58b9a078a15cae8a02a50d"
+PKG_VERSION="22.2.1-Piers"
+PKG_SHA256="15cc7b75ff5d1f36693d86bcd47a61d58c1fd171c6ac96e10717d3741133a4c1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"

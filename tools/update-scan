@@ -100,7 +100,7 @@ check_for_update() {
 
     # compare upstream with local version
     if [ "${PKG_VERSION}" != "${upstream_latest_commit##*/}" ]; then
-      # get upstream tag informations
+      # get upstream tag information
       if [ "${upstream_latest_tag}" != "null" ]; then
         tag=" | TAG: ${upstream_latest_tag} (${upstream_latest_tag_date%T*})"
       else

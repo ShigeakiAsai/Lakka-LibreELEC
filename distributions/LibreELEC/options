@@ -147,7 +147,7 @@
 # build with MySQL support (mariadb / none)
   KODI_MYSQL_SUPPORT="mariadb"
 
-# build xbmc with optical drive support (yes / no)
+# build Kodi with optical drive support (yes / no)
   KODI_OPTICAL_SUPPORT="yes"
 
 # build with AirPlay support (stream videos from iDevices to KODI) (yes / no)
@@ -224,7 +224,7 @@
 # mediacenter also automount internally drives at boottime via udev (yes / no)
   UDEVIL="yes"
 
-# Support for partitioning and formating disks in initramfs (yes / no)
+# Support for partitioning and formatting disks in initramfs (yes / no)
 # This adds support for parted and mkfs.ext3/4 to initramfs for OEM usage
   INITRAMFS_PARTED_SUPPORT="no"
 

@@ -2,8 +2,8 @@
 # Copyright (C) 2021-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="exfatprogs"
-PKG_VERSION="1.2.6"
-PKG_SHA256="89d05b7a9537f2413079b724ec8d02d7a2e291c29c52e7256303e9456200fb0f"
+PKG_VERSION="1.2.7"
+PKG_SHA256="46ded87fceb550c4dd629fac22d1dc04a091660ed9890055802ad66f3d7edbe7"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/exfatprogs/exfatprogs"
 PKG_URL="https://github.com/exfatprogs/exfatprogs/releases/download/${PKG_VERSION}/${PKG_NAME}-${PKG_VERSION}.tar.xz"

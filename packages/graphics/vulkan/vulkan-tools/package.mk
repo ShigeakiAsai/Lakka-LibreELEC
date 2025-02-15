@@ -3,8 +3,8 @@
 # Copyright (C) 2021-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="vulkan-tools"
-PKG_VERSION="1.4.306"
-PKG_SHA256="8e3c3df74fa8e6408cbb772d20012c3fdf0bf1b3e363e18e909b6c99d5b489a2"
+PKG_VERSION="1.4.307"
+PKG_SHA256="4f0baeaf078c2a9d298b87d6d6ef85c3faf08f0f95b8a7d7d7ff243c6de2707c"
 PKG_LICENSE="Apache-2.0"
 PKG_SITE="https://github.com/KhronosGroup/Vulkan-Tools"
 PKG_URL="https://github.com/KhronosGroup/Vulkan-tools/archive/v${PKG_VERSION}.tar.gz"
@@ -16,7 +16,7 @@ configure_package() {
   if [ "${DISPLAYSERVER}" = "x11" ]; then
     PKG_DEPENDS_TARGET+=" libxcb libX11"
   elif [ "${DISPLAYSERVER}" = "wl" ]; then
-    PKG_DEPENDS_TARGET+=" wayland"
+    PKG_DEPENDS_TARGET+=" wayland wayland-protocols"
   fi
 }
 
@@ -40,7 +40,7 @@ pre_configure_target() {
                              -DCOMPILE_CUBE_SHADERS=ON \
                              -DBUILD_WSI_XCB_SUPPORT=OFF \
                              -DBUILD_WSI_XLIB_SUPPORT=OFF \
-                             -DBUILD_WSI_WAYLAND_SUPPORT=ON
+                             -DBUILD_WSI_WAYLAND_SUPPORT=ON \
                              -DCUBE_WSI_SELECTION=WAYLAND"
   else
     PKG_CMAKE_OPTS_TARGET+=" -DBUILD_CUBE=ON \
@@ -59,6 +59,6 @@ pre_make_target() {
 }
 
 post_makeinstall_target() {
-  # Clean up - two graphic test tools are superflous
+  # Clean up - two graphic test tools are superfluous
   safe_remove ${INSTALL}/usr/bin/vkcubepp
 }

@@ -1,0 +1,293 @@
+From 0a8ce55e9ec5bd805e868f7f342e86ec981a3441 Mon Sep 17 00:00:00 2001
+From: phunkyfish <phunkyfish@gmail.com>
+Date: Thu, 23 Jan 2025 09:01:35 +0000
+Subject: [PATCH 1/5] Add configure~ to .gitignore
+
+---
+ .gitignore | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/.gitignore b/.gitignore
+index 2941b0c..f463d0d 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -21,6 +21,7 @@ autom4te.cache
+ compile
+ config.*
+ configure
++configure~
+ depcomp
+ install-sh
+ missing
+
+From d073c92190e14cbe79d6d2c6aae39a349b9c9a9f Mon Sep 17 00:00:00 2001
+From: phunkyfish <phunkyfish@gmail.com>
+Date: Wed, 22 Jan 2025 22:35:09 +0000
+Subject: [PATCH 2/5] Enable building with ffmpeg 6 and 7
+
+---
+ mpeg2dec.c | 32 +++++++++++++++++++++++++++++++-
+ 1 file changed, 31 insertions(+), 1 deletion(-)
+
+diff --git a/mpeg2dec.c b/mpeg2dec.c
+index 3caa63c..4b13416 100755
+--- a/mpeg2dec.c
++++ b/mpeg2dec.c
+@@ -575,8 +575,14 @@ void sound_to_frames(VideoState *is, short **b, int s, int c, int format)
+                     for (l=0;l < c;l++ ) volume += *((fb[l])++) * 64000;
+                 else
+                     for (l=0;l < c;l++ ) volume += *((fb[0])++) * 64000;
++#if LIBAVCODEC_BUILD >= AV_VERSION_INT(59, 37, 100) && \
++    LIBAVUTIL_BUILD >= AV_VERSION_INT(57, 28, 100)
++                *audio_buffer_ptr++ = volume / is->audio_st->codecpar->ch_layout.nb_channels;
++                avg_volume += abs(volume / is->audio_st->codecpar->ch_layout.nb_channels);
++#else
+                 *audio_buffer_ptr++ = volume / is->audio_st->codecpar->channels;
+                 avg_volume += abs(volume / is->audio_st->codecpar->channels);
++#endif
+             }
+         }
+         else
+@@ -592,8 +598,14 @@ void sound_to_frames(VideoState *is, short **b, int s, int c, int format)
+                     for (l=0;l < c;l++ ) volume += *((sb[l])++);
+                 else
+                     for (l=0;l < c;l++ ) volume += *((sb[0])++);
++#if LIBAVCODEC_BUILD >= AV_VERSION_INT(59, 37, 100) && \
++    LIBAVUTIL_BUILD >= AV_VERSION_INT(57, 28, 100)
++                *audio_buffer_ptr++ = volume / is->audio_st->codecpar->ch_layout.nb_channels;
++                avg_volume += abs(volume / is->audio_st->codecpar->ch_layout.nb_channels);
++#else
+                 *audio_buffer_ptr++ = volume / is->audio_st->codecpar->channels;
+                 avg_volume += abs(volume / is->audio_st->codecpar->channels);
++#endif
+             }
+         }
+     }
+@@ -769,7 +781,19 @@ void audio_packet_process(VideoState *is, AVPacket *pkt)
+         }
+ 
+ 
+-
++#if LIBAVCODEC_BUILD >= AV_VERSION_INT(59, 37, 100) && \
++    LIBAVUTIL_BUILD >= AV_VERSION_INT(57, 28, 100)
++        data_size = av_samples_get_buffer_size(NULL, is->frame->ch_layout.nb_channels,
++                                               is->frame->nb_samples,
++                                               is->frame->format, 1);
++        if (data_size > 0)
++        {
++            sound_to_frames(is, (short **)is->frame->data, is->frame->nb_samples ,is->frame->ch_layout.nb_channels, is->frame->format);
++        }
++        is->audio_clock += (double)data_size /
++                           (is->frame->ch_layout.nb_channels * is->frame->sample_rate * av_get_bytes_per_sample(is->frame->format));
++        av_frame_unref(is->frame);
++#else
+         data_size = av_samples_get_buffer_size(NULL, is->frame->channels,
+                                                is->frame->nb_samples,
+                                                is->frame->format, 1);
+@@ -780,6 +804,7 @@ void audio_packet_process(VideoState *is, AVPacket *pkt)
+         is->audio_clock += (double)data_size /
+                            (is->frame->channels * is->frame->sample_rate * av_get_bytes_per_sample(is->frame->format));
+         av_frame_unref(is->frame);
++#endif
+     }
+ 
+     if (ALIGN_AC3_PACKETS && is->audio_st->codecpar->codec_id == AV_CODEC_ID_AC3) {
+@@ -1033,6 +1058,10 @@ void DoSeekRequest(VideoState *is)
+     if(ret < 0)
+     {
+         char *error_text;
++#if LIBAVCODEC_BUILD >= AV_VERSION_INT(59, 37, 100) && \
++    LIBAVUTIL_BUILD >= AV_VERSION_INT(57, 28, 100)
++        error_text = "Generic";
++#else
+         if (is->pFormatCtx->iformat->read_seek)
+         {
+             error_text = "Format specific";
+@@ -1045,6 +1074,7 @@ void DoSeekRequest(VideoState *is)
+         {
+             error_text = "Generic";
+         }
++#endif
+ 
+         fprintf(stderr, "%s error while seeking. target=%6.3f, \"%s\"\n", error_text,is->seek_pts, is->pFormatCtx->url);
+ 
+
+From 22a3aeb6eb8d1d4fdadc4d19f61519282a32e643 Mon Sep 17 00:00:00 2001
+From: phunkyfish <phunkyfish@gmail.com>
+Date: Thu, 23 Jan 2025 16:28:44 +0000
+Subject: [PATCH 3/5] Adding missing pthread header, needed for windows builds
+
+---
+ comskip.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/comskip.c b/comskip.c
+index 2babdb8..373bd53 100644
+--- a/comskip.c
++++ b/comskip.c
+@@ -16,6 +16,7 @@
+ #include "platform.h"
+ #include "vo.h"
+ #include <argtable2.h>
++#include <pthread.h>
+ 
+ 
+ #include <libavformat/avformat.h>
+
+From 102b2a4e192f7d42681fc15c523b7863af7688a1 Mon Sep 17 00:00:00 2001
+From: phunkyfish <phunkyfish@gmail.com>
+Date: Thu, 23 Jan 2025 16:30:10 +0000
+Subject: [PATCH 4/5] Fixes needed for windows build with Msys2
+
+---
+ platform.h     | 2 +-
+ video_out_dx.c | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/platform.h b/platform.h
+index c37a872..179e89f 100644
+--- a/platform.h
++++ b/platform.h
+@@ -74,7 +74,7 @@ typedef unsigned char uint8_t;
+ typedef unsigned short uint16_t;
+ typedef unsigned int uint32_t;
+ typedef unsigned __int64 uint64_t;
+-#ifndef HARDWARE_DECODE
++#if !defined(HARDWARE_DECODE) && !defined(__MINGW64__)
+ #include <compat/w32pthreads.h>  // Is already defined in ffmpeg
+ #endif
+ 
+diff --git a/video_out_dx.c b/video_out_dx.c
+index 887df9b..ea17ab0 100644
+--- a/video_out_dx.c
++++ b/video_out_dx.c
+@@ -541,7 +541,7 @@ static int create_window (dx_instance_t * instance)
+      /* store a directx_instance pointer into the window local storage
+       * (for later use in event_handler).
+       * We need to use SetWindowLongPtr when it is available in mingw */
+-     SetWindowLongPtr (instance->window, GWLP_USERDATA, instance);
++     SetWindowLongPtr (instance->window, GWLP_USERDATA, (LONG_PTR) instance);
+      SetWindowPos(instance->window, HWND_TOP, 100, 0, 0, 0, SWP_SHOWWINDOW|SWP_NOSIZE);
+ 
+      ShowWindow (instance->window, SW_SHOW);
+@@ -928,13 +928,13 @@ void vo_init(int width, int height, char *title)
+      memset(buf2,128,width*height);
+ 
+ #ifdef RGB
+-     instance = vo_dxrgb_open();
+-     hWind = instance;
++     instance = (dx_instance_t *) vo_dxrgb_open();
++     hWind = (HWND) instance;
+      strcpy(instance->title, title);
+      dxrgb_setup( instance, width, height, width, height, &result);
+ //	dx_setup_fbuf ( instance, buffer, &result);
+ #else
+-     instance = vo_dx_open();
++     instance = (HWND) vo_dx_open();
+      strcpy(instance->title, title);
+      dx_setup( instance, width, height, width, height, &result);
+ #endif
+
+From cd5fce346cebc554d7e262a58c8961a6968243e8 Mon Sep 17 00:00:00 2001
+From: phunkyfish <phunkyfish@gmail.com>
+Date: Thu, 23 Jan 2025 08:44:06 +0000
+Subject: [PATCH 5/5] Github workflows for Linux, Mac and Windows
+
+---
+ .github/workflows/build.yaml | 87 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 87 insertions(+)
+ create mode 100644 .github/workflows/build.yaml
+
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+new file mode 100644
+index 0000000..522b19c
+--- /dev/null
++++ b/.github/workflows/build.yaml
+@@ -0,0 +1,87 @@
++name: Build
++on: [push, pull_request]
++
++jobs:
++  build:
++    runs-on: ${{ matrix.os }}
++    strategy:
++      fail-fast: false
++      matrix:
++        include:
++        - os: ubuntu-latest
++          platform: linux
++        - os: macos-latest
++          platform: macos
++          ffmpeg_version: ffmpeg5
++        - os: macos-latest
++          platform: macos
++          ffmpeg_version: ffmpeg6
++        - os: macos-latest
++          platform: macos
++          ffmpeg_version: ffmpeg7
++        - os: windows-latest
++          platform: windows-mingw
++    steps:
++    - name: Checkout
++      uses: actions/checkout@v4
++
++    - name: Setup
++      shell: bash
++      run: |
++        setupScript='ci/${{ matrix.platform }}/setup.sh'
++        [ ! -f "$setupScript" ] || "$setupScript"
++
++    - name: Configure Apt packages
++      if: ${{ matrix.platform == 'linux' }}
++      run: |
++        sudo apt-get install -y autoconf libtool git build-essential libargtable2-dev libavformat-dev libswscale-dev libsdl1.2-dev
++
++    - name: Configure Brew packages ffmpeg7
++      if: ${{ matrix.ffmpeg_version == 'ffmpeg7' }}
++      run: |
++        brew install autoconf automake libtool pkgconfig argtable ffmpeg sdl
++
++    - name: Configure Brew packages ffmpeg6
++      if: ${{ matrix.ffmpeg_version == 'ffmpeg6' }}
++      run: |
++        brew install autoconf automake libtool pkgconfig argtable ffmpeg@6 sdl
++        brew link ffmpeg@6
++
++    - name: Configure Brew packages ffmpeg5
++      if: ${{ matrix.ffmpeg_version == 'ffmpeg5' }}
++      run: |
++        brew install autoconf automake libtool pkgconfig argtable ffmpeg@5 sdl
++        brew link ffmpeg@5
++
++    - name: Setup msys2
++      uses: msys2/setup-msys2@v2
++      if: ${{ matrix.platform == 'windows-mingw' }}
++      with:
++        update: true
++        install: >-
++          mingw-w64-x86_64-gcc
++          mingw-w64-x86_64-make
++          mingw-w64-x86_64-autotools
++          mingw-w64-x86_64-libtool
++          mingw-w64-x86_64-pkg-config
++          mingw-w64-x86_64-yasm
++          mingw-w64-x86_64-argtable
++          mingw-w64-x86_64-ffmpeg
++    - name: Put MSYS2_MinGW64 on PATH
++      if: ${{ matrix.platform == 'windows-mingw' }}
++      run: |
++        echo "${{ runner.temp }}/msys64/mingw64/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
++
++    - name: Configure and build Posix
++      if: ${{ matrix.platform != 'windows-mingw' }}
++      run: |
++        ./autogen.sh
++        ./configure
++        make
++
++    - name: Configure and build Windows
++      if: ${{ matrix.platform == 'windows-mingw' }}
++      run: |
++        msys2 -c './autogen.sh'
++        msys2 -c './configure'
++        msys2 -c 'make'

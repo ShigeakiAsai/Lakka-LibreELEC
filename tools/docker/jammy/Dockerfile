@@ -22,11 +22,11 @@ RUN apt-get install -y \
     curl bash bc gcc-12 sed patch patchutils tar bzip2 gzip xz-utils zstd perl gawk gperf zip \
       unzip diffutils lzop make file g++-12 xfonts-utils xsltproc default-jre-headless python3 \
       libc6-dev libncurses5-dev libjson-perl libxml-parser-perl libparse-yapp-perl rdfind \
-      golang-1.21-go git openssh-client rsync \
+      golang-1.22-go git openssh-client rsync \
     --no-install-recommends \
-    && ln -s /usr/lib/go-1.21 /usr/lib/go \
-    && ln -s /usr/lib/go-1.21/bin/go /usr/bin/go \
-    && ln -s /usr/lib/go-1.21/bin/gofmt /usr/bin/gofmt
+    && ln -s /usr/lib/go-1.22 /usr/lib/go \
+    && ln -s /usr/lib/go-1.22/bin/go /usr/bin/go \
+    && ln -s /usr/lib/go-1.22/bin/gofmt /usr/bin/gofmt
 
 RUN if [ "$(uname -m)" = "aarch64" ]; then \
   apt-get install -y libc6-amd64-cross qemu-user-binfmt --no-install-recommends; \

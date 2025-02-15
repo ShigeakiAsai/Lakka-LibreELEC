@@ -201,7 +201,7 @@ index 581233d6eaf2..a5771b5d9b67 100644
  static int sun8i_hdmi_phy_probe(struct platform_device *pdev)
  {
  	struct device *dev = &pdev->dev;
-@@ -681,6 +756,14 @@ static int sun8i_hdmi_phy_probe(struct platform_device *pdev)
+@@ -681,6 +756,15 @@ static int sun8i_hdmi_phy_probe(struct platform_device *pdev)
  
  	phy->variant = of_device_get_match_data(dev);
  	phy->dev = dev;
@@ -209,6 +209,7 @@ index 581233d6eaf2..a5771b5d9b67 100644
 +			   of_machine_is_compatible("friendlyarm,nanopi-m1") ||
 +			   of_machine_is_compatible("xunlong,orangepi-lite") ||
 +			   of_machine_is_compatible("xunlong,orangepi-one") ||
++			   of_machine_is_compatible("xunlong,orangepi-pc") ||
 +			   of_machine_is_compatible("xunlong,orangepi-pc-plus") ||
 +			   of_machine_is_compatible("xunlong,orangepi-plus2e");
 +	phy->bit_bang_cec = phy->disable_cec &&

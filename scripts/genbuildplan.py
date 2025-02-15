@@ -346,7 +346,7 @@ parser.add_argument("-b", "--build", nargs="+", metavar="PACKAGE", required=True
                     help="Space-separated list of build trigger packages, either for host or target. Required property - specify at least one package.")
 
 parser.add_argument("--warn-invalid", action="store_true", default=False, \
-                    help="Warn about invalid/missing dependency packages, perhaps excluded by a PKG_ARCH incompatability. Default is to abort.")
+                    help="Warn about invalid/missing dependency packages, perhaps excluded by a PKG_ARCH incompatibility. Default is to abort.")
 
 parser.add_argument("--ignore-invalid", action="store_true", default=False, \
                     help="Ignore invalid packages.")

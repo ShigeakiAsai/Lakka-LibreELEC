@@ -289,7 +289,7 @@ if [ "${#need_map[@]}" -gt 0 ]; then
   fi
 fi
 
-# check if installed packages satisifed deps
+# check if installed packages satisfied deps
 get_deps
 
 if [ "${#need_map[@]}" -gt 0 ]; then

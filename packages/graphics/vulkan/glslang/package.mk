@@ -27,7 +27,7 @@ PKG_CMAKE_OPTS_COMMON="-DBUILD_EXTERNAL=ON \
                        -Wno-dev"
 
 post_unpack() {
-  # Enables SPIR-V optimzer capability needed for ENABLE_OPT CMake build option
+  # Enables SPIR-V optimizer capability needed for ENABLE_OPT CMake build option
   mkdir -p ${PKG_BUILD}/External/spirv-tools
     tar --strip-components=1 \
       -xf "${SOURCES}/spirv-tools/spirv-tools-$(get_pkg_version spirv-tools).tar.gz" \
