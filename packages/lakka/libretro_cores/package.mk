@@ -231,7 +231,7 @@ if [ "${PROJECT}" = "RPi" ]; then
   elif [ "${DEVICE}" = "RPiZero2-GPiCase" ]; then
     EXCLUDE_LIBRETRO_CORES+=" kronos openlara play ppsspp vircon32 swanstation yabasanshiro"
   fi
-  if [ "${DEVICE}" != "${RPi5}" ]; then
+  if [ "${DEVICE}" != "RPi5" ]; then
     EXCLUDE_LIBRETRO_CORES+=" panda3ds"
   fi
 elif [ "${PROJECT}" = "Generic" -a "${ARCH}" = "i386" ]; then
