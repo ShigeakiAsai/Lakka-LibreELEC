@@ -50,11 +50,11 @@ if [ "${DISPLAYSERVER}" = "x11" ]; then
   PKG_MESON_OPTS_TARGET+=" -Dplatforms=x11 \
                            -Dglx=dri"
   if [ "${DEVICE}" = "Odin" ]; then
-     PKG_MESON_OPTS_TARGET+=" -Dglx-direct=true"
+     PKG_MESON_OPTS_TARGET+=" -Dglx-direct=enabled"
   fi
   if [ "${PROJECT}" = "L4T" ]; then
     PKG_DEPENDS_TARGET+=" libglvnd"
-    PKG_MESON_OPTS_TARGET+=" -Dglvnd=true"
+    PKG_MESON_OPTS_TARGET+=" -Dglvnd=enabled"
   fi
 elif [ "${DISPLAYSERVER}" = "wl" ]; then
   PKG_DEPENDS_TARGET+=" wayland wayland-protocols"
