@@ -16,7 +16,7 @@ configure_package() {
   fi
 }
 
-pre_configure_target(){
+pre_configure_target() {
   if [ ! "${PROJECT}" = "L4T" -a "${PROJECT}" = "Ayn" ]; then
     PKG_MESON_OPTS_TARGET="-Dgles1=false"
 
