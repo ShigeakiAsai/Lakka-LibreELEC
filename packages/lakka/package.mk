@@ -13,8 +13,12 @@ if [ "${DISABLE_LIBRETRO_CORES}" != "yes" ]; then
   PKG_DEPENDS_TARGET+=" libretro_cores"
 fi
 
+if [ "${SAMBA_SUPPORT}" = yes ]; then
+  PKG_DEPENDS_TARGET+=" samba"
+fi
+
 if [ "${AVAHI_DAEMON}" = yes ]; then
-  PKG_DEPENDS_TARGET+=" nss-mdns"
+  PKG_DEPENDS_TARGET+=" avahi nss-mdns"
 fi
 
 if [ "${PROJECT}" = "Generic" ]; then
