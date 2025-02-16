@@ -1,0 +1,23 @@
+[Unit]
+Description=Retroarch
+After=tmp-assets.mount tmp-cores.mount tmp-database.mount tmp-joypads.mount tmp-overlays.mount tmp-shaders.mount tmp-system.mount
+ConditionKernelCommandLine=!retroarch=0
+Requires=graphical.target
+
+[Service]
+EnvironmentFile=/usr/lib/retroarch/retroarch-env.conf
+EnvironmentFile=-/run/libreelec/retroarch.conf
+EnvironmentFile=-/storage/.cache/services/retroarch.conf
+ExecStartPre=-/usr/lib/retroarch/retroarch-config
+ExecStart=/usr/bin/retroarch
+# keep KillMode=process unless there is no good reason to switch to cgroup
+KillMode=process
+TimeoutStopSec=15
+Restart=always
+RestartSec=2
+StartLimitInterval=0
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=retroarch.target
