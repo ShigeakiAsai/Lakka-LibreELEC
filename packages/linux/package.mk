@@ -61,8 +61,8 @@ case "${LINUX}" in
     PKG_PATCH_DIRS="h616"
     ;;
   *)
-    PKG_VERSION="6.12.14"
-    PKG_SHA256="9423f4bfb4d875417e39cb0b017b5499fea47da56119f0cd28a201735d898f14"
+    PKG_VERSION="6.12.15"
+    PKG_SHA256="5ff5bd84ea0e22c53437302db5d394d0a92d8b8b1a88ce20d1098298e9f7630a"
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
     PKG_PATCH_DIRS="default rtlwifi/6.13 rtlwifi/6.14 rtlwifi/after-6.14"
     ;;
