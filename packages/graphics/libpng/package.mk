@@ -3,8 +3,8 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libpng"
-PKG_VERSION="1.6.46"
-PKG_SHA256="f3aa8b7003998ab92a4e9906c18d19853e999f9d3bca9bd1668f54fa81707cb1"
+PKG_VERSION="1.6.47"
+PKG_SHA256="b213cb381fbb1175327bd708a77aab708a05adde7b471bc267bd15ac99893631"
 if [ "${DISTRO}" = "Lakka" ]; then
   PKG_VERSION="1.7.0beta89"
   PKG_SHA256="1fad2475a24174f5b4ad237b8b899a2c0583237f108c2288a6e2ac5c3537147a"
