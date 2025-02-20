@@ -10,7 +10,7 @@ LIBRETRO_CORES="\
                 81 \
                 a5200 \
                 anarch \
-                ardens
+                ardens \
                 atari800 \
                 beetle_bsnes \
                 beetle_lynx \
@@ -188,9 +188,15 @@ done
 # prepend the list
 LIBRETRO_CORES="${EARLY_START_LR_CORES} ${LIBRETRO_CORES}"
 
-# override above with custom list via env CUSTOM_LIBRETRO_CORES="..." passed to make
+# override above with custom list via env CUSTOM_LIBRETRO_CORES="core1 core2"
+# passed to make
 if [ -n "${CUSTOM_LIBRETRO_CORES}" ]; then
   LIBRETRO_CORES="${CUSTOM_LIBRETRO_CORES}"
+fi
+
+# disable cores that do not build for OPENGLES
+if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
+  EXCLUDE_LIBRETRO_CORES+=" kronos"
 fi
 
 # disable cores based on PROJECT/DEVICE
@@ -200,17 +206,17 @@ elif [ "${PROJECT}" = "Amlogic" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight panda3ds vitaquake3"
 elif [ "${PROJECT}" = "Ayn" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight vitaquake3"
-elif [ "${PROJECT}" = "Generic" ];then
+elif [ "${PROJECT}" = "Generic" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight vitaquake3"
   if [ "${ARCH}" = "i386" ]; then
     EXCLUDE_LIBRETRO_CORES+=" fake_08 kronos openlara"
   fi
 elif [ "${PROJECT}" = "L4T" ]; then
-# lr_moonlight does not currently build for Switch because of newer OpenSSL package. (older package is not compatible with ffmpeg)
-# Stella Doesnt Build.
-# Holani Doesnt Build.
+  # lr_moonlight does not currently build for Switch because of newer OpenSSL package. (older package is not compatible with ffmpeg)
+  # mame requires gcc >= 10.3
+  # Stella Doesnt Build.
   EXCLUDE_LIBRETRO_CORES+=" stella holani lr_moonlight"
-elif [ "${PROJECT}" = "NXP" -a "${DEVICE}" = "iMX8" ]; then
+elif [ "${PROJECT}" = "NXP" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight vitaquake3"
   if [ "${DEVICE}" = "iMX8" ]; then
     EXCLUDE_LIBRETRO_CORES+=" panda3ds"
@@ -243,7 +249,6 @@ elif [ "${PROJECT}" = "RPi" ]; then
                              genesis_plus_gx \
                              higan_sfc \
                              higan_sfc_balanced \
-                             kronos \
                              mame \
                              mame2003_plus \
                              mame2010 \
@@ -277,7 +282,7 @@ elif [ "${PROJECT}" = "RPi" ]; then
   elif [ "${DEVICE}" = "RPi2" ]; then
     EXCLUDE_LIBRETRO_CORES+=" play"
   elif [ "${DEVICE}" = "RPiZero2-GPiCase" ]; then
-    EXCLUDE_LIBRETRO_CORES+=" kronos openlara play ppsspp vircon32 swanstation yabasanshiro"
+    EXCLUDE_LIBRETRO_CORES+=" openlara play ppsspp vircon32 swanstation yabasanshiro"
   fi
   if [ "${DEVICE}" != "RPi5" ]; then
     EXCLUDE_LIBRETRO_CORES+=" panda3ds"
@@ -286,13 +291,8 @@ elif [ "${PROJECT}" = "Samsung" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight vitaquake3"
 fi
 
-# disable cores that do not build for OPENGLES
-if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" kronos"
-fi
-
-# exclude some cores at build time via env EXCLUDE_LIBRETRO_CORES="..." passed to make
-# and cores added to the env above
+# exclude some cores at build time via env EXCLUDE_LIBRETRO_CORES="core1 core2"
+# passed to make and cores added to the env above
 if [ -n "${EXCLUDE_LIBRETRO_CORES}" ]; then
   for core in ${EXCLUDE_LIBRETRO_CORES} ; do
     LIBRETRO_CORES="${LIBRETRO_CORES// ${core} /}"
