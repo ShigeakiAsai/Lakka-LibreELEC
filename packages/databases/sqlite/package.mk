@@ -3,9 +3,9 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="sqlite"
-PKG_VERSION="3.48.0"
+PKG_VERSION="3.49.1"
 PKG_VERSION_SQLITE="${PKG_VERSION/./}00"
-PKG_SHA256="ac992f7fca3989de7ed1fe99c16363f848794c8c32a158dafd4eb927a2e02fd5"
+PKG_SHA256="106642d8ccb36c5f7323b64e4152e9b719f7c0215acf5bfeac3d5e7f97b59254"
 PKG_LICENSE="PublicDomain"
 PKG_SITE="https://www.sqlite.org/"
 PKG_URL="https://www.sqlite.org/2025/${PKG_NAME}-autoconf-${PKG_VERSION_SQLITE/./0}.tar.gz"
@@ -19,8 +19,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-static \
                            --enable-shared \
                            --disable-readline \
                            --enable-threadsafe \
-                           --enable-dynamic-extensions \
-                           --with-gnu-ld"
+                           --soname=legacy"
 
 pre_configure_target() {
   # sqlite fails to compile with fast-math link time optimization.

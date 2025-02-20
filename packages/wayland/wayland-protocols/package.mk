@@ -2,8 +2,8 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="wayland-protocols"
-PKG_VERSION="1.40"
-PKG_SHA256="b21711793247c2c42763914392dfa9fcb9e3728ca4b4aa110adb8d915fc00689"
+PKG_VERSION="1.41"
+PKG_SHA256="2786b6b1b79965e313f2c289c12075b9ed700d41844810c51afda10ee329576b"
 PKG_LICENSE="OSS"
 PKG_SITE="https://wayland.freedesktop.org/"
 PKG_URL="https://gitlab.freedesktop.org/wayland/${PKG_NAME}/-/releases/${PKG_VERSION}/downloads/${PKG_NAME}-${PKG_VERSION}.tar.xz"
