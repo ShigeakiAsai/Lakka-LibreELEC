@@ -18,7 +18,8 @@ PKG_BUILD_FLAGS="+pic +pic:host -parallel"
 PKG_CONFIGURE_OPTS_TARGET="--disable-static \
                            --enable-shared \
                            --disable-readline \
-                           --enable-threadsafe"
+                           --enable-threadsafe \
+                           --soname=legacy"
 
 pre_configure_target() {
   # sqlite fails to compile with fast-math link time optimization.
