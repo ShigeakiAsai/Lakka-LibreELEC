@@ -315,6 +315,11 @@ elif [ "${BOOTLOADER}" = "u-boot" -a -n "${UBOOT_SYSTEM}" ]; then
 
     if [ -f "${RELEASE_DIR}/3rdparty/bootloader/${DTB}" ]; then
       mcopy "${RELEASE_DIR}/3rdparty/bootloader/${DTB}" :: >"${SAVE_ERROR}" 2>&1 || show_error
+      if [ "${DISTRO}" = "Lakka" -a "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+        if [ -f "${RELEASE_DIR}/3rdparty/bootloader/${DTB//.dtb/-rev6-panel.dtb}" ]; then
+          mcopy "${RELEASE_DIR}/3rdparty/bootloader/${DTB//.dtb/-rev6-panel.dtb}" :: >"${SAVE_ERROR}" 2>&1 || show_error
+        fi
+      fi
     fi
 
     if [ -d "${RELEASE_DIR}/3rdparty/bootloader/overlays" ]; then
@@ -325,6 +330,9 @@ elif [ "${BOOTLOADER}" = "u-boot" -a -n "${UBOOT_SYSTEM}" ]; then
 
     [ "${DISTRO}" = "Lakka" -a "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H3" -a \
       "${UBOOT_SYSTEM}" = "capcom-home-arcade" ] && EXTRA_CMDLINE+=" cma=128MB"
+
+    [ "${DISTRO}" = "Lakka" -a "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" -a \
+      "${UBOOT_SYSTEM}" = "anbernic-rg28xx" ] && EXTRA_CMDLINE+=" fbcon=rotate:3"
 
     cat <<EOF >"${LE_TMP}/extlinux/extlinux.conf"
 LABEL ${DISTRO}

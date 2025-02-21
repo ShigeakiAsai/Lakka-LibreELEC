@@ -156,6 +156,44 @@ devices = \
         'crust_config' : 'tanix_tx6_defconfig'
       },
     },
+    'H700' : {
+      'anbernic-rg28xx' : {
+        'dtb' : 'sun50i-h700-anbernic-rg28xx.dtb',
+        'config' : 'anbernic_rg35xx_h700_defconfig'
+      },
+      'anbernic-rg34xx' : {
+        'dtb' : 'sun50i-h700-anbernic-rg34xx.dtb',
+        'config' : 'anbernic_rg35xx_h700_defconfig'
+      },
+      'anbernic-rg35xx-2024' : {
+        'dtb' : 'sun50i-h700-anbernic-rg35xx-2024.dtb',
+        'config' : 'anbernic_rg35xx_h700_defconfig'
+      },
+      'anbernic-rg35xx-h' : {
+        'dtb' : 'sun50i-h700-anbernic-rg35xx-h.dtb',
+        'config' : 'anbernic_rg35xx_h700_defconfig'
+      },
+      'anbernic-rg35xx-plus' : {
+        'dtb' : 'sun50i-h700-anbernic-rg35xx-plus.dtb',
+        'config' : 'anbernic_rg35xx_h700_defconfig'
+      },
+      'anbernic-rg35xx-sp' : {
+        'dtb' : 'sun50i-h700-anbernic-rg35xx-sp.dtb',
+        'config' : 'anbernic_rg35xx_h700_defconfig'
+      },
+      'anbernic-rg40xx-h' : {
+        'dtb' : 'sun50i-h700-anbernic-rg40xx-h.dtb',
+        'config' : 'anbernic_rg35xx_h700_defconfig'
+      },
+      'anbernic-rg40xx-v' : {
+        'dtb' : 'sun50i-h700-anbernic-rg40xx-v.dtb',
+        'config' : 'anbernic_rg35xx_h700_defconfig'
+      },
+      'anbernic-rgcubexx' : {
+        'dtb' : 'sun50i-h700-anbernic-rgcubexx.dtb',
+        'config' : 'anbernic_rg35xx_h700_defconfig'
+      },
+    },
     'R40' : {
       'bananapi-m2u' : {
         'dtb' : 'sun8i-r40-bananapi-m2-ultra.dtb',

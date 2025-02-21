@@ -17,7 +17,11 @@ fi
 if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
   if [ "${OPENGLES}" = "mesa" ]; then
-    PKG_MAKE_OPTS_TARGET+=" HAVE_OPENGL=1"
+    if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+      PKG_MAKE_OPTS_TARGET+=" HAVE_OPENGL=0 HAVE_OPENGLES=1"
+    else
+      PKG_MAKE_OPTS_TARGET+=" HAVE_OPENGL=1"
+    fi
   else
     PKG_MAKE_OPTS_TARGET+=" HAVE_OPENGLES=1"
   fi
@@ -33,6 +37,9 @@ if [ "${ARCH}" = "aarch64" ]; then
     PKG_MAKE_OPTS_TARGET+=" platform=tegra210"
   elif [ "${DEVICE:0:4}" = "RPi4" ]; then
     PKG_MAKE_OPTS_TARGET+=" platform=rpi4_64 HAVE_OPENGL=0"
+  elif [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+    # Allwinner H700 is similar to Allwinner H616
+    PKG_MAKE_OPTS_TARGET+=" platform=orangepizero2"
   else
     PKG_MAKE_OPTS_TARGET+=" platform=unix"
   fi

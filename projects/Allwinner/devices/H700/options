@@ -1,0 +1,73 @@
+################################################################################
+# setup system defaults
+################################################################################
+
+  # The TARGET_CPU variable controls which processor should be targeted for
+  # generated code.
+    case $TARGET_ARCH in
+      aarch64)
+        TARGET_CPU="cortex-a53"
+        TARGET_CPU_FLAGS="+crc+crypto"
+        ;;
+      arm)
+        TARGET_KERNEL_ARCH="arm64"
+        TARGET_FLOAT="hard"
+        TARGET_CPU="cortex-a53"
+        TARGET_CPU_FLAGS="+crc"
+        TARGET_FPU="crypto-neon-fp-armv8"
+        ;;
+    esac
+
+  # Kernel target
+    KERNEL_TARGET="Image"
+
+  # Kernel to use. values can be:
+  # default:  default mainline kernel
+    LINUX="allwinner-h700"
+
+  # U-Boot firmware package(s) to use
+    UBOOT_FIRMWARE="atf"
+
+  # ATF platform
+    ATF_PLATFORM="sun50i_h616"
+
+  # Mali GPU family
+    MALI_FAMILY="g31"
+    GRAPHIC_DRIVERS="mali panfrost"
+
+  # OpenGL-ES implementation to use (no / bcm2835-driver / gpu-viv-bin-mx6q)
+    OPENGLES="mesa"
+
+  # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap)
+    KODIPLAYER_DRIVER="$OPENGLES"
+
+  # Displayserver to use (wl / no)
+    DISPLAYSERVER="wl"
+
+  # Windowmanager to use (weston / no)
+    WINDOWMANAGER="sway"
+
+  # additional packages to install
+    ADDITIONAL_PACKAGES+=" H700-volkeys"
+
+  # additional drivers to install:
+  # for a list of additional drivers see packages/linux-drivers
+  # Space separated list is supported,
+  # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
+    ADDITIONAL_DRIVERS="rocknix-joypad"
+
+  # set the addon project
+    ADDON_PROJECT="ARMv8"
+
+  # build and install CEC framework support (yes / no)
+    CEC_FRAMEWORK_SUPPORT="no"
+  # Above "CEC_FRAMEWORK_SUPPORT" is for initial porting. please remove when it finished.
+
+  # debug tty path
+    DEBUG_TTY="/dev/ttyS0"
+
+  # additional kernel parameters
+  # EXTRA_CMDLINE="earlycon=uart,mmio32,0x5000000 systemd.debug_shell=ttyS0 console=ttyS0,115200 console=tty1"
+    EXTRA_CMDLINE="systemd.debug_shell=ttyS0 console=ttyS0,115200 console=tty0"
+  # Above "EXTRA_CMDLINE" is for initial porting. please remove when it finished.
+  # EXTRA_CMDLINE="console=tty1"

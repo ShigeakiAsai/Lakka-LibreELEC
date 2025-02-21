@@ -1,0 +1,12 @@
+[Unit]
+Description=ANBERNIC RG35xx/RG28xx/RG40xx series series volume keys sense service
+Before=retroarch.target
+
+[Service]
+Environment=HOME=/storage
+ExecStart=/usr/bin/spkeys-service gpio-keys-volume
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

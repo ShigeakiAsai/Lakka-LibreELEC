@@ -33,7 +33,7 @@ PKG_MAKE_OPTS_TARGET="V=1 \
 if [ "${OPENGLES_SUPPORT}" = yes ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
   PKG_CONFIGURE_OPTS_TARGET+=" --enable-opengles"
-  if [ "${DEVICE:0:4}" =  "RPi4" ] || [ "${DEVICE:0:4}" = "RPi5" ] || [ "${DEVICE}" = "RK3288" ] || [ "${DEVICE}" = "RK3399" ] || [ "${PROJECT}" = "Generic" ] || [ "${DEVICE}" = "Odin" ]; then
+  if [ "${DEVICE:0:4}" =  "RPi4" ] || [ "${DEVICE:0:4}" = "RPi5" ] || [ "${DEVICE}" = "RK3288" ] || [ "${DEVICE}" = "RK3399" ] || [ "${PROJECT}" = "Generic" ] || [ "${DEVICE}" = "Odin" ] || [ "${DEVICE}" = "H700" ]; then
     PKG_CONFIGURE_OPTS_TARGET+=" --enable-opengles3 \
                                  --enable-opengles3_1"
     if [ "${PROJECT}" = "Generic" ]; then
@@ -334,6 +334,13 @@ makeinstall_target() {
 
     #HACK: Temporary hack for touchscreen
     sed -i -e 's|^video_windowed_fullscreen =.*|video_windowed_fullscreen = "true"|' ${INSTALL}/etc/retroarch.cfg
+  fi
+
+  # ANBERNIC RG XX series (Allwinner H700)
+  if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+    echo 'audio_out_rate = "44100"' >> ${INSTALL}/etc/retroarch.cfg
+    echo 'input_menu_toggle_btn = "10"' >> ${INSTALL}/etc/retroarch.cfg
+    echo 'xmb_layout = "2"' >> ${INSTALL}/etc/retroarch.cfg
   fi
 
   # sort the options in config file

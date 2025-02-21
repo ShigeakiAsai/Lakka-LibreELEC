@@ -261,6 +261,11 @@ if [ "${PROJECT}" != "L4T" -a "${DEVICE}" != "Switch" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 vitaquake3 lr_moonlight"
 fi
 
+# vircon32 and vitaquake2 are excluded on Allwinner H700 devices
+if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+  EXCLUDE_LIBRETRO_CORES+=" vircon32 vitaquake2"
+fi
+
 # disable cores that do not build for OPENGLES
 if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   EXCLUDE_LIBRETRO_CORES+=" kronos"
