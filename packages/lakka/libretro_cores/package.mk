@@ -202,6 +202,9 @@ fi
 # disable cores based on PROJECT/DEVICE
 if [ "${PROJECT}" = "Allwinner" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight vitaquake3"
+  if [ "${DEVICE}" = "H616" ]; then
+    EXCLUDE_LIBRETRO_CORES+=" melonds panda3ds vircon32 vitaquake2 yabasanshiro"
+  fi
 elif [ "${PROJECT}" = "Amlogic" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight panda3ds vitaquake3"
 elif [ "${PROJECT}" = "Ayn" ]; then
