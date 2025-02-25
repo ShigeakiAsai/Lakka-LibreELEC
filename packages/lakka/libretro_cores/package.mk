@@ -202,6 +202,10 @@ fi
 # disable cores based on PROJECT/DEVICE
 if [ "${PROJECT}" = "Allwinner" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight vitaquake3"
+  if [ "${DEVICE}" = "H700" ]; then
+    # Exclude the vircon32 core because it needs OpenGL library but not installed.
+    EXCLUDE_LIBRETRO_CORES+=" vircon32"
+  fi
 elif [ "${PROJECT}" = "Amlogic" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight panda3ds vitaquake3"
 elif [ "${PROJECT}" = "Ayn" ]; then
@@ -289,11 +293,6 @@ elif [ "${PROJECT}" = "RPi" ]; then
   fi
 elif [ "${PROJECT}" = "Samsung" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight vitaquake3"
-fi
-
-# vircon32 and vitaquake2 are excluded on Allwinner H700 devices
-if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" vircon32 vitaquake2"
 fi
 
 # exclude some cores at build time via env EXCLUDE_LIBRETRO_CORES="core1 core2"
