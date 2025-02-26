@@ -203,8 +203,9 @@ fi
 if [ "${PROJECT}" = "Allwinner" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight vitaquake3"
   if [ "${DEVICE}" = "H700" ]; then
+    # Temp exclude the panda3ds core. will investigate.
     # Exclude the vircon32 core because it needs OpenGL library but not installed.
-    EXCLUDE_LIBRETRO_CORES+=" vircon32"
+    EXCLUDE_LIBRETRO_CORES+=" panda3ds vircon32"
   fi
 elif [ "${PROJECT}" = "Amlogic" ]; then
   EXCLUDE_LIBRETRO_CORES+=" boom3 lr_moonlight panda3ds vitaquake3"
