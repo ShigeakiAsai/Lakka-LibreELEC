@@ -55,8 +55,8 @@ case "${LINUX}" in
    PKG_GIT_CLONE_BRANCH="sdm845-5.19.16"
    ;;
   allwinner-h700)
-    PKG_VERSION="6.13.2"
-    PKG_SHA256="cdf62981906bbbe9701aeb73c4f9fcc807a09846c288731663d62717ed1ae705"
+    PKG_VERSION="6.13.5"
+    PKG_SHA256="283ecb0784f3fbc16dd822fb1d9642e230ec7515ed33f120e551b839f355e6e2"
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
     PKG_PATCH_DIRS="h700"
     ;;
