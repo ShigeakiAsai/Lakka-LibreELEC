@@ -1,0 +1,12 @@
+diff -uNr a/frontend/drivers/platform_unix.c b/frontend/drivers/platform_unix.c
+--- a/frontend/drivers/platform_unix.c	2025-02-19 14:25:36.000000000 +0900
++++ b/frontend/drivers/platform_unix.c	2025-03-13 14:30:28.977776935 +0900
+@@ -3046,7 +3046,7 @@
+ #else
+    NULL,                               /* get_lakka_version */
+ #endif
+-#if defined(HAVE_LAKKA_SWITCH) || (defined(HAVE_LAKKA) && defined(HAVE_ODROIDGO2))
++#if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LAKKA)
+    frontend_unix_set_screen_brightness,/* set_screen_brightness */
+ #else
+    NULL,                         /* set_screen_brightness */
