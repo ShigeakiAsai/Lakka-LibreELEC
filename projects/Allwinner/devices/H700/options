@@ -48,7 +48,7 @@
     WINDOWMANAGER="sway"
 
   # additional packages to install
-    ADDITIONAL_PACKAGES+=" H700-hpsense H700-volkeys"
+    ADDITIONAL_PACKAGES+=" H700-adjust-date-time H700-hpsense H700-volkeys"
 
   # additional drivers to install:
   # for a list of additional drivers see packages/linux-drivers
