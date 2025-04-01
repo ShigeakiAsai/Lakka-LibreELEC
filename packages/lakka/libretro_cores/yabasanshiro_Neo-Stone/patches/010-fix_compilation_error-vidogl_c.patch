@@ -1,0 +1,32 @@
+diff -uNr a/yabause/src/vidogl.c b/yabause/src/vidogl.c
+--- a/yabause/src/vidogl.c	2025-04-01 07:15:45.000000000 +0900
++++ b/yabause/src/vidogl.c	2025-04-01 08:48:42.763944552 +0900
+@@ -56,6 +56,10 @@
+ #include "yui.h"
+ #include "frameprofile.h"
+ 
++extern void RBGGenerator_init(int width, int height);
++extern void RBGGenerator_update(RBGDrawInfo * rbg );
++extern void YglRebuildGramebuffer();
++
+ #define Y_MAX(a, b) ((a) > (b) ? (a) : (b))
+ #define Y_MIN(a, b) ((a) < (b) ? (a) : (b))
+ 
+@@ -856,7 +860,7 @@
+           if ((colorindex & 0x8000) && (fixVdp2Regs->SPCTL & 0x20)) {
+             *texture->textdata++ = VDP1COLOR(0, colorcl, priority, 0, VDP1COLOR16TO24(colorindex));
+           } else {
+-            Vdp1MaskSpritePixel(fixVdp2Regs->SPCTL & 0xF, &colorindex,&colorcl);
++            Vdp1MaskSpritePixel(fixVdp2Regs->SPCTL & 0xF, (u16 *)&colorindex,&colorcl);
+             *texture->textdata++ = VDP1COLOR(1, colorcl, priority, 0, colorindex);
+           }
+         }
+@@ -901,7 +905,7 @@
+             *texture->textdata++ = VDP1COLOR(0, colorcl, priority, 0, VDP1COLOR16TO24(dot));
+           }
+           else {
+-            Vdp1MaskSpritePixel(fixVdp2Regs->SPCTL & 0xF, &dot, &colorcl);
++            Vdp1MaskSpritePixel(fixVdp2Regs->SPCTL & 0xF, (u16 *)&dot, &colorcl);
+             *texture->textdata++ = VDP1COLOR(1, colorcl, priority, 0, dot );
+           }
+         }

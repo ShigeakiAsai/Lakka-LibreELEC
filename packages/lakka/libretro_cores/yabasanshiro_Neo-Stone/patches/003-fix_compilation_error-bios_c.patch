@@ -1,0 +1,12 @@
+diff -uNr a/yabause/src/bios.c b/yabause/src/bios.c
+--- a/yabause/src/bios.c	2025-04-01 07:15:45.000000000 +0900
++++ b/yabause/src/bios.c	2025-04-01 07:39:45.781266454 +0900
+@@ -1891,7 +1891,7 @@
+         else
+         {
+            yearoffset = 0;
+-           ConvertMonthAndDay(0, &save[savecount].month, &save[savecount].day, 1);
++           ConvertMonthAndDayMem((yearremainder - 1), &save[savecount].month, &save[savecount].day, 1);
+         }
+         save[savecount].year = (u8)(((div / 0x5B5) * 4) + yearoffset);
+ 

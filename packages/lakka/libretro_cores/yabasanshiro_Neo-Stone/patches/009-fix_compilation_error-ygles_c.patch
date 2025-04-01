@@ -1,0 +1,12 @@
+diff -uNr a/yabause/src/ygles.c b/yabause/src/ygles.c
+--- a/yabause/src/ygles.c	2025-04-01 07:15:45.000000000 +0900
++++ b/yabause/src/ygles.c	2025-04-01 08:42:26.956781610 +0900
+@@ -34,6 +34,8 @@
+ //#define YGLDEBUG yprintf
+ //#define YGLLOG yprintf
+ 
++extern int YuiGetFB(void);
++extern void RBGGenerator_onFinish();
+ extern u8 * Vdp1FrameBuffer[];
+ static int rebuild_frame_buffer = 0;
+ 

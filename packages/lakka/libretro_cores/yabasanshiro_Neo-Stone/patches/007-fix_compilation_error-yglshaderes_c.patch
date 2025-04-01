@@ -1,0 +1,22 @@
+diff -uNr a/yabause/src/yglshaderes.c b/yabause/src/yglshaderes.c
+--- a/yabause/src/yglshaderes.c	2025-04-01 07:15:45.000000000 +0900
++++ b/yabause/src/yglshaderes.c	2025-04-01 08:09:30.937240920 +0900
+@@ -27,6 +27,9 @@
+ #include "vidshared.h"
+ #include "shaders/FXAA_DefaultES.h"
+ 
++extern void YuiMsg(const char *format, ...);
++extern GLuint RBGGenerator_getTexture( int id );
++
+ #if defined(__LIBRETRO__)
+ #define YGLLOG YuiMsg
+ #elif defined(__ANDROID__) || defined(_WINDOWS)
+@@ -4015,7 +4018,7 @@
+       return -1;
+     }
+ 
+-    glShaderSource(fshader, 2, fxaa_f, NULL);
++    glShaderSource(fshader, 2, (const GLchar * const*)fxaa_f, NULL);
+     glCompileShader(fshader);
+     glGetShaderiv(fshader, GL_COMPILE_STATUS, &compiled);
+     if (compiled == GL_FALSE) {

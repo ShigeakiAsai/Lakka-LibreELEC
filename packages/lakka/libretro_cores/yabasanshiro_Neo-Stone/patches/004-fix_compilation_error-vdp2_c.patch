@@ -1,0 +1,11 @@
+diff -uNr a/yabause/src/vdp2.c b/yabause/src/vdp2.c
+--- a/yabause/src/vdp2.c	2025-04-01 07:15:45.000000000 +0900
++++ b/yabause/src/vdp2.c	2025-04-01 07:48:33.182453998 +0900
+@@ -89,6 +89,7 @@
+ YabEventQueue * vout_rcv_evqueue = NULL;
+ static u64 syncticks = 0;       // CPU time sync for real time.
+ void VdpProc( void *arg );      // rendering thread.
++int Vdp2GenerateCCode(void);
+ static void vdp2VBlankIN(void); // VBLANK-IN handler
+ static void vdp2VBlankOUT(void);// VBLANK-OUT handler
+ static int vdp_proc_running = 0;

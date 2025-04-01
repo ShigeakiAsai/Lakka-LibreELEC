@@ -1,0 +1,12 @@
+diff -uNr a/yabause/src/yabause.c b/yabause/src/yabause.c
+--- a/yabause/src/yabause.c	2025-04-01 07:50:55.370771000 +0900
++++ b/yabause/src/yabause.c	2025-04-01 07:55:30.567148610 +0900
+@@ -677,7 +677,7 @@
+       }
+    }
+ 
+-   DoMovie();
++   //DoMovie();
+ 
+    #if defined(SH2_DYNAREC)
+    if(SH2Core->id==2) {
