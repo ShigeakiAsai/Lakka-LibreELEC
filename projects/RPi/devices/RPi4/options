@@ -34,3 +34,6 @@
 
   # Kernel target
     KERNEL_TARGET="Image"
+
+  # additional packages to install
+    ADDITIONAL_PACKAGES+=" bluez-alsa"
