@@ -84,7 +84,10 @@ post_makeinstall_target() {
     ln -sf /usr/lib/firmware ${INSTALL}/etc/firmware
 
   # pulseaudio checks for bluez via pkgconfig but lib is not actually needed
-    sed -i 's/-lbluetooth//g' ${PKG_BUILD}/lib/bluez.pc
+  # bluez-alsa needs lib
+    if ! listcontains "${ADDITIONAL_PACKAGES}" "bluez-alsa" ; then
+      sed -i 's/-lbluetooth//g' ${PKG_BUILD}/lib/bluez.pc
+    fi
     cp -P ${PKG_BUILD}/lib/bluez.pc ${SYSROOT_PREFIX}/usr/lib/pkgconfig
 }
 
