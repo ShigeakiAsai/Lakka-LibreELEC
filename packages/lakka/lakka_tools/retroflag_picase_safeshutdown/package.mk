@@ -9,6 +9,7 @@ PKG_TOOLCHAIN="manual"
 makeinstall_target() {
   mkdir -p "${INSTALL}/usr/bin"
     cp -av "${PKG_DIR}/scripts/retroflag_picase_safeshutdown.py" "${INSTALL}/usr/bin"
+    cp -av "${PKG_DIR}/scripts/retroflag_picase_gpio-poweroff_overlay.sh" "${INSTALL}/usr/bin"
 }
 
 post_install() {

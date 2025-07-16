@@ -31,7 +31,8 @@ def init():
 	handle = sbc.gpiochip_open(0)
 
 	# Activate PowerEn Pin for enable PowerSwitch.
-	sbc.gpio_claim_output(handle, powerenPin, level=1)
+	# ... PowerEn Pin is better activated by gpio-poweroff overlay in distroconfig.txt.
+	# sbc.gpio_claim_output(handle, powerenPin, level=1)
 
 	# Enable Power LED.
 	LED_status = 1
