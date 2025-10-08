@@ -412,6 +412,7 @@ static u32 __init gc_bcm_peri_base_probe(void) {
 	return base_address == 1 ? 0x02000000 : base_address;
 }
 
+#if 0 // Lakka doesn't use external osd
 static void osd(void)
 {
 	char *envp[] = {
@@ -428,6 +429,7 @@ static void osd(void)
 	int result = call_usermodehelper(argv[0], argv, envp, UMH_WAIT_EXEC);
 	printk(KERN_INFO "Executing OSD: %i",result);
 }
+#endif // Lakka doesn't use external osd
 
 static int __init gc_init(void)
 {
@@ -439,7 +441,9 @@ static int __init gc_init(void)
 	values.red_val = 100;
 	values.green_val = 100;
 
+#if 0 // Lakka doesn't use external osd
 	osd();
+#endif // Lakka doesn't use external osd
 
 	/* Get the BCM2708 peripheral address */
 	gc_bcm2708_peri_base = gc_bcm_peri_base_probe();

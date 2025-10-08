@@ -1,5 +1,5 @@
 [Unit]
-Description=Shutdown xpi_gamecon
+Description=Reboot xpi_gamecon
 DefaultDependencies=no
 
 [Service]

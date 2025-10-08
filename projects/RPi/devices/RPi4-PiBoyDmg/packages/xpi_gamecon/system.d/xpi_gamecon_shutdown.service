@@ -1,7 +1,7 @@
 [Unit]
 Description=Shutdown xpi_gamecon
 DefaultDependencies=no
-Before = local-fs.target
+Before=local-fs.target
 
 [Service]
 Type=oneshot
