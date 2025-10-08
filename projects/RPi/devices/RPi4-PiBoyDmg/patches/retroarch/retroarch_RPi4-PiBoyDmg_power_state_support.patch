@@ -1,0 +1,99 @@
+diff --git a/frontend/drivers/platform_unix.c b/frontend/drivers/platform_unix.c
+index 778f54eeda..8562d9c897 100644
+--- a/frontend/drivers/platform_unix.c
++++ b/frontend/drivers/platform_unix.c
+@@ -1072,6 +1072,82 @@ static bool frontend_unix_powerstate_check_acpi(
+    return true;
+ }
+ 
++// Lakka RPi4-PiBoyDmg power state support (start)
++static bool frontend_unix_powerstate_check_PiBoyDmg(
++      enum frontend_powerstate *state,
++      int *seconds, int *percent)
++{
++   char* buf               = NULL;
++   int64_t length          = 0;
++   bool have_battery       = false;
++   bool have_ac            = false;
++   bool charging           = false;
++
++   *seconds = 0; /* always return 0 */
++   *percent = 0; /* initialize */
++
++   /* xpi_gamecon provides some information
++      /sys/kernel/xpi_gamecon/amps is current power consumption
++      /sys/kernel/xpi_gamecon/battery is current Battery value
++      /sys/kernel/xpi_gamecon/fan is Fan state
++      /sys/kernel/xpi_gamecon/flags ?
++      /sys/kernel/xpi_gamecon/green is Green LED state
++      /sys/kernel/xpi_gamecon/percent is Battery remained percent (0-100)
++      /sys/kernel/xpi_gamecon/red is Red LED state
++      /sys/kernel/xpi_gamecon/status is xpi_gamecon state?
++      /sys/kernel/xpi_gamecon/version is board FW version
++      /sys/kernel/xpi_gamecon/volume is audio volume value (0-100)
++   */
++
++   /* Get AC connection state via /sys/kernel/xpi_gamecon/status */
++   if (filestream_read_file("/sys/kernel/xpi_gamecon/status", (void**)&buf, &length))
++   {
++      if ( 0x80 & atoi(buf) ) have_ac = true;
++      free(buf);
++      buf = NULL;
++   }
++
++   /* Get Battery connection state and charging state via /sys/kernel/xpi_gamecon/amps */
++   if (filestream_read_file("/sys/kernel/xpi_gamecon/amps", (void**)&buf, &length))
++   {
++      if (atoi(buf) > 0 )
++      {
++         if( have_ac )
++         {
++            have_battery = true;
++            charging = true;
++         }
++         /* else : no battry & no AC - this won't happen probably */
++      }
++      else
++      {
++         have_battery = true;
++      }
++      free(buf);
++      buf = NULL;
++   }
++
++   /* Get battery percent value via /sys/kernel/xpi_gamecon/percent */
++   if (filestream_read_file("/sys/kernel/xpi_gamecon/percent", (void**)&buf, &length))
++   {
++      *percent = atoi(buf);
++      free(buf);
++      buf = NULL;
++   }
++
++   if (!have_battery)
++      *state = FRONTEND_POWERSTATE_NO_SOURCE;
++   else if (charging)
++      *state = FRONTEND_POWERSTATE_CHARGING;
++   else if (have_ac)
++      *state = FRONTEND_POWERSTATE_CHARGED;
++   else
++      *state = FRONTEND_POWERSTATE_ON_POWER_SOURCE;
++
++   return true;
++}
++// Lakka RPi4-PiBoyDmg power state support (end)
++
+ static bool frontend_unix_powerstate_check_acpi_sysfs(
+       enum frontend_powerstate *state,
+       int *seconds, int *percent)
+@@ -1192,6 +1268,11 @@ static enum frontend_powerstate frontend_unix_get_powerstate(
+    /* 'Time left' reporting is unsupported */
+    *seconds = -1;
+ #else
++   // Lakka RPi4-PiBoyDmg power state support (start)
++   if (frontend_unix_powerstate_check_PiBoyDmg(&ret, seconds, percent))
++      return ret;
++   // Lakka RPi4-PiBoyDmg power state support (end)
++
+    if (frontend_unix_powerstate_check_acpi_sysfs(&ret, seconds, percent))
+       return ret;
+ 
