@@ -1,5 +1,5 @@
 PKG_NAME="mupen64plus_next"
-PKG_VERSION="222acbd3f98391458a047874d0372fe78e14fe94"
+PKG_VERSION="680e033fc8ed1a49df7b156d97164e0050ee13bc"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/mupen64plus-libretro-nx"
 PKG_URL="${PKG_SITE}.git"
