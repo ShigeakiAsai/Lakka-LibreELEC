@@ -7,7 +7,7 @@
   DESCRIPTION="Lakka is a fast and user-friendly retroarch turnkey distribution"
 
 # Homepage
-  DISTRO_WEBSITE="https://www.lakka.tv/"
+  DISTRO_HOME_URL="https://www.lakka.tv"
 
 # Do not add version to the build folder name
   BUILD_NO_VERSION="yes"
@@ -109,7 +109,7 @@
 
 # Distribution Specific source location
   DISTRO_MIRROR="http://sources.libreelec.tv/mirror"
-  DISTRO_SRC="http://sources.libreelec.tv/$LIBREELEC_VERSION"
+  DISTRO_SRC="http://sources.libreelec.tv/$DISTRO_VERSION"
 
 # build and install iSCSI support - iscsistart (yes / no)
   ISCSI_SUPPORT="no"

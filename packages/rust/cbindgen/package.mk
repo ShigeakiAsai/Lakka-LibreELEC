@@ -2,8 +2,8 @@
 # Copyright (C) 2025-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="cbindgen"
-PKG_VERSION="0.28.0"
-PKG_SHA256="b0ed39dda089cafba583e407183e43de151d2ae9d945d74fb4870db7e4ca858e"
+PKG_VERSION="0.29.2"
+PKG_SHA256="c7d4d610482390c70e471a5682de714967e187ed2f92f2237c317a484a8c7e3a"
 PKG_LICENSE="MPL-2.0"
 PKG_SITE="https://github.com/mozilla/bindgen"
 PKG_URL="https://github.com/mozilla/cbindgen/archive/v${PKG_VERSION}.tar.gz"

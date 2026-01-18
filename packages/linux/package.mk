@@ -16,18 +16,25 @@ PKG_PATCH_DIRS="${LINUX}"
 
 case "${LINUX}" in
   amlogic)
-    PKG_VERSION="5996393469d99560b7845d22c9eff00661de0724" # 6.12.9
-    PKG_SHA256="1a140beb8b10ea52e4dd595c5ce4e00995e0176353f980be50aedca4c009c2b7"
+    PKG_VERSION="7d0a66e4bb9081d75c82ec4957c50034cb0ea449" # 6.18.0
+    PKG_SHA256="2617efd103533b57613d16f144ceea575b1a6b890ce5e16201b1d254e2b7b33c"
     PKG_URL="https://github.com/torvalds/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
-    PKG_PATCH_DIRS="default rtlwifi/6.13 rtlwifi/6.14 rtlwifi/after-6.14"
+    PKG_PATCH_DIRS="default"
     ;;
   raspberrypi)
-    PKG_VERSION="031a3826707c5a9c5761bb9c354756b6730051cf" # 6.12.15
-    PKG_SHA256="247184d2f8e5de5606988ba8820dc663460492147d138076bb69fafde53ac820"
+    PKG_VERSION="bb594fb36f555f9b88b7b6fcf8b71c669c1d60c7" # 6.18.4
+    PKG_SHA256="1c9a308daaf417a92a3c5ad4548e8fec11bab2f3e222350444f6a509335e91e9"
     PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
-    PKG_PATCH_DIRS="raspberrypi rtlwifi/6.13 rtlwifi/6.14 rtlwifi/after-6.14"
+    PKG_PATCH_DIRS="raspberrypi"
+    ;;
+  rockchip)
+    PKG_VERSION="78d82960b939df64cf7d26ca5ed34eb87f44c9e5" # 6.18.2
+    PKG_SHA256="a11985db0126ba0e80e34a97d4a6e3b77cf13c89a3af76733a44b8c4f8d5b767"
+    PKG_URL="https://github.com/chewitt/linux/archive/${PKG_VERSION}.tar.gz"
+    PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
+    PKG_PATCH_DIRS="default rockchip"
     ;;
   raspberrypi-5.10.y)
     PKG_VERSION="8e1110a580887f4b82303b9354c25d7e2ff5860e" # 5.10.110
@@ -61,10 +68,15 @@ case "${LINUX}" in
    PKG_GIT_CLONE_BRANCH="sdm845-5.19.16"
    ;;
   *)
-    PKG_VERSION="6.12.15"
-    PKG_SHA256="5ff5bd84ea0e22c53437302db5d394d0a92d8b8b1a88ce20d1098298e9f7630a"
+    PKG_VERSION="6.18.4"
+    PKG_SHA256="f850139ca5f79c1bf6bb8b32f92e212aadca97bdaef8a83a7cf4ac4d6a525fab"
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
-    PKG_PATCH_DIRS="default rtlwifi/6.13 rtlwifi/6.14 rtlwifi/after-6.14"
+    PKG_PATCH_DIRS="default"
+    case ${DEVICE} in
+      RK3288|RK3328|RK3399)
+        PKG_PATCH_DIRS+=" rockchip-old"
+        ;;
+    esac
     ;;
 esac
 
@@ -137,7 +149,7 @@ makeinstall_host() {
 }
 
 pre_make_target() {
-  ( 
+  (
     cd ${ROOT}
     rm -rf ${BUILD}/initramfs
     rm -f ${STAMPS_INSTALL}/initramfs/install_target ${STAMPS_INSTALL}/*/install_init
@@ -166,14 +178,6 @@ pre_make_target() {
   if [ ! "${SAMBA_SUPPORT}" = yes ]; then
     ${PKG_BUILD}/scripts/config --disable CONFIG_CIFS
   fi
-
-  # enable/disable iscsi support
-  [ "${ISCSI_SUPPORT}" = yes ] && OPTION="--enable" || OPTION="--disable"
-  ${PKG_BUILD}/scripts/config ${OPTION} CONFIG_SCSI_ISCSI_ATTRS
-  ${PKG_BUILD}/scripts/config ${OPTION} CONFIG_ISCSI_TCP
-  ${PKG_BUILD}/scripts/config ${OPTION} CONFIG_ISCSI_BOOT_SYSFS
-  ${PKG_BUILD}/scripts/config ${OPTION} CONFIG_ISCSI_IBFT_FIND
-  ${PKG_BUILD}/scripts/config ${OPTION} CONFIG_ISCSI_IBFT
 
   # disable wireguard support if not enabled
   if [ ! "${WIREGUARD_SUPPORT}" = yes ]; then
@@ -282,6 +286,27 @@ pre_make_target() {
     for f in ${PROJECT_DIR}/${PROJECT}/config/*-overlay.dts ${PROJECT_DIR}/${PROJECT}/devices/${DEVICE}/config/*-overlay.dts ; do
       [ -f "${f}" ] && cp -v ${f} ${PKG_BUILD}/arch/${TARGET_KERNEL_ARCH}/boot/dts/overlays || true
     done
+  fi
+
+  # disable vfd support if not enabled
+  if [ ! "${VFD_SUPPORT}" = yes ]; then
+    ${PKG_BUILD}/scripts/config --disable CONFIG_PANEL_CHANGE_MESSAGE
+  else
+    # enable the module and set distro boot message
+    ${PKG_BUILD}/scripts/config --enable CONFIG_AUXDISPLAY
+    ${PKG_BUILD}/scripts/config --enable CONFIG_LINEDISPLAY
+    ${PKG_BUILD}/scripts/config --enable CONFIG_TM16XX
+    ${PKG_BUILD}/scripts/config --enable CONFIG_TM16XX_KEYPAD
+    ${PKG_BUILD}/scripts/config --enable CONFIG_TM16XX_I2C
+    ${PKG_BUILD}/scripts/config --enable CONFIG_TM16XX_SPI
+    ${PKG_BUILD}/scripts/config --enable CONFIG_PANEL_CHANGE_MESSAGE
+    ${PKG_BUILD}/scripts/config --set-str CONFIG_PANEL_BOOT_MESSAGE "${VFD_MESSAGE}"
+    ${PKG_BUILD}/scripts/config --enable CONFIG_INPUT_MATRIXKMAP
+    # enable led activity triggers
+    ${PKG_BUILD}/scripts/config --enable CONFIG_LEDS_TRIGGER_TIMER # Colon
+    ${PKG_BUILD}/scripts/config --enable CONFIG_LEDS_TRIGGER_NETDEV # LAN/WLAN
+    ${PKG_BUILD}/scripts/config --enable CONFIG_USB_LEDS_TRIGGER_USBPORT # USB
+    ${PKG_BUILD}/scripts/config --enable CONFIG_MMC # SD
   fi
 
   if [ "${TARGET_ARCH}" = "x86_64" -o "${TARGET_ARCH}" = "i386" ]; then
@@ -404,7 +429,8 @@ make_target() {
 
   if [ ! "${LINUX}" = "L4T" ]; then
     if [ "${PKG_BUILD_PERF}" = "yes" ]; then
-      ( cd tools/perf
+      (
+        cd tools/perf
 
         # arch specific perf build args
         case "${TARGET_ARCH}" in
@@ -429,6 +455,14 @@ make_target() {
         NO_LIBTRACEEVENT=1 \
         NO_LZMA=1 \
         NO_SDT=1 \
+        NO_LIBDEBUGINFOD=1 \
+        NO_JVMTI=1 \
+        NO_LIBLLVM=1 \
+        NO_LIBPFM4=1 \
+        NO_LIBBABELTRACE=1 \
+        NO_CAPSTONE=1 \
+        NO_LIBPFM4=1 \
+        BUILD_BPF_SKEL=0 \
         CROSS_COMPILE="${TARGET_PREFIX}" \
         JOBS="${CONCURRENCY_MAKE_LEVEL}" \
           make ${PERF_BUILD_ARGS}

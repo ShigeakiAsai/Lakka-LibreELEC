@@ -1,10 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (C) 2009-2016 Lukas Rusak (lrusak@libreelec.tv)
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="screensaver.asterwave"
-PKG_VERSION="20.2.0-Nexus"
-PKG_SHA256="2c07219218fad17ef285577ff8309f7b6503302e52048d12ee20459dbcedf89c"
+PKG_VERSION="22.0.2-Piers"
+PKG_SHA256="7df1c7a91faac455d392a5f176ec318283d87188d4457af6484df39355e8c8ea"
 PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
@@ -20,4 +19,8 @@ PKG_ADDON_TYPE="xbmc.ui.screensaver"
 
 if [ "${OPENGL}" = "no" ]; then
   exit 0
+fi
+
+if [ "${DISPLAYSERVER}" = "no" ]; then
+  PKG_CMAKE_OPTS_TARGET="-DCORE_PLATFORM_NAME=gbm"
 fi

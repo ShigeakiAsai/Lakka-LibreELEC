@@ -3,16 +3,16 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="mpd"
-PKG_VERSION="0.23.17"
-PKG_SHA256="a86f4fe811695743b08db82a9f1a840b8918bb4f46b06f48aa1d8d1b5386dff2"
-PKG_REV="2"
+PKG_VERSION="0.24.6"
+PKG_SHA256="8ce34a010577feb42999a96d867325c6d38bf7ae1b7a57f878d7e548c1fd1fa9"
+PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://www.musicpd.org"
 PKG_URL="http://www.musicpd.org/download/mpd/$(get_pkg_version_maj_min)/mpd-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain alsa-lib avahi boost curl faad2 ffmpeg flac glib lame libcdio libfmt \
                     libgcrypt libiconv libid3tag libmad libmpdclient libopenmpt libsamplerate \
-                    libvorbis libnfs5 libogg mpd-mpc opus pulseaudio samba wavpack yajl"
+                    libvorbis libnfs libogg mpd-mpc opus pulseaudio samba wavpack nlohmann-json"
 PKG_SECTION="service.multimedia"
 PKG_SHORTDESC="Music Player Daemon (MPD): a free and open Music Player Server"
 PKG_LONGDESC="Music Player Daemon (${PKG_VERSION}) is a flexible and powerful server-side application for playing music"
@@ -77,7 +77,6 @@ PKG_MESON_OPTS_TARGET="-Dadplug=disabled \
                        -Dsndfile=enabled \
                        -Dsndio=disabled \
                        -Dsolaris_output=disabled \
-                       -Dsoundcloud=enabled \
                        -Dsoxr=enabled \
                        -Dsqlite=enabled \
                        -Dsyslog=disabled \
@@ -91,15 +90,10 @@ PKG_MESON_OPTS_TARGET="-Dadplug=disabled \
                        -Dwavpack=enabled \
                        -Dwebdav=enabled \
                        -Dwildmidi=disabled \
-                       -Dyajl=enabled \
+                       -Dnlohmann_json=enabled \
                        -Dzeroconf=avahi \
                        -Dzlib=enabled \
                        -Dzzip=disabled"
-
-pre_configure_target() {
-  export PKG_CONFIG_PATH="$(get_install_dir libnfs5)/usr/lib/pkgconfig:${PKG_CONFIG_PATH}"
-  export TARGET_CXXFLAGS+=" -I$(get_install_dir libnfs5)/usr/include"
-}
 
 addon() {
   mkdir -p ${ADDON_BUILD}/${PKG_ADDON_ID}/bin

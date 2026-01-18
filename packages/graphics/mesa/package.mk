@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="mesa"
-PKG_VERSION="25.0.0"
-PKG_SHA256="96a53501fd59679654273258c6c6a1055a20e352ee1429f0b123516c7190e5b0"
+PKG_VERSION="25.3.3"
+PKG_SHA256="05328b3891c000e6a110a3e7321d8bfbb21631d132bf86bd3d4a8f45c535ef6b"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.mesa3d.org/"
 PKG_URL="https://mesa.freedesktop.org/archive/mesa-${PKG_VERSION}.tar.xz"
@@ -20,18 +20,16 @@ fi
 
 PKG_MESON_OPTS_HOST="-Dglvnd=disabled \
                      -Dgallium-drivers=iris \
-                     -Dgallium-vdpau=disabled \
                      -Dplatforms= \
                      -Dglx=disabled \
-                     -Dvulkan-drivers="
+                     -Dvulkan-drivers= \
+                     -Dshared-llvm=disabled \
+                     -Dtools=panfrost"
 
 PKG_MESON_OPTS_TARGET="-Dgallium-drivers=${GALLIUM_DRIVERS// /,} \
                        -Dgallium-extra-hud=false \
                        -Dgallium-rusticl=false \
-                       -Dgallium-nine=false \
-                       -Dgallium-opencl=disabled \
                        -Dshader-cache=enabled \
-                       -Dshared-glapi=enabled \
                        -Dopengl=true \
                        -Dgbm=enabled \
                        -Degl=enabled \
@@ -39,9 +37,7 @@ PKG_MESON_OPTS_TARGET="-Dgallium-drivers=${GALLIUM_DRIVERS// /,} \
                        -Dlibunwind=disabled \
                        -Dlmsensors=disabled \
                        -Dbuild-tests=false \
-                       -Ddraw-use-llvm=false \
-                       -Dmicrosoft-clc=disabled \
-                       -Dosmesa=false"
+                       -Dmicrosoft-clc=disabled"
 
 if [ "${DISPLAYSERVER}" = "x11" ]; then
   PKG_DEPENDS_TARGET+=" xorgproto libXext libXdamage libXfixes libXxf86vm libxcb libX11 libxshmfence libXrandr"
@@ -71,12 +67,23 @@ if listcontains "${GRAPHIC_DRIVERS}" "etnaviv"; then
   PKG_DEPENDS_TARGET+=" pycparser:host"
 fi
 
-if listcontains "${GRAPHIC_DRIVERS}" "iris"; then
-  PKG_DEPENDS_TARGET+=" mesa:host"
-  PKG_MESON_OPTS_TARGET+=" -Dmesa-clc=system"
+if listcontains "${GRAPHIC_DRIVERS}" "(i915|r300)"; then
+  PKG_MESON_OPTS_TARGET+=" -Ddraw-use-llvm=true"
+else
+  PKG_MESON_OPTS_TARGET+=" -Ddraw-use-llvm=false"
 fi
 
-if listcontains "${GRAPHIC_DRIVERS}" "(nvidia|nvidia-ng)"; then
+if listcontains "${GRAPHIC_DRIVERS}" "(iris|panfrost)"; then
+  if [ "${USE_REUSABLE}" = "yes" ]; then
+    PKG_DEPENDS_TARGET+=" mesa-reusable"
+  else
+    PKG_DEPENDS_TARGET+=" mesa:host"
+  fi
+  PKG_MESON_OPTS_TARGET+=" -Dmesa-clc=system -Dprecomp-compiler=system"
+fi
+
+if listcontains "${GRAPHIC_DRIVERS}" "(nvidia|nvidia-ng)" ||
+              [ "${OPENGL_SUPPORT}" = "yes" -a "${DISPLAYSERVER}" != "x11" ]; then
   PKG_DEPENDS_TARGET+=" libglvnd"
   PKG_MESON_OPTS_TARGET+=" -Dglvnd=enabled"
 else
@@ -92,25 +99,12 @@ else
   PKG_MESON_OPTS_TARGET+=" -Dllvm=disabled"
 fi
 
-if [ "${VDPAU_SUPPORT}" = "yes" -a "${DISPLAYSERVER}" = "x11" ]; then
-  PKG_DEPENDS_TARGET+=" libvdpau"
-  PKG_MESON_OPTS_TARGET+=" -Dgallium-vdpau=enabled"
-else
-  PKG_MESON_OPTS_TARGET+=" -Dgallium-vdpau=disabled"
-fi
-
 if [ "${VAAPI_SUPPORT}" = "yes" ] && listcontains "${GRAPHIC_DRIVERS}" "(r600|radeonsi)"; then
   PKG_DEPENDS_TARGET+=" libva"
   PKG_MESON_OPTS_TARGET+=" -Dgallium-va=enabled \
-                           -Dvideo-codecs=vc1dec,h264dec,h264enc,h265dec,h265enc"
+                           -Dvideo-codecs=vc1dec,h264dec,h264enc,h265dec,h265enc,av1dec,av1enc,vp9dec"
 else
   PKG_MESON_OPTS_TARGET+=" -Dgallium-va=disabled"
-fi
-
-if listcontains "${GRAPHIC_DRIVERS}" "vmware" || listcontains "${GRAPHIC_DRIVERS}" "freedreno"; then
-  PKG_MESON_OPTS_TARGET+=" -Dgallium-xa=enabled"
-else
-  PKG_MESON_OPTS_TARGET+=" -Dgallium-xa=disabled"
 fi
 
 if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
@@ -141,7 +135,31 @@ post_makeinstall_target() {
 }
 
 makeinstall_host() {
+  host_files="src/compiler/clc/mesa_clc src/compiler/spirv/vtn_bindgen2 src/panfrost/clc/panfrost_compile"
+
+  if listcontains "${BUILD_REUSABLE}" "(all|mesa:host)"; then
+    # Build the reusable mesa:host for both local and to be added to a GitHub release
+    strip ${host_files}
+    upx --lzma ${host_files}
+
+    REUSABLE_SOURCES="${SOURCES}/mesa-reusable"
+    MESA_HOST="mesa-reusable-${OS_VERSION}-${PKG_VERSION}"
+    REUSABLE_SOURCE_NAME=${MESA_HOST}-${MACHINE_HARDWARE_NAME}.tar
+
+    mkdir -p "${TARGET_IMG}"
+
+    tar cf ${TARGET_IMG}/${REUSABLE_SOURCE_NAME} --transform='s|.*/||' ${host_files}
+    sha256sum ${TARGET_IMG}/${REUSABLE_SOURCE_NAME} | \
+      cut -d" " -f1 >${TARGET_IMG}/${REUSABLE_SOURCE_NAME}.sha256
+
+    if listcontains "${BUILD_REUSABLE}" "save-local"; then
+      mkdir -p "${REUSABLE_SOURCES}"
+      cp -p ${TARGET_IMG}/${REUSABLE_SOURCE_NAME} ${REUSABLE_SOURCES}
+      cp -p ${TARGET_IMG}/${REUSABLE_SOURCE_NAME}.sha256 ${REUSABLE_SOURCES}
+      echo "save-local" >${REUSABLE_SOURCES}/${REUSABLE_SOURCE_NAME}.url
+    fi
+  fi
+
   mkdir -p "${TOOLCHAIN}/bin"
-    cp -a src/compiler/clc/mesa_clc "${TOOLCHAIN}/bin"
-    cp -a src/compiler/spirv/vtn_bindgen "${TOOLCHAIN}/bin"
+    cp -a ${host_files} "${TOOLCHAIN}/bin"
 }

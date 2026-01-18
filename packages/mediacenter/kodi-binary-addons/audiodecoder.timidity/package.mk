@@ -3,9 +3,9 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="audiodecoder.timidity"
-PKG_VERSION="20.2.0-Nexus"
-PKG_SHA256="ef1b384090df3c2c78d00ed33de1d989ce802702b0a9aa13575946409a5cd0f1"
-PKG_REV="8"
+PKG_VERSION="22.0.1-Piers"
+PKG_SHA256="eba35855d77cab3e346f6f78ea15a96c88a8ff0e6658655f3ba6a709b046e771"
+PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/xbmc/audiodecoder.timidity"

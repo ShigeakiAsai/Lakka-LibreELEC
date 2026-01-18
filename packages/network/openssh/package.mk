@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="openssh"
-PKG_VERSION="9.9p2"
-PKG_SHA256="91aadb603e08cc285eddf965e1199d02585fa94d994d6cae5b41e1721e215673"
+PKG_VERSION="10.2p1"
+PKG_SHA256="ccc42c0419937959263fa1dbd16dafc18c56b984c03562d2937ce56a60f798b2"
 PKG_LICENSE="OSS"
 PKG_SITE="https://www.openssh.com/"
 PKG_URL="https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/${PKG_NAME}-${PKG_VERSION}.tar.gz"
@@ -55,5 +55,8 @@ post_makeinstall_target() {
 }
 
 post_install() {
+  if [ "${SSH_ENABLED_DEFAULT}" = "yes" ]; then
+    sed -e "\|^Condition.*|d" -i ${INSTALL}/usr/lib/systemd/system/sshd.service
+  fi
   enable_service sshd.service
 }

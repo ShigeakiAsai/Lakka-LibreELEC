@@ -3,8 +3,8 @@
 
 PKG_NAME="Python3"
 # When changing PKG_VERSION remember to sync PKG_PYTHON_VERSION!
-PKG_VERSION="3.12.9"
-PKG_SHA256="7220835d9f90b37c006e9842a8dff4580aaca4318674f947302b8d28f3f81112"
+PKG_VERSION="3.14.2"
+PKG_SHA256="ce543ab854bc256b61b71e9b27f831ffd1bfd60a479d639f8be7f9757cf573e9"
 PKG_LICENSE="OSS"
 PKG_SITE="https://www.python.org/"
 PKG_URL="https://www.python.org/ftp/python/${PKG_VERSION}/${PKG_NAME::-1}-${PKG_VERSION}.tar.xz"
@@ -14,7 +14,7 @@ PKG_LONGDESC="Python3 is an interpreted object-oriented programming language."
 PKG_BUILD_FLAGS="-cfg-libs -cfg-libs:host"
 PKG_TOOLCHAIN="autotools"
 
-PKG_PYTHON_VERSION="python3.12"
+PKG_PYTHON_VERSION="python3.14"
 
 PKG_CONFIGURE_OPTS_HOST="ac_cv_prog_HAS_HG=/bin/false
                          ac_cv_prog_SVNVERSION=/bin/false
@@ -39,7 +39,6 @@ PKG_CONFIGURE_OPTS_HOST="ac_cv_prog_HAS_HG=/bin/false
                          --disable-curses
                          --disable-pydoc
                          --disable-test-modules
-                         --disable-lib2to3
                          --disable-idle3
                          --with-expat=builtin
                          --with-doc-strings
@@ -78,10 +77,10 @@ PKG_CONFIGURE_OPTS_TARGET="ac_cv_prog_HAS_HG=/bin/false
                            --enable-curses
                            --disable-pydoc
                            --disable-test-modules
-                           --disable-lib2to3
                            --disable-idle3
                            --with-expat=system
                            --with-doc-strings
+                           --with-lto
                            --without-pymalloc
                            --without-ensurepip
                            --enable-ipv6
@@ -114,6 +113,13 @@ post_make_target() {
   sed -e "s,\([\'|\ ]\)/usr/lib,\1${SYSROOT_PREFIX}/usr/lib,g" -i ${PKG_SYSCONFIG_FILE}
 }
 
+pre_configure_target() {
+  export PYTHON_MODULES_INCLUDE="${TARGET_INCDIR}"
+  export PYTHON_MODULES_LIB="${TARGET_LIBDIR}"
+  export DISABLED_EXTENSIONS="${PKG_PY_DISABLED_MODULES}"
+  export PKG_CONFIG_PATH="$(get_install_dir xz)/usr/lib/pkgconfig:${PKG_CONFIG_PATH}"
+}
+
 post_makeinstall_target() {
   ln -sf ${PKG_PYTHON_VERSION} ${INSTALL}/usr/bin/python
 
@@ -121,7 +127,7 @@ post_makeinstall_target() {
 
   PKG_INSTALL_PATH_LIB=${INSTALL}/usr/lib/${PKG_PYTHON_VERSION}
 
-  for dir in config compiler sysconfigdata lib-dynload/sysconfigdata lib2to3/tests test; do
+  for dir in config compiler sysconfigdata lib-dynload/sysconfigdata test; do
     rm -rf ${PKG_INSTALL_PATH_LIB}/${dir}
   done
 

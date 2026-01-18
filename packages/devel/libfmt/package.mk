@@ -2,8 +2,8 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libfmt"
-PKG_VERSION="11.1.3"
-PKG_SHA256="67cd23ea86ccc359693e2ce1ba8d1bab533c02d743c09b15f3131102d0c2fc1c"
+PKG_VERSION="12.1.0"
+PKG_SHA256="ea7de4299689e12b6dddd392f9896f08fb0777ac7168897a244a6d6085043fea"
 PKG_LICENSE="BSD"
 PKG_SITE="https://github.com/fmtlib/fmt"
 PKG_URL="https://github.com/fmtlib/fmt/archive/${PKG_VERSION}.tar.gz"
@@ -11,7 +11,7 @@ PKG_DEPENDS_HOST="cmake:host make:host"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_LONGDESC="fmt is an open-source formatting library for C++. It can be used as a safe alternative to printf or as a fast alternative to IOStreams."
 PKG_TOOLCHAIN="cmake-make"
-PKG_BUILD_FLAGS="+local-cc"
+PKG_BUILD_FLAGS="+local-cc +lto"
 
 PKG_CMAKE_OPTS_COMMON="-DCMAKE_CXX_STANDARD=14 \
                        -DCMAKE_CXX_EXTENSIONS:BOOL=OFF \

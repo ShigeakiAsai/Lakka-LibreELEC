@@ -17,18 +17,18 @@ diff --git a/cmake/modules/FindGBM.cmake b/cmake/modules/FindGBM.cmake
 index 37a26a7bc4..53cc04663e 100644
 --- a/cmake/modules/FindGBM.cmake
 +++ b/cmake/modules/FindGBM.cmake
-@@ -48,13 +48,5 @@
-                                                                      IMPORTED_LOCATION "${GBM_LIBRARY}"
-                                                                      INTERFACE_INCLUDE_DIRECTORIES "${GBM_INCLUDE_DIR}"
-                                                                      INTERFACE_COMPILE_DEFINITIONS "HAVE_GBM")
+@@ -44,13 +44,6 @@
+ 
+     set(${${CMAKE_FIND_PACKAGE_NAME}_MODULE}_COMPILE_DEFINITIONS HAVE_GBM)
+ 
 -    if(GBM_HAS_BO_MAP)
--      set_property(TARGET ${APP_NAME_LC}::${CMAKE_FIND_PACKAGE_NAME} APPEND PROPERTY
--                                                                            INTERFACE_COMPILE_DEFINITIONS HAS_GBM_BO_MAP)
+-      list(APPEND ${${CMAKE_FIND_PACKAGE_NAME}_MODULE}_COMPILE_DEFINITIONS HAS_GBM_BO_MAP)
 -    endif()
 -    if(GBM_HAS_MODIFIERS)
--      set_property(TARGET ${APP_NAME_LC}::${CMAKE_FIND_PACKAGE_NAME} APPEND PROPERTY
--                                                                            INTERFACE_COMPILE_DEFINITIONS HAS_GBM_MODIFIERS)
+-      list(APPEND ${${CMAKE_FIND_PACKAGE_NAME}_MODULE}_COMPILE_DEFINITIONS HAS_GBM_MODIFIERS)
 -    endif()
+-
+     ADD_TARGET_COMPILE_DEFINITION()
    endif()
  endif()
 diff --git a/system/settings/linux.xml b/system/settings/linux.xml
@@ -201,8 +201,8 @@ index 5267c93c8f..bc0a9b1c96 100644
 +  * are no buffers available instead GEM buffers are running out, so we manually empty
 +  * the buffers here for a maximum of three
 +  */
-+  std::call_once(
-+     flag, [this]() { CLog::Log(LOGDEBUG, "CGBMUtils - using {} buffers", MAX_SURFACE_BUFFERS); });
++  std::call_once(flag, [this]()
++                 { CLog::Log(LOGDEBUG, "CGBMUtils - using {} buffers", MAX_SURFACE_BUFFERS); });
 +
 +  if (m_buffers.size() >= MAX_SURFACE_BUFFERS)
    {
@@ -211,8 +211,8 @@ index 5267c93c8f..bc0a9b1c96 100644
 -     * we have to release buffers. This means that the maximum amount of buffers had been reached.
 -     * For mesa this should be 4 buffers but it may vary across other implementations.
 -     */
--    std::call_once(
--        flag, [this]() { CLog::Log(LOGDEBUG, "CGBMUtils - using {} buffers", m_buffers.size()); });
+-    std::call_once(flag, [this]()
+-                   { CLog::Log(LOGDEBUG, "CGBMUtils - using {} buffers", m_buffers.size()); });
 -
 -    m_buffers.pop();
 +     while (!m_buffers.empty())

@@ -2,14 +2,13 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="ngrep"
-PKG_VERSION="b2e3ba3c5a593abf203e65a407c3a9de0f998d4a"
-PKG_SHA256="daeb3e0473120541ebfa0d16b9cf4829d797d04cf30348d6c02b9b9a37fc9f05"
+PKG_VERSION="1.48.3"
+PKG_SHA256="7c69777c21cc491368b2f1fe057d1d44febcf42413a885b59badeade5264a066"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/jpr5/ngrep"
-PKG_URL="https://github.com/jpr5/ngrep/archive/${PKG_VERSION}.tar.gz"
+PKG_URL="https://github.com/jpr5/ngrep/archive/v${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain libpcap pcre2"
 PKG_LONGDESC="A tool like GNU grep applied to the network layer."
-PKG_TOOLCHAIN="autotools"
 PKG_BUILD_FLAGS="-sysroot -parallel -cfg-libs"
 
 PKG_CONFIGURE_OPTS_TARGET="--with-pcap-includes=${SYSROOT_PREFIX}/usr/include \

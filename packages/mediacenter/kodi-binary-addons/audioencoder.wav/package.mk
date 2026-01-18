@@ -3,9 +3,9 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="audioencoder.wav"
-PKG_VERSION="20.2.0-Nexus"
-PKG_SHA256="1baf69cca688ebd389705ea2bef2c5285ba75dcfd0d0b534b6ab1e61c0020979"
-PKG_REV="8"
+PKG_VERSION="22.0.1-Piers"
+PKG_SHA256="2f8845da1b3fc0096933c6cc609183101dce5995b923eef6023b64e18b032dac"
+PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/xbmc/audioencoder.wav"

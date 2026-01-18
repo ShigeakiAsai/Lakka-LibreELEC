@@ -7,7 +7,7 @@ PKG_SHA256="c3fcf411aea9cb9643590cbc9df99fa5fe30adcac695024442973d76fa5f87bc"
 PKG_LICENSE="GPL"
 PKG_SITE="http://libmtp.sourceforge.net/"
 PKG_URL="${SOURCEFORGE_SRC}/project/${PKG_NAME}/${PKG_NAME}/${PKG_VERSION}/${PKG_NAME}-${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain libusb"
+PKG_DEPENDS_TARGET="toolchain libusb gettext"
 PKG_LONGDESC="An Initiator implementation of the Media Transfer Protocol (MTP)."
 PKG_TOOLCHAIN="autotools"
 

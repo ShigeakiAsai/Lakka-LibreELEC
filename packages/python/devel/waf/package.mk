@@ -2,8 +2,8 @@
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="waf"
-PKG_VERSION="2.1.5"
-PKG_SHA256="ca23407fe8169c9ca8c439fcc8ac143230da056678df279220ebf0c10091678a"
+PKG_VERSION="2.1.9"
+PKG_SHA256="4a47a431b86d5c42fa23b8474aaf752384dcaed65fe9e6aa1f518c103d38a7d1"
 PKG_LICENSE="MIT"
 PKG_SITE="https://waf.io"
 PKG_URL="https://waf.io/${PKG_NAME}-${PKG_VERSION}.tar.bz2"

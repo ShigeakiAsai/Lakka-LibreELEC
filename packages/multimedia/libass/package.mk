@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libass"
-PKG_VERSION="0.17.3"
-PKG_SHA256="eae425da50f0015c21f7b3a9c7262a910f0218af469e22e2931462fed3c50959"
+PKG_VERSION="0.17.4"
+PKG_SHA256="78f1179b838d025e9c26e8fef33f8092f65611444ffa1bfc0cfac6a33511a05a"
 if [ "${DISTRO}" = "Lakka" ]; then
   PKG_VERSION="0.14.0"
   PKG_SHA256="881f2382af48aead75b7a0e02e65d88c5ebd369fe46bc77d9270a94aa8fd38a2"

@@ -3,9 +3,9 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="audioencoder.flac"
-PKG_VERSION="20.2.0-Nexus"
-PKG_SHA256="71daf8c35bbf644591600fef93412cd068a6bf6173d2258dc243ee04c8e5b091"
-PKG_REV="8"
+PKG_VERSION="22.0.1-Piers"
+PKG_SHA256="6daeab034261d452392b9e9627e97291777b10c6f52a549c2994a733a107a783"
+PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/xbmc/audioencoder.flac"

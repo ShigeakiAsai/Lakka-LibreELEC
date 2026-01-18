@@ -12,6 +12,8 @@ PKG_DEPENDS_TARGET="autotools:host gcc:host linux:host libmnl libnftnl"
 PKG_LONGDESC="IP packet filter administration."
 PKG_TOOLCHAIN="autotools"
 
+PKG_CONFIGURE_OPTS_TARGET+=" --enable-nftables --disable-ipv4 --disable-ipv6"
+
 post_configure_target() {
   libtool_remove_rpath libtool
 }
@@ -25,6 +27,13 @@ post_makeinstall_target() {
 
   mkdir -p ${INSTALL}/usr/lib/libreelec
     cp ${PKG_DIR}/scripts/iptables_helper ${INSTALL}/usr/lib/libreelec
+
+  ln -sf xtables-nft-multi ${INSTALL}/usr/sbin/iptables
+  ln -sf xtables-nft-multi ${INSTALL}/usr/sbin/iptables-restore
+  ln -sf xtables-nft-multi ${INSTALL}/usr/sbin/iptables-save
+  ln -sf xtables-nft-multi ${INSTALL}/usr/sbin/ip6tables
+  ln -sf xtables-nft-multi ${INSTALL}/usr/sbin/ip6tables-restore
+  ln -sf xtables-nft-multi ${INSTALL}/usr/sbin/ip6tables-save
 }
 
 post_install() {

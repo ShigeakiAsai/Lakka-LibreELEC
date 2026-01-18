@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="e2fsprogs"
-PKG_VERSION="1.47.2"
-PKG_SHA256="08242e64ca0e8194d9c1caad49762b19209a06318199b63ce74ae4ef2d74e63c"
+PKG_VERSION="1.47.3"
+PKG_SHA256="857e6ef800feaa2bb4578fbc810214be5d3c88b072ea53c5384733a965737329"
 PKG_LICENSE="GPL"
 PKG_SITE="http://e2fsprogs.sourceforge.net/"
 PKG_URL="https://www.kernel.org/pub/linux/kernel/people/tytso/${PKG_NAME}/v${PKG_VERSION}/${PKG_NAME}-${PKG_VERSION}.tar.xz"
@@ -84,6 +84,7 @@ post_makeinstall_target() {
   rm -rf ${INSTALL}/usr/sbin/blkid
   rm -rf ${INSTALL}/usr/sbin/dumpe2fs
   rm -rf ${INSTALL}/usr/sbin/e2freefrag
+  rm -rf ${INSTALL}/usr/sbin/e2mmpstatus
   rm -rf ${INSTALL}/usr/sbin/e2undo
   rm -rf ${INSTALL}/usr/sbin/e4defrag
   rm -rf ${INSTALL}/usr/sbin/filefrag

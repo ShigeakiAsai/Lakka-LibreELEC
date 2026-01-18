@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="curl"
-PKG_VERSION="8.12.1"
-PKG_SHA256="0341f1ed97a26c811abaebd37d62b833956792b7607ea3f15d001613c76de202"
+PKG_VERSION="8.18.0"
+PKG_SHA256="40df79166e74aa20149365e11ee4c798a46ad57c34e4f68fd13100e2c9a91946"
 PKG_LICENSE="MIT"
 PKG_SITE="https://curl.haxx.se"
 PKG_URL="https://curl.haxx.se/download/${PKG_NAME}-${PKG_VERSION}.tar.xz"
@@ -32,6 +32,7 @@ PKG_CMAKE_OPTS_TARGET="-DENABLE_DEBUG=OFF \
                        -DCURL_DISABLE_SMTP=ON \
                        -DCURL_DISABLE_GOPHER=ON \
                        -DCURL_DISABLE_MQTT=ON \
+                       -DBUILD_LIBCURL_DOCS=OFF \
                        -DENABLE_CURL_MANUAL=OFF \
                        -DENABLE_IPV6=ON \
                        -DENABLE_THREADED_RESOLVER=ON \
@@ -40,10 +41,8 @@ PKG_CMAKE_OPTS_TARGET="-DENABLE_DEBUG=OFF \
                        -DCURL_DISABLE_COOKIES=OFF \
                        -DCURL_HIDDEN_SYMBOLS=ON \
                        -DCURL_USE_GSSAPI=OFF \
-                       -DUSE_ZLIB=ON \
                        -DCURL_BROTLI=OFF \
                        -DCURL_ZSTD=OFF \
-                       -DRANDOM_FILE=/dev/urandom \
                        -DCURL_USE_GNUTLS=OFF \
                        -DCURL_ENABLE_SSL=ON \
                        -DCURL_USE_MBEDTLS=OFF \

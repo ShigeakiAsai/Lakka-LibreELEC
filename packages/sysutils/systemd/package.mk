@@ -3,19 +3,17 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="systemd"
-PKG_VERSION="257.3"
-PKG_SHA256="99365d1a01bcc59a659ab59c7bae9c34f7eb2998f1656ee0a4aae05312eacdc9"
+PKG_VERSION="259"
+PKG_SHA256="a84123692d1add7f9c48fd11cdf5f901393008c2d2ade667c18f25a20bf1290d"
 PKG_LICENSE="LGPL2.1+"
 PKG_SITE="http://www.freedesktop.org/wiki/Software/systemd"
 PKG_URL="https://github.com/systemd/systemd/archive/v${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="meson:host ninja:host gcc:host libcap kmod util-linux entropy libidn2 wait-time-sync Jinja2:host"
 PKG_LONGDESC="A system and session manager for Linux, compatible with SysV and LSB init scripts."
+PKG_BUILD_FLAGS="+lto"
 
 PKG_MESON_OPTS_TARGET="--libdir=/usr/lib \
-                       -Drootprefix=/usr \
-                       -Dsplit-usr=false \
                        -Dsplit-bin=true \
-                       -Ddefault-hierarchy=unified \
                        -Dtty-gid=5 \
                        -Dtests=false \
                        -Dseccomp=disabled \
@@ -95,6 +93,7 @@ PKG_MESON_OPTS_TARGET="--libdir=/usr/lib \
                        -Dlink-udev-shared=true \
                        -Dlink-systemctl-shared=true \
                        -Dlink-networkd-shared=false \
+                       -Djournal-storage-default=auto \
                        -Dbashcompletiondir=no \
                        -Dzshcompletiondir=no \
                        -Dkmod-path=/usr/bin/kmod \
@@ -158,6 +157,11 @@ post_makeinstall_target() {
   # adjust systemd-hwdb-update (we have read-only /etc).
   sed '/^ConditionNeedsUpdate=.*$/d' -i ${INSTALL}/usr/lib/systemd/system/systemd-hwdb-update.service
 
+  # remove systemd-creds
+  safe_remove ${INSTALL}/usr/bin/systemd-creds
+  safe_remove ${INSTALL}/usr/lib/tmpfiles.d/credstore.conf
+  safe_remove ${INSTALL}/usr/lib/tmpfiles.d/provision.conf
+
   # remove nspawn
   safe_remove ${INSTALL}/usr/bin/systemd-nspawn
   safe_remove ${INSTALL}/usr/lib/systemd/system/systemd-nspawn@.service
@@ -197,6 +201,9 @@ post_makeinstall_target() {
   # remove systemd-time-wait-sync (not detecting slew time updates, using package wait-time-sync)
   safe_remove ${INSTALL}/usr/lib/systemd/system/systemd-time-wait-sync.service
   safe_remove ${INSTALL}/usr/lib/systemd/systemd-time-wait-sync
+
+  # remove the userdbctl load-credentials script - no service (addon) require the creation of static users
+  safe_remove ${INSTALL}/usr/lib/systemd/system/systemd-userdb-load-credentials.service
 
   # tune journald.conf
   sed -e "s,^.*Compress=.*$,Compress=no,g" -i ${INSTALL}/etc/systemd/journald.conf
@@ -276,6 +283,8 @@ post_makeinstall_target() {
   safe_remove ${INSTALL}/etc/udev/rules.d
   ln -sf /storage/.config/udev.rules.d ${INSTALL}/etc/udev/rules.d
 
+  ln -sf /storage/.cache/userdb ${INSTALL}/etc/userdb
+
   # journald
   ln -sf /storage/.cache/journald.conf.d ${INSTALL}/usr/lib/systemd/journald.conf.d
 }
@@ -289,20 +298,27 @@ post_install() {
   add_group systemd-network 193
   add_user systemd-network x 193 193 "systemd-network" "/" "/bin/sh"
 
-  add_group audio 63 pipewire,${DISTRO}
+  add_group systemd-oom 194
+  add_user systemd-oom x 194 194 "systemd Userspace OOM Killer" "/" "/bin/false"
+
+  add_group adm 4
+  add_group tty 5
+  add_group disk 6 ${DISTRO}
+  add_group lp 7
+  add_group kmem 9
+  add_group wheel 10
   add_group cdrom 11 ${DISTRO}
   add_group dialout 18 ${DISTRO}
-  add_group disk 6 ${DISTRO}
   add_group floppy 19 ${DISTRO}
-  add_group kmem 9
-  add_group kvm 10
-  add_group lp 7
-  add_group render 12
-  add_group tape 33
-  add_group tty 5
-  add_group video 39 pipewire,${DISTRO}
   add_group utmp 22
-  add_group input 199 ${DISTRO}
+  add_group tape 33
+  add_group kvm 36
+  add_group video 39 pipewire,${DISTRO}
+  add_group audio 63 pipewire,${DISTRO}
+  add_group input 104 ${DISTRO}
+  add_group render 105
+  add_group sgx 106
+  add_group clock 107
 
   enable_service machine-id.service
   enable_service debugconfig.service

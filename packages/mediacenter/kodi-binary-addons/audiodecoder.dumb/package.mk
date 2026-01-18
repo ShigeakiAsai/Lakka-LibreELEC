@@ -3,9 +3,9 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="audiodecoder.dumb"
-PKG_VERSION="20.2.1-Nexus"
-PKG_SHA256="d2ef04e80645f0bd1c9d31c9633d2a27d1757198fbcd2d43d00c84889e6ae585"
-PKG_REV="8"
+PKG_VERSION="22.0.1-Piers"
+PKG_SHA256="e18dd848c0d224981cbc4739d6ba3d085f15083596f683d520c4f6961fed71a4"
+PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/xbmc/audiodecoder.dumb"

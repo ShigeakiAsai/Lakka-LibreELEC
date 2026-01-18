@@ -3,9 +3,9 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="audiodecoder.ncsf"
-PKG_VERSION="20.2.0-Nexus"
-PKG_SHA256="31b25846a9b8213306456eb6f8ab8fdaeede5cad35627e77aff2c422f370b211"
-PKG_REV="8"
+PKG_VERSION="22.0.1-Piers"
+PKG_SHA256="a158ce4f9fcde14a21ef3c5f2f5815296a73a7de973ff17854ab4b7d612a6955"
+PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/xbmc/audiodecoder.ncsf"

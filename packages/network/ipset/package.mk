@@ -2,8 +2,8 @@
 # Copyright (C) 2025-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="ipset"
-PKG_VERSION="7.23"
-PKG_SHA256="db3a51a9ebf27c7cbd0a1482c46c5e0ed630c28c796f73287c4b339dd46086e5"
+PKG_VERSION="7.24"
+PKG_SHA256="fbe3424dff222c1cb5e5c34d38b64524b2217ce80226c14fdcbb13b29ea36112"
 PKG_LICENSE="GPL"
 PKG_SITE="https://ipset.netfilter.org"
 PKG_URL="https://ipset.netfilter.org/${PKG_NAME}-${PKG_VERSION}.tar.bz2"

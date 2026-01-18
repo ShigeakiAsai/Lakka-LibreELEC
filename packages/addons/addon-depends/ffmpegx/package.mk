@@ -2,8 +2,8 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="ffmpegx"
-PKG_VERSION="7.1"
-PKG_SHA256="40973d44970dbc83ef302b0609f2e74982be2d85916dd2ee7472d30678a7abe6"
+PKG_VERSION="8.0.1"
+PKG_SHA256="05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41"
 PKG_LICENSE="GPL-3.0-only"
 PKG_SITE="https://ffmpeg.org"
 PKG_URL="https://ffmpeg.org/releases/ffmpeg-${PKG_VERSION}.tar.xz"
@@ -14,8 +14,12 @@ PKG_BUILD_FLAGS="-sysroot"
 # Dependencies
 get_graphicdrivers
 
+if [ "${TARGET_ARCH}" = "aarch64" ] || [ "${TARGET_ARCH}" = "x86_64" ]; then
+  PKG_DEPENDS_TARGET+=" x265"
+fi
+
 if [ "${TARGET_ARCH}" = "x86_64" ]; then
-  PKG_DEPENDS_TARGET+=" nasm:host x265"
+  PKG_DEPENDS_TARGET+=" nasm:host"
 
   if listcontains "${GRAPHIC_DRIVERS}" "(crocus|i915|iris)"; then
     PKG_DEPENDS_TARGET+=" intel-vaapi-driver"
@@ -61,12 +65,12 @@ pre_configure_target() {
     --enable-hwaccel=vp8_vaapi \
     --enable-hwaccel=vp9_vaapi \
     --enable-hwaccel=wmv3_vaapi"
+  fi
 
-    PKG_FFMPEG_X26x_GENERIC="\
-    --enable-libx264 \
-    --enable-encoder=libx264 \
-    --enable-libx265 \
-    --enable-encoder=libx265"
+  if [ "${TARGET_ARCH}" = "aarch64" ] || [ "${TARGET_ARCH}" = "x86_64" ]; then
+    PKG_FFMPEG_X265="\
+      --enable-libx265 \
+      --enable-encoder=libx265"
   fi
 
   # Encoders
@@ -75,7 +79,9 @@ pre_configure_target() {
     --enable-libvpx \
     --enable-encoder=libvpx_vp8 \
     --enable-encoder=libvpx_vp9 \
-    ${PKG_FFMPEG_X26x_GENERIC} \
+    --enable-libx264 \
+    --enable-encoder=libx264 \
+    ${PKG_FFMPEG_X265} \
     --enable-libaom \
     --enable-encoder=libaom_av1 \
     \

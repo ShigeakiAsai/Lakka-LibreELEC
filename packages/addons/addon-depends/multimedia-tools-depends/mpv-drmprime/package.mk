@@ -2,8 +2,8 @@
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="mpv-drmprime"
-PKG_VERSION="0.39.0"
-PKG_SHA256="2ca92437affb62c2b559b4419ea4785c70d023590500e8a52e95ea3ab4554683"
+PKG_VERSION="0.41.0"
+PKG_SHA256="ee21092a5ee427353392360929dc64645c54479aefdb5babc5cfbb5fad626209"
 PKG_LICENSE="GPL"
 PKG_SITE="https://mpv.io/"
 PKG_URL="https://github.com/mpv-player/mpv/archive/v${PKG_VERSION}.tar.gz"

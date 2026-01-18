@@ -2,14 +2,20 @@
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="media-driver"
-PKG_VERSION="25.1.2"
-PKG_SHA256="6c11cfe1b9012011d0354b010d191a527fa3a4086152726ba642ca51808029bb"
+PKG_VERSION="26.1.0"
+PKG_SHA256="b9bb6177a36c69a44d821062637b4bb69f7751e8a3be354e5402e1abdf93b96a"
 PKG_ARCH="x86_64"
 PKG_LICENSE="MIT"
 PKG_SITE="https://01.org/linuxmedia"
 PKG_URL="https://github.com/intel/media-driver/archive/intel-media-${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain libva libdrm gmmlib"
 PKG_LONGDESC="media-driver: The Intel(R) Media Driver for VAAPI is a new VA-API (Video Acceleration API) user mode driver supporting hardware accelerated decoding, encoding, and video post processing for GEN based graphics hardware."
+
+pre_configure_target() {
+  # build with gcc 15 (since 15-20250330, build is successful with 15-20250316) fails
+  # unless this error is degraded to a warning
+  export CXXFLAGS+=" -Wno-error=array-bounds="
+}
 
 PKG_CMAKE_OPTS_TARGET="-DBUILD_CMRTLIB=OFF \
                        -DBUILD_KERNELS=ON \

@@ -29,7 +29,6 @@ get_graphicdrivers() {
   VULKAN_DRIVERS_MESA=""
   LLVM_SUPPORT="no"
   COMPOSITE_SUPPORT="no"
-  VDPAU_SUPPORT="no"
   VAAPI_SUPPORT="no"
   V4L2_SUPPORT="no"
 
@@ -48,7 +47,6 @@ get_graphicdrivers() {
     GALLIUM_DRIVERS+=" etnaviv"
     V4L2_SUPPORT="yes"
     VAAPI_SUPPORT="no"
-    VDPAU_SUPPORT="no"
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "freedreno"; then
@@ -56,12 +54,12 @@ get_graphicdrivers() {
     VULKAN_DRIVERS_MESA+=" freedreno"
     V4L2_SUPPORT="yes"
     VAAPI_SUPPORT="no"
-    VDPAU_SUPPORT="no"
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "i915"; then
     GALLIUM_DRIVERS+=" i915"
     XORG_DRIVERS+=" intel"
+    LLVM_SUPPORT="yes"
     COMPOSITE_SUPPORT="yes"
     VAAPI_SUPPORT="yes"
   fi
@@ -82,7 +80,7 @@ get_graphicdrivers() {
   if listcontains "${GRAPHIC_DRIVERS}" "nvidia"; then
     XORG_DRIVERS+=" nvidia"
     VULKAN_DRIVERS_CONFIG+=" nvidia"
-    VDPAU_SUPPORT="yes"
+    VAAPI_SUPPORT="yes"
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "nvidia-ng"; then
@@ -100,14 +98,12 @@ get_graphicdrivers() {
     GALLIUM_DRIVERS+=" r300"
     LLVM_SUPPORT="yes"
     COMPOSITE_SUPPORT="yes"
-    VDPAU_SUPPORT="no"
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "r600"; then
     GALLIUM_DRIVERS+=" r600"
     LLVM_SUPPORT="yes"
     COMPOSITE_SUPPORT="yes"
-    VDPAU_SUPPORT="no"
     VAAPI_SUPPORT="yes"
   fi
 
@@ -117,7 +113,6 @@ get_graphicdrivers() {
     VULKAN_DRIVERS_MESA+=" amd"
     LLVM_SUPPORT="yes"
     COMPOSITE_SUPPORT="yes"
-    VDPAU_SUPPORT="yes"
     VAAPI_SUPPORT="yes"
   fi
 
@@ -126,7 +121,6 @@ get_graphicdrivers() {
     VULKAN_DRIVERS_MESA+=" broadcom"
     V4L2_SUPPORT="yes"
     VAAPI_SUPPORT="no"
-    VDPAU_SUPPORT="no"
   fi
 
   if listcontains "${GRAPHIC_DRIVERS}" "virtio"; then
@@ -143,11 +137,6 @@ get_graphicdrivers() {
     GALLIUM_DRIVERS+=" nouveau"
     XORG_DRIVERS+=" nouveau"
     COMPOSITE_SUPPORT="yes"
-  fi
-
-  # VDPAU Support depends on X11
-  if [ ! "${DISPLAYSERVER}" = "x11" ]; then
-    VDPAU_SUPPORT="no"
   fi
 
   # remove duplicate entries

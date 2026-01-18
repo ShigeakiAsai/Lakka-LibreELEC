@@ -2,8 +2,8 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="rust"
-PKG_VERSION="1.85.0"
-PKG_SHA256="2f4f3142ffb7c8402139cfa0796e24baaac8b9fd3f96b2deec3b94b4045c6a8a"
+PKG_VERSION="1.92.0"
+PKG_SHA256="9e0d2ca75c7e275fdc758255bf4b03afb3d65d1543602746907c933b6901c3b8"
 PKG_LICENSE="MIT"
 PKG_SITE="https://www.rust-lang.org"
 PKG_URL="https://static.rust-lang.org/dist/rustc-${PKG_VERSION}-src.tar.gz"
@@ -33,7 +33,7 @@ configure_host() {
   esac
 
   cat >${PKG_BUILD}/config.toml  <<END
-change-id = 133207
+change-id = 147888
 
 [llvm]
 download-ci-llvm = false
@@ -114,6 +114,8 @@ make_host() {
   unset LDFLAGS
 
   export RUST_TARGET_PATH="${PKG_BUILD}/targets/"
+  export HOST_CMAKE="${TOOLCHAIN}/bin/cmake"
+  export HOST_CMAKE_TOOLCHAIN_FILE="${CMAKE_CONF}"
 
   python3 src/bootstrap/bootstrap.py -j ${CONCURRENCY_MAKE_LEVEL} build --stage 2 --verbose
 }

@@ -3,8 +3,8 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="glib"
-PKG_VERSION="2.83.4"
-PKG_SHA256="4edc4dc184f46d1220694b7775c5d7c62265c83b0e9632d844da127c181fc391"
+PKG_VERSION="2.87.1"
+PKG_SHA256="fc2ce0f948ee163f8adc5bdde2f38612b8a3f270022aa1b0d087cb9f1f0ac5c2"
 PKG_LICENSE="LGPL"
 PKG_SITE="https://www.gtk.org/"
 PKG_URL="https://download.gnome.org/sources/glib/$(get_pkg_version_maj_min)/${PKG_NAME}-${PKG_VERSION}.tar.xz"
@@ -15,18 +15,20 @@ PKG_LONGDESC="A library which includes support routines for C such as lists, tre
 PKG_MESON_OPTS_HOST="-Ddefault_library=static \
                      -Dinstalled_tests=false \
                      -Dlibmount=disabled \
+                     -Dintrospection=disabled \
+                     -Dsysprof=disabled \
                      -Dtests=false"
 
 PKG_MESON_OPTS_TARGET="-Ddefault_library=shared \
                        -Dinstalled_tests=false \
                        -Dselinux=disabled \
                        -Dxattr=true \
-                       -Dgtk_doc=false \
-                       -Dman=false \
-                       -Ddtrace=false \
-                       -Dsystemtap=false \
+                       -Ddocumentation=false \
+                       -Dman-pages=disabled \
+                       -Ddtrace=disabled \
+                       -Dsystemtap=disabled \
                        -Dbsymbolic_functions=true \
-                       -Dforce_posix_threads=true \
+                       -Dsysprof=disabled \
                        -Dtests=false"
 
 post_makeinstall_target() {

@@ -2,8 +2,8 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="inputstream.rtmp"
-PKG_VERSION="22.0.0-Piers"
-PKG_SHA256="0b5ce569adb8939dcb958e7dc8b8c0e4e2680f130368ef64ef900e2c412680a2"
+PKG_VERSION="22.1.0-Piers"
+PKG_SHA256="a08b5687d07b0617d27c5182162d601d9e62c7bf79379fbf5d07031fe61de43b"
 PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"

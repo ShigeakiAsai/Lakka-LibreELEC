@@ -2,8 +2,8 @@
 # Copyright (C) 2025-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="hyperhdr"
-PKG_VERSION="21.0.0.0beta2"
-PKG_SHA256="7ef919e10b903541f138685bb0fef0a14a4c2b36e925b61aceb9c76472385511"
+PKG_VERSION="21.0.0.0"
+PKG_SHA256="fde381b8ae701c93b57b23cfa95c56dcbbecee7e5e7b2cce5d8b5f97ed86a676"
 PKG_REV="0"
 PKG_LICENSE="MIT"
 PKG_SITE="https://github.com/awawa-dev/HyperHDR"
@@ -44,6 +44,7 @@ PKG_CMAKE_OPTS_TARGET="-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON \
                        -DUSE_STATIC_QT_PLUGINS=ON \
                        -DUSE_SYSTEM_FLATBUFFERS_LIBS=OFF \
                        -DFLATBUFFERS_FLATC_EXECUTABLE=${TOOLCHAIN}/bin/flatc \
+                       -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
                        -Wno-dev"
 
 pre_configure_target() {
@@ -64,7 +65,7 @@ addon() {
   mkdir -p ${ADDON_BUILD}/${PKG_ADDON_ID}/bin
   cp ${PKG_INSTALL}/usr/share/hyperhdr/bin/hyperhdr ${ADDON_BUILD}/${PKG_ADDON_ID}/bin
 
-  patchelf --add-rpath '$ORIGIN/../lib.private' ${ADDON_BUILD}/${PKG_ADDON_ID}/bin/hyperhdr
+  patchelf --add-rpath '${ORIGIN}/../lib.private' ${ADDON_BUILD}/${PKG_ADDON_ID}/bin/hyperhdr
 
   mkdir -p ${ADDON_BUILD}/${PKG_ADDON_ID}/lib.private
   cp -p $(get_install_dir zstd)/usr/lib/libzstd.so.1 ${ADDON_BUILD}/${PKG_ADDON_ID}/lib.private

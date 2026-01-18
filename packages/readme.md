@@ -271,7 +271,7 @@ Issue | Level | Meaning |
     * new kernel driver
     * ...
 2. Find a place in the packages tree
-    * look into the package tree structure, which is generally self explanitory.
+    * look into the package tree structure, which is generally self explanatory.
     * do not place it in an existing package (directory that includes a `package.mk`)
     * when you found a place, create a directory with the name of your package (use same value for `PKG_NAME`!!)
 3. Create an initial `package.mk`

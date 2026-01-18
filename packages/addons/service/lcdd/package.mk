@@ -63,5 +63,4 @@ addon() {
 
   sed -e "s/@DRIVERS@/${drivers}/" \
       -i ${ADDON_BUILD}/${PKG_ADDON_ID}/resources/settings.xml
-
 }

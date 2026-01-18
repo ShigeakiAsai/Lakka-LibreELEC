@@ -2,11 +2,11 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="icu"
-PKG_VERSION="76-1"
-PKG_SHA256="a2c443404f00098e9e90acf29dc318e049d2dc78d9ae5f46efb261934a730ce2"
+PKG_VERSION="78.2"
+PKG_SHA256="3e99687b5c435d4b209630e2d2ebb79906c984685e78635078b672e03c89df35"
 PKG_LICENSE="Custom"
 PKG_SITE="https://icu.unicode.org"
-PKG_URL="https://github.com/unicode-org/icu/archive/release-${PKG_VERSION}.tar.gz"
+PKG_URL="https://github.com/unicode-org/icu/releases/download/release-${PKG_VERSION}/icu4c-${PKG_VERSION}-sources.tgz"
 PKG_DEPENDS_HOST="toolchain:host"
 PKG_DEPENDS_TARGET="toolchain icu:host"
 PKG_LONGDESC="International Components for Unicode library."
@@ -19,7 +19,7 @@ if [ "${DISTRO}" = "Lakka" ]; then
 fi
 
 configure_package() {
-  PKG_CONFIGURE_SCRIPT="${PKG_BUILD}/icu4c/source/configure"
+  PKG_CONFIGURE_SCRIPT="${PKG_BUILD}/source/configure"
   PKG_CONFIGURE_OPTS_TARGET="--disable-layout \
                              --disable-layoutex \
                              --enable-renaming \

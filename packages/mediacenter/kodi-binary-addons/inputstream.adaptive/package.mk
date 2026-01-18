@@ -2,14 +2,14 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="inputstream.adaptive"
-PKG_VERSION="22.1.12-Piers"
-PKG_SHA256="f5880a23c4e3a366bde08b0acd9ccdfb7b69014028a1b2a563ae73f3e1c281e7"
+PKG_VERSION="22.3.6-Piers"
+PKG_SHA256="bb44e38e54b3ffa33027cbd7cf24d1f569263dd34e7196075aea4d037cc8869d"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/xbmc/inputstream.adaptive"
 PKG_URL="https://github.com/xbmc/inputstream.adaptive/archive/${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain kodi-platform bento4 nss pugixml rapidjson"
+PKG_DEPENDS_TARGET="toolchain kodi-platform bento4 nlohmann-json nss pugixml"
 PKG_SECTION=""
 PKG_SHORTDESC="inputstream.adaptive"
 PKG_LONGDESC="inputstream.adaptive"

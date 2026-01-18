@@ -2,9 +2,9 @@
 # Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="inputstream.ffmpegdirect"
-PKG_VERSION="22.1.0-Piers"
-PKG_SHA256="93be6d64857951c41c4f82518da556dc6b9d090dfb58b3c9044ce4aeeab10e57"
-PKG_REV="1"
+PKG_VERSION="22.2.0-Piers"
+PKG_SHA256="c2afc0f55ab90aa808cd2a1030ef07757da490d209bdecc2db9d5799aff4ac64"
+PKG_REV="3"
 PKG_ARCH="any"
 PKG_LICENSE="GPL2+"
 PKG_SITE="https://github.com/xbmc/inputstream.ffmpegdirect"
