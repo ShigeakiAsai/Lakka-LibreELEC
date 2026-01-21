@@ -4,6 +4,7 @@ After=syslog.target bluetooth-defaults.service
 Requires=bluetooth-defaults.service
 
 ConditionPathExists=/storage/.cache/services/bluez.conf
+ConditionPathExists=!/storage/.cache/services/bluez.disabled
 
 [Service]
 Type=dbus
