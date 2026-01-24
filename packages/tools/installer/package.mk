@@ -10,6 +10,10 @@ PKG_DEPENDS_TARGET="toolchain busybox newt parted e2fsprogs syslinux grub"
 PKG_LONGDESC="LibreELEC.tv Install manager to install the system on any disk"
 PKG_TOOLCHAIN="manual"
 
+if [ "${DISTRO}" = "Lakka" ]; then
+  PKG_DEPENDS_TARGET+=" grub_x64"
+fi
+
 post_install() {
   mkdir -p ${INSTALL}/usr/bin
     cp ${PKG_DIR}/scripts/installer ${INSTALL}/usr/bin

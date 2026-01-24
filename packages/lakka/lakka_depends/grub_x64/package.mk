@@ -1,15 +1,12 @@
-# SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
-
-PKG_NAME="grub"
+PKG_NAME="grub_x64"
 PKG_VERSION="2.14"
 PKG_SHA256="bc8d3c73535b8838d8c8e2654d73edc4e6ae8c8acdb45d5df5dc9a1547446d43"
 PKG_ARCH="x86_64"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://www.gnu.org/software/grub/index.html"
-PKG_URL="https://ftp.gnu.org/gnu/grub/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+PKG_URL="https://ftp.gnu.org/gnu/grub/grub-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_HOST="toolchain:host"
-PKG_DEPENDS_TARGET="toolchain flex freetype:host gettext:host grub:host"
+PKG_DEPENDS_TARGET="toolchain flex freetype:host gettext:host grub_x64:host"
 PKG_LONGDESC="GRUB is a Multiboot boot loader."
 PKG_TOOLCHAIN="configure"
 PKG_BUILD_FLAGS="-cfg-libs -cfg-libs:host"
@@ -23,7 +20,7 @@ pre_configure_host() {
 }
 
 pre_configure_target() {
-  PKG_CONFIGURE_OPTS_TARGET="--target=i386-pc-linux \
+  PKG_CONFIGURE_OPTS_TARGET="--target=x86_64-pc-linux \
                              --disable-nls \
                              --with-platform=efi"
 
@@ -50,13 +47,13 @@ make_target() {
 }
 
 makeinstall_target() {
-  ${PKG_BUILD}/.${HOST_NAME}/grub-mkimage -d grub-core -o bootia32.efi -O i386-efi -p /EFI/BOOT \
+  ${PKG_BUILD}/.${HOST_NAME}/grub-mkimage -d grub-core -o bootx64.efi -O x86_64-efi -p /EFI/BOOT \
     boot chain configfile ext2 fat linux search efi_gop \
     efi_uga part_gpt gzio gettext loadenv loadbios memrw
 
   mkdir -p ${INSTALL}/usr/share/grub
-     cp -P bootia32.efi ${INSTALL}/usr/share/grub
+     cp -P bootx64.efi ${INSTALL}/usr/share/grub
 
   mkdir -p ${TOOLCHAIN}/share/grub
-     cp -P bootia32.efi ${TOOLCHAIN}/share/grub
+     cp -P bootx64.efi ${TOOLCHAIN}/share/grub
 }
