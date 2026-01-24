@@ -145,25 +145,7 @@ fi
 
 configure_target() {
   PKG_CONFIG_OPTS_STANDARD="\
-              --prefix="/usr" \
-              --cpu="${TARGET_CPU}" \
-              --arch="${TARGET_ARCH}" \
               --enable-cross-compile \
-              --cross-prefix="${TARGET_PREFIX}" \
-              --sysroot="${SYSROOT_PREFIX}" \
-              --sysinclude="${SYSROOT_PREFIX}/usr/include" \
-              --target-os="linux" \
-              --nm="${NM}" \
-              --ar="${AR}" \
-              --as="${CC}" \
-              --cc="${CC}" \
-              --ld="${CC}" \
-              --host-cc="${HOST_CC}" \
-              --host-cflags="${HOST_CFLAGS}" \
-              --host-ldflags="${HOST_LDFLAGS}" \
-              --extra-cflags="${CFLAGS}" \
-              --extra-ldflags="${LDFLAGS}" \
-              --extra-libs="${PKG_FFMPEG_LIBS}" \
               --disable-static \
               --enable-shared \
               --enable-gpl \
@@ -172,7 +154,6 @@ configure_target() {
               --disable-doc \
               ${PKG_FFMPEG_DEBUG} \
               --enable-pic \
-              --pkg-config="${TOOLCHAIN}/bin/pkg-config" \
               --enable-optimizations \
               --disable-extra-warnings \
               --enable-avdevice \
@@ -263,7 +244,26 @@ configure_target() {
     PKG_CONFIG_OPTS_STANDARD=${PKG_CONFIG_OPTS_STANDARD/"--disable-libx264 "/"--enable-libx264 "}
   fi
 
-  ./configure ${PKG_CONFIG_OPTS_STANDARD}
+  ./configure ${PKG_CONFIG_OPTS_STANDARD} \
+              --prefix="/usr" \
+              --cpu="${TARGET_CPU}" \
+              --arch="${TARGET_ARCH}" \
+              --cross-prefix="${TARGET_PREFIX}" \
+              --sysroot="${SYSROOT_PREFIX}" \
+              --sysinclude="${SYSROOT_PREFIX}/usr/include" \
+              --target-os="linux" \
+              --nm="${NM}" \
+              --ar="${AR}" \
+              --as="${CC}" \
+              --cc="${CC}" \
+              --ld="${CC}" \
+              --host-cc="${HOST_CC}" \
+              --host-cflags="${HOST_CFLAGS}" \
+              --host-ldflags="${HOST_LDFLAGS}" \
+              --extra-cflags="${CFLAGS}" \
+              --extra-ldflags="${LDFLAGS}" \
+              --extra-libs="${PKG_FFMPEG_LIBS}" \
+              --pkg-config="${TOOLCHAIN}/bin/pkg-config"
 }
 
 post_makeinstall_target() {
