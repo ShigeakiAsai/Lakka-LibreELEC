@@ -1,0 +1,12 @@
+diff --git a/src/lib/util/corestr.cpp b/src/lib/util/corestr.cpp
+index 586f56c1..d9b5c9e3 100644
+--- a/src/lib/util/corestr.cpp
++++ b/src/lib/util/corestr.cpp
+@@ -16,6 +16,7 @@
+ 
+ #include <cctype>
+ #include <cstdlib>
++#include <cstdint>
+ 
+ 
+ /*-------------------------------------------------

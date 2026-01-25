@@ -13,7 +13,8 @@ PKG_CMAKE_OPTS_TARGET="-DBUILD_PLAYER=OFF \
                        -DBUILD_DEMO_CARTS=OFF \
                        -DBUILD_LIBRETRO=ON \
                        -DBUILD_WITH_MRUBY=OFF \
-                       -DCMAKE_BUILD_TYPE=Release"
+                       -DCMAKE_BUILD_TYPE=Release \
+                       -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 pre_configure_target() {
   PKG_CMAKE_SCRIPT="${PKG_BUILD}/core/CMakeLists.txt"

@@ -1,11 +1,11 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bfd5e69..5cc4a5d 100644
+index 4cb1106..cf41e41 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -202,8 +202,14 @@ endif()
+@@ -240,8 +240,14 @@ endif()
  if(LIBRETRO)
- 	add_definitions(-D__LIBRETRO__)
- 	add_definitions(-DGLEW_NO_GLU)
+ 	add_compile_definitions(__LIBRETRO__)
+ 	add_compile_definitions(GLEW_NO_GLU)
 +	if(ARM64)
 +		add_compile_options(-mno-outline-atomics)
 +	endif()
