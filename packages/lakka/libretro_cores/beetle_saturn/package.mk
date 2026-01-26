@@ -1,5 +1,5 @@
 PKG_NAME="beetle_saturn"
-PKG_VERSION="0a78a9a5ab0088ba19f21e028dda9f4b4d7c9e48"
+PKG_VERSION="b4df47a9f0f30d09eb95b07a4435d0f435a2e95d"
 PKG_ARCH="x86_64"
 if [ "${PROJECT}" = "RPi" ] && [ "${DEVICE:0:4}" = "RPi5" ]; then
   PKG_ARCH+=" aarch64"

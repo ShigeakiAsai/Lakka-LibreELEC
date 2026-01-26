@@ -1,0 +1,25 @@
+diff --git a/libretro/Makefile.libretro b/libretro/Makefile.libretro
+index ca05cce..f50a0a6 100644
+--- a/libretro/Makefile.libretro
++++ b/libretro/Makefile.libretro
+@@ -48,6 +48,7 @@ else
+ endif
+ CXXFLAGS += -Wno-register -DFMT_HEADER_ONLY
+ COMMONFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\" -DSVN_VERSION=\"$(SVN_VERSION)\"
++EXTRA_CMAKE_FLAGS += -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+ 
+ # Target triplet for cross compilation. When cross compiling from Linux to
+ # Windows 32-bit using MXE for example, you'd set this to something like:
+diff --git a/libretro/deps/fluidsynth-sans-glib/src/CMakeLists.txt b/libretro/deps/fluidsynth-sans-glib/src/CMakeLists.txt
+index 2b25a8a..d463193 100644
+--- a/libretro/deps/fluidsynth-sans-glib/src/CMakeLists.txt
++++ b/libretro/deps/fluidsynth-sans-glib/src/CMakeLists.txt
+@@ -435,7 +435,7 @@ ExternalProject_Add(gentables
+     SOURCE_DIR ${GENTAB_SDIR}
+     BINARY_DIR ${GENTAB_BDIR}
+     CONFIGURE_COMMAND
+-        "${CMAKE_COMMAND}" -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE} -G "${CMAKE_GENERATOR}" -B "${GENTAB_BDIR}" "${GENTAB_SDIR}"
++        "${CMAKE_COMMAND}" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE} -G "${CMAKE_GENERATOR}" -B "${GENTAB_BDIR}" "${GENTAB_SDIR}"
+     BUILD_COMMAND
+         "${CMAKE_COMMAND}" --build "${GENTAB_BDIR}"
+     INSTALL_COMMAND ${GENTAB_BDIR}/make_tables.exe "${CMAKE_BINARY_DIR}/"

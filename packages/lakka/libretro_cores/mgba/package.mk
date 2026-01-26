@@ -1,5 +1,5 @@
 PKG_NAME="mgba"
-PKG_VERSION="6c2da7b62163fcd6446fc06b9b993fd414a05eaa"
+PKG_VERSION="26b7884bc25a5933960f3cdcd98bac1ae14d42e2"
 PKG_LICENSE="MPLv2.0"
 PKG_SITE="https://github.com/mgba-emu/mgba"
 PKG_URL="${PKG_SITE}.git"
@@ -16,7 +16,8 @@ PKG_CMAKE_OPTS_TARGET="-DCMAKE_BUILD_TYPE=Release \
                        -DBUILD_SDL=OFF \
                        -DUSE_DISCORD_RPC=OFF \
                        -DUSE_EDITLINE=OFF \
-                       -DUSE_EPOXY=OFF"
+                       -DUSE_EPOXY=OFF \
+                       -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 if [ "${OPENGL_SUPPORT}" = "yes" ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGL}"

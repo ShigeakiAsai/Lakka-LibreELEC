@@ -1,5 +1,5 @@
 PKG_NAME="gearsystem"
-PKG_VERSION="0b0775e898606e9138bbea4217b759b745dc1b26"
+PKG_VERSION="5133ca740b701e12d4b00d715627248f8a545b47"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/drhelius/Gearsystem"
 PKG_URL="${PKG_SITE}.git"

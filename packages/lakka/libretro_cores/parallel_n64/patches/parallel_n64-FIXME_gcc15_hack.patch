@@ -1,0 +1,13 @@
+diff --git a/Makefile.common b/Makefile.common
+index ebc77a0..0da9757 100644
+--- a/Makefile.common
++++ b/Makefile.common
+@@ -12,6 +12,8 @@ RSPDIR_PARALLEL    = $(ROOT_DIR)/mupen64plus-rsp-paraLLEl
+ VIDEODIR_GLIDE     = $(ROOT_DIR)/glide2gl/src
+ VIDEODIR_GLIDEN64  = $(ROOT_DIR)/mupen64plus-video-gliden64
+ 
++CFLAGS += -Wno-error=incompatible-pointer-types
++
+ ifeq ($(HAVE_OPENGL),0)
+ 	HAVE_GLN64    =0
+ 	HAVE_GLIDE64  =0

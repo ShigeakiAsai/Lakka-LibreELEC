@@ -1,5 +1,5 @@
 PKG_NAME="holani"
-PKG_VERSION="0.9.6"
+PKG_VERSION="19b974f77247a937369adf48280d2b34a5a66245"
 PKG_LICENSE="GPLv3"
 PKG_ARCH="x86_64"
 PKG_SITE="https://github.com/LLeny/holani-retro"

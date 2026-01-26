@@ -1,0 +1,36 @@
+diff --git a/GLideN64/src/GLideNHQ/TxHiResLoader.cpp b/GLideN64/src/GLideNHQ/TxHiResLoader.cpp
+index 1cae456..0d31991 100644
+--- a/GLideN64/src/GLideNHQ/TxHiResLoader.cpp
++++ b/GLideN64/src/GLideNHQ/TxHiResLoader.cpp
+@@ -6,6 +6,7 @@
+ #include <string.h>
+ #include <math.h>
+ #include <osal_files.h>
++#include <cstdint>
+ 
+ /* use power of 2 texture size
+  * (0:disable, 1:enable, 2:3dfx) */
+diff --git a/GLideN64/src/GLideNHQ/TxHiResLoader.h b/GLideN64/src/GLideNHQ/TxHiResLoader.h
+index 4c13651..7328ee2 100644
+--- a/GLideN64/src/GLideNHQ/TxHiResLoader.h
++++ b/GLideN64/src/GLideNHQ/TxHiResLoader.h
+@@ -17,6 +17,7 @@
+ #include "TxQuantize.h"
+ #include "TxImage.h"
+ #include "TxReSample.h"
++#include <cstdint>
+ 
+ #ifdef _WIN32
+ #define FULLFNAME_CHARTYPE wchar_t
+diff --git a/GLideN64/src/GLideNHQ/TxHiResNoCache.cpp b/GLideN64/src/GLideNHQ/TxHiResNoCache.cpp
+index 9f4da20..f80fc40 100644
+--- a/GLideN64/src/GLideNHQ/TxHiResNoCache.cpp
++++ b/GLideN64/src/GLideNHQ/TxHiResNoCache.cpp
+@@ -3,6 +3,7 @@
+ #include "TxDbg.h"
+ #include "TxFilterExport.h"
+ #include <osal_files.h>
++#include <cstdint>
+ 
+ TxHiResNoCache::TxHiResNoCache(int maxwidth,
+ 			   int maxheight,

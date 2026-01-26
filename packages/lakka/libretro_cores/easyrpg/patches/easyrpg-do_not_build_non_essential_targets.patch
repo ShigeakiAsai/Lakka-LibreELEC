@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b6d498c..86bd78e 100644
+index a12ca82..b1bf0e8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1287,72 +1287,14 @@ endif()
+@@ -1430,72 +1430,14 @@ endif()
  
  # manpage
  # Handled as extra target "man"

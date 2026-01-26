@@ -1,0 +1,25 @@
+diff --git a/common/qtypes.h b/common/qtypes.h
+index 97633fc..dd71ae9 100644
+--- a/common/qtypes.h
++++ b/common/qtypes.h
+@@ -30,10 +30,18 @@ typedef unsigned char byte;
+ 
+ #ifdef _MSC_VER
+ #include <compat/msvc.h>
+-typedef enum{ false, true };
++typedef enum{ qfalse, qtrue };
+ typedef int qboolean;
+ #else
+-typedef enum{ false, true, ENSURE_INT_QBOOL = 0x70000000 } qboolean;
++typedef enum{ qfalse, qtrue, ENSURE_INT_QBOOL = 0x70000000 } qboolean;
++#endif
++
++#ifndef false
++#define false qfalse
++#endif
++
++#ifndef true
++#define true qtrue
+ #endif
+ 
+ #ifndef offsetof

@@ -1,5 +1,5 @@
 PKG_NAME="geolith"
-PKG_VERSION="f4dd9fc55554b149e2eeb4c6d9cda7378aa16193"
+PKG_VERSION="a137836711bbbd6e279310dc6e91bedc03904016"
 PKG_LICENSE="BSD"
 PKG_SITE="https://github.com/libretro/geolith-libretro"
 PKG_URL="${PKG_SITE}.git"

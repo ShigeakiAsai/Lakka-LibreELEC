@@ -34,6 +34,9 @@ fi
 pre_make_target() {
   find ${PKG_BUILD} -name flags.make -exec sed -i "s:isystem :I:g" \{} \;
   find ${PKG_BUILD} -name build.ninja -exec sed -i "s:isystem :I:g" \{} \;
+
+  # copy embedded bios files, as cmake / ninja fails to generate them
+  cp -r ${PKG_DIR}/embedded ${PKG_BUILD}/.${TARGET_NAME}
 }
 
 makeinstall_target() {

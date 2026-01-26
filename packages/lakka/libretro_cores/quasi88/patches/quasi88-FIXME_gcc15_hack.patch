@@ -1,0 +1,13 @@
+diff --git a/Makefile.common b/Makefile.common
+index e1b611f..e744de7 100644
+--- a/Makefile.common
++++ b/Makefile.common
+@@ -20,6 +20,8 @@ ifneq (,$(findstring msvc2003,$(platform)))
+ INCFLAGS += -I$(LIBRETRO_COMM_DIR)/include/compat/msvc
+ endif
+ 
++CFLAGS += -Wno-error=incompatible-pointer-types
++
+ #ROMDIR = rom/
+ #DISKDIR = disk/
+ #TAPEDIR = tape/
