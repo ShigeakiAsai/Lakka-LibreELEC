@@ -1,0 +1,176 @@
+From 377f623dd978c4e0a43e216105dec0dd0d34b2b7 Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Sun, 25 Jan 2026 22:04:42 +0900
+Subject: [PATCH] bt menu change (not test yet)
+
+---
+ configuration.c     | 15 +++++++++---
+ lakka.h             | 17 +++++++------
+ menu/menu_setting.c | 59 ++++++++++++++++++++++++++++++++++++++++-----
+ 3 files changed, 73 insertions(+), 18 deletions(-)
+
+diff --git a/configuration.c b/configuration.c
+index 19edf50580..b436307062 100644
+--- a/configuration.c
++++ b/configuration.c
+@@ -3040,7 +3040,8 @@ void config_set_defaults(void *data)
+    configuration_set_bool(settings,
+          settings->bools.samba_enable, !filestream_exists(LAKKA_SAMBA_DISABLED_FILE_PATH));
+    configuration_set_bool(settings,
+-         settings->bools.bluetooth_enable, filestream_exists(LAKKA_BLUETOOTH_PATH));
++         settings->bools.bluetooth_enable,
++         filestream_exists(LAKKA_BLUETOOTH_PATH) && !filestream_exists(LAKKA_BLUETOOTH_DISABLED_FILE_PATH));
+    configuration_set_bool(settings, settings->bools.localap_enable, false);
+    load_timezone(settings->arrays.timezone, TIMEZONE_LENGTH);
+ #endif
+@@ -4411,7 +4412,8 @@ static bool config_load_file(global_t *global,
+    configuration_set_bool(settings,
+          settings->bools.samba_enable, !filestream_exists(LAKKA_SAMBA_DISABLED_FILE_PATH));
+    configuration_set_bool(settings,
+-         settings->bools.bluetooth_enable, filestream_exists(LAKKA_BLUETOOTH_PATH));
++         settings->bools.bluetooth_enable,
++         filestream_exists(LAKKA_BLUETOOTH_PATH) && !filestream_exists(LAKKA_BLUETOOTH_DISABLED_FILE_PATH));
+ #endif
+ 
+    if (    !retroarch_override_setting_is_set(RARCH_OVERRIDE_SETTING_SAVE_PATH, NULL)
+@@ -5665,11 +5667,16 @@ bool config_save_file(const char *path)
+                RETRO_VFS_FILE_ACCESS_WRITE,
+                RETRO_VFS_FILE_ACCESS_HINT_NONE));
+    if (settings->bools.bluetooth_enable)
++   {
++      filestream_delete(LAKKA_BLUETOOTH_DISABLED_FILE_PATH);
+       filestream_close(filestream_open(LAKKA_BLUETOOTH_PATH,
+-               RETRO_VFS_FILE_ACCESS_WRITE,
++               RETRO_VFS_FILE_ACCESS_READ_WRITE | RETRO_VFS_FILE_ACCESS_UPDATE_EXISTING,
+                RETRO_VFS_FILE_ACCESS_HINT_NONE));
++   }
+    else
+-      filestream_delete(LAKKA_BLUETOOTH_PATH);
++      filestream_close(filestream_open(LAKKA_BLUETOOTH_DISABLED_FILE_PATH,
++               RETRO_VFS_FILE_ACCESS_WRITE,
++               RETRO_VFS_FILE_ACCESS_HINT_NONE));
+ #endif
+ 
+    for (i = 0; i < MAX_USERS; i++)
+diff --git a/lakka.h b/lakka.h
+index 941403e202..94c3c9c338 100644
+--- a/lakka.h
++++ b/lakka.h
+@@ -18,14 +18,15 @@
+ #ifndef __RARCH_LAKKA_H
+ #define __RARCH_LAKKA_H
+ 
+-#define LAKKA_SSH_PATH                 "/storage/.cache/services/sshd.conf"
+-#define LAKKA_SAMBA_PATH               "/storage/.cache/services/samba.conf"
+-#define LAKKA_SAMBA_DISABLED_FILE_PATH "/storage/.cache/services/samba.disabled"
+-#define LAKKA_BLUETOOTH_PATH           "/storage/.cache/services/bluez.conf"
+-#define LAKKA_UPDATE_DIR               "/storage/.update/"
+-#define LAKKA_CONNMAN_DIR              "/storage/.cache/connman/"
+-#define LAKKA_LOCALAP_PATH             "/storage/.cache/services/localap.conf"
+-#define LAKKA_TIMEZONE_PATH            "/storage/.cache/timezone"
++#define LAKKA_SSH_PATH                     "/storage/.cache/services/sshd.conf"
++#define LAKKA_SAMBA_PATH                   "/storage/.cache/services/samba.conf"
++#define LAKKA_SAMBA_DISABLED_FILE_PATH     "/storage/.cache/services/samba.disabled"
++#define LAKKA_BLUETOOTH_PATH               "/storage/.cache/services/bluez.conf"
++#define LAKKA_BLUETOOTH_DISABLED_FILE_PATH "/storage/.cache/services/bluez.disabled"
++#define LAKKA_UPDATE_DIR                   "/storage/.update/"
++#define LAKKA_CONNMAN_DIR                  "/storage/.cache/connman/"
++#define LAKKA_LOCALAP_PATH                 "/storage/.cache/services/localap.conf"
++#define LAKKA_TIMEZONE_PATH                "/storage/.cache/timezone"
+ 
+ #define DEFAULT_TIMEZONE "UTC"
+ #define TIMEZONE_LENGTH 255
+diff --git a/menu/menu_setting.c b/menu/menu_setting.c
+index 52d6c50071..17eac02e96 100644
+--- a/menu/menu_setting.c
++++ b/menu/menu_setting.c
+@@ -9202,6 +9202,11 @@ static void update_streaming_url_write_handler(rarch_setting_t *setting)
+ #ifdef HAVE_LAKKA
+ static void systemd_service_toggle(const char *path, char *unit, bool enable)
+ {
++   /* bluetooth, samba, and SSH are all different.
++    * This is for ssh.
++    * ssh.service is enabled when "/storage/.cache/services/sshd.conf" file is exist.
++    * So, create(enabled) or remove(disabled) this file and start/stop service. */
++
+    pid_t pid    = fork();
+    char* args[] = {(char*)"systemctl",
+                    enable ? (char*)"start" : (char*)"stop",
+@@ -9223,11 +9228,10 @@ static void systemd_service_toggle(const char *path, char *unit, bool enable)
+ 
+ static void systemd_samba_service_toggle(const char *path, char *unit, bool enable)
+ {
+-   /* There is difference between samba and ssh/bluetooth.
+-    * - samba.service is disabled if "/storage/.cache/services/samba.disabled" file is exist.
+-    * - ssh.service is enabled if "/storage/.cache/services/sshd.conf" file is exist.
+-    * - bluetooth.service is enabled if "/storage/.cache/services/bluez.conf" file is exist.
+-    * So it separates the systemd_service_toggle for samba.service. */
++   /* bluetooth, samba, and SSH are all different.
++    * This is for samba.
++    * samba.service will be disabled if "/storage/.cache/services/samba.disabled" file is exist.
++    * So, remove(enabled) or create(disabled) "samba.disabled" file and start/stop service. */
+ 
+    pid_t pid    = fork();
+    char* args[] = {(char*)"systemctl",
+@@ -9248,6 +9252,48 @@ static void systemd_samba_service_toggle(const char *path, char *unit, bool enab
+    }
+ }
+ 
++static void systemd_bluetooth_service_toggle(const char *path_disabled, const char *path_conf, char *unit, bool enable)
++{
++   /* bluetooth, samba, and SSH are all different.
++    * This is used for bluetooth.
++    * 1) bluetooth.service will be disabled if "/storage/.cache/services/bluez.disabled" file is exist.
++    *    - if enabled - it removes "bluez.disabled" file.
++    *    - if disabled - it creates "bluez.disabled" file.
++    *    So, remove(enabled) or create(disabled) "bluez.disabled" file.
++    * 2) bluetooth.service will be enabled if "/storage/.cache/services/bluez.conf" file is exist.
++    *    - if enabled - it checks "bluez.conf" file exist.
++    *      if "bluez.conf" file is not exist, it restarts "bluetooth-defaults.service" for default file restore
++    *      and wait 0.5 sec.
++    *    - if disabled - it keeps current "bluez.conf" file for re-enable.
++    * 3) start/stop "bluetooth.service"
++    */
++
++   pid_t pid    = fork();
++   char* args[] = {(char*)"systemctl",
++                   enable ? (char*)"start" : (char*)"stop",
++                   unit,
++                   NULL};
++
++   if (pid == 0)
++   {
++      if (enable)
++      {
++         filestream_delete(path_disabled);
++         if (!filestream_exists(path_conf))
++         {
++            system("systemctl restart bluetooth-defaults.service");
++            system("sleep 0.5");
++         }
++      }
++      else
++         filestream_close(filestream_open(path_disabled,
++                  RETRO_VFS_FILE_ACCESS_WRITE,
++                  RETRO_VFS_FILE_ACCESS_HINT_NONE));
++
++      execvp(args[0], args);
++   }
++}
++
+ #ifdef HAVE_LAKKA_SWITCH
+ static void switch_oc_enable_toggle_change_handler(rarch_setting_t *setting)
+ {
+@@ -9304,7 +9350,8 @@ static void samba_enable_toggle_change_handler(rarch_setting_t *setting)
+ static void bluetooth_enable_toggle_change_handler(
+       rarch_setting_t *setting)
+ {
+-   systemd_service_toggle(LAKKA_BLUETOOTH_PATH,
++   systemd_bluetooth_service_toggle(LAKKA_BLUETOOTH_DISABLED_FILE_PATH,
++          LAKKA_BLUETOOTH_PATH,
+          (char*)"bluetooth.service",
+          *setting->value.target.boolean);
+ }
+-- 
+2.43.0
+
