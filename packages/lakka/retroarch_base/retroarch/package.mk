@@ -3,14 +3,13 @@ PKG_VERSION="69a4f0ea1e8aaf442ae4858f2e7f2b31a1776576"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="${PKG_SITE}.git"
-PKG_DEPENDS_TARGET="toolchain freetype zlib ffmpeg libass libxkbcommon glsl_shaders slang_shaders systemd libpng fontconfig"
+PKG_DEPENDS_TARGET="toolchain freetype zlib ffmpeg libass libxkbcommon glsl_shaders slang_shaders systemd libpng fontconfig SDL2_input"
 PKG_LONGDESC="Reference frontend for the libretro API."
 PKG_LR_UPDATE_TAG="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
                            --disable-sdl \
-                           --disable-sdl2 \
-                           --disable-ssl \
+                           --enable-sdl2 \
                            --enable-zlib \
                            --enable-freetype \
                            --enable-translate \
@@ -27,7 +26,6 @@ PKG_MAKE_OPTS_TARGET="V=1 \
                       HAVE_LAKKA_PROJECT="${DEVICE:-${PROJECT}}.${ARCH}" \
                       HAVE_LAKKA_SERVER="${LAKKA_UPDATE_SERVER_URL}" \
                       HAVE_CHEEVOS=1 \
-                      HAVE_HAVE_ZARCH=0 \
                       HAVE_WIFI=1 \
                       HAVE_BLUETOOTH=1 \
                       HAVE_CLOUDSYNC=1 \
@@ -177,8 +175,10 @@ makeinstall_target() {
 
   # General configuration
   local ra_config=${INSTALL}/etc/retroarch.cfg
+  local ra_env=${INSTALL}/usr/lib/retroarch/retroarch-env.conf
   mkdir -p ${INSTALL}/etc
     cp ${PKG_DIR}/config/retroarch.cfg ${ra_config}
+    cp ${PKG_DIR}/config/retroarch-env.conf ${ra_env}
 
   # Power settings
   # Use ondemand for all RPi devices (for backwards compatibility?)
@@ -368,14 +368,13 @@ makeinstall_target() {
     sed -i ${ra_config} -e 's|^video_windowed_fullscreen = .*|video_windowed_fullscreen = "true"|'
   fi
 
-  # create default environment file
-  echo "HOME=/storage" >> ${INSTALL}/usr/lib/retroarch/retroarch-env.conf
+  # add variables to environment file
   if [ "${DISPLAYSERVER}" = "x11" ]; then
-    echo "DISPLAY=:0.0" >> ${INSTALL}/usr/lib/retroarch/retroarch-env.conf
+    echo "DISPLAY=:0.0" >> ${ra_env}
   elif [ "${DISPLAYSERVER}" = "wl" ]; then
-    echo "WAYLAND_DISPLAY='wayland-1'" >> ${INSTALL}/usr/lib/retroarch/retroarch-env.conf
-    echo "SWAYSOCK='/var/run/0-runtime-dir/sway-ipc.0.sock'" >> ${INSTALL}/usr/lib/retroarch/retroarch-env.conf
-    echo "XDG_RUNTIME_DIR='/var/run/0-runtime-dir'" >> ${INSTALL}/usr/lib/retroarch/retroarch-env.conf
+    echo "WAYLAND_DISPLAY='wayland-1'" >> ${ra_env}
+    echo "SWAYSOCK='/var/run/0-runtime-dir/sway-ipc.0.sock'" >> ${ra_env}
+    echo "XDG_RUNTIME_DIR='/var/run/0-runtime-dir'" >> ${ra_env}
   fi
 }
 
