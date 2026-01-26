@@ -417,6 +417,12 @@ EOF
 #
 # Overrides for RPiX-Composite build:
 #
+# AUDIO: internal 3.5mm jack - uncomment following line
+#audio_device="default:CARD=Headphones"
+#
+# AUDIO: USB audio - uncomment following line
+#audio_device="default:CARD=Device
+#
 # PAL Users: uncomment following line(s):
 EOF
     if [ "${DEVICE:0:4}" = "RPi3" -o "${DEVICE:0:4}" = "RPi4" ]; then
