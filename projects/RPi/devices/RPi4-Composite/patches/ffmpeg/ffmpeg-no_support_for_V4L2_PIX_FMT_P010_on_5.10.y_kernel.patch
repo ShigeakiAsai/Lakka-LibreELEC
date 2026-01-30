@@ -1,0 +1,16 @@
+diff --git a/libavcodec/v4l2_req_hevc_vx.c b/libavcodec/v4l2_req_hevc_vx.c
+index a32560e..ddac56b 100644
+--- a/libavcodec/v4l2_req_hevc_vx.c
++++ b/libavcodec/v4l2_req_hevc_vx.c
+@@ -798,9 +798,11 @@ static int drm_from_format(AVDRMFrameDescriptor * const desc, const struct v4l2_
+     case V4L2_PIX_FMT_NV12:
+         layer->format = DRM_FORMAT_NV12;
+         break;
++#ifdef V4L2_PIX_FMT_P010
+     case V4L2_PIX_FMT_P010:
+         layer->format = DRM_FORMAT_P010;
+         break;
++#endif
+ #if CONFIG_SAND
+     case V4L2_PIX_FMT_NV12_COL128:
+         layer->format = DRM_FORMAT_NV12;
