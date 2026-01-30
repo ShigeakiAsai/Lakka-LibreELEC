@@ -1,0 +1,45 @@
+diff --git a/misc/create_inode.c b/misc/create_inode.c
+index 624efc0..ec673dc 100644
+--- a/misc/create_inode.c
++++ b/misc/create_inode.c
+@@ -575,6 +575,8 @@ static inline off_t round_up(off_t n, off_t blksz, off_t bias)
+   return ((n - bias + (blksz - 1)) & ~(blksz - 1)) + bias;
+ }
+ 
++#if defined(FS_IOC_READ_VERITY_METADATA) && \
++    defined(FS_VERITY_METADATA_TYPE_MERKLE_TREE)
+ static errcode_t copy_fs_verity_data(ext2_file_t e2_file, ext2_off_t e2_offset,
+ 				     int fd, uint64_t metadata_type,
+ 				     __u32 *written)
+@@ -643,7 +645,17 @@ static errcode_t copy_fs_verity_data(ext2_file_t e2_file, ext2_off_t e2_offset,
+ 
+ 	return 0;
+ }
++#else /* no usable fs-verity support */
++static errcode_t copy_fs_verity_data(ext2_file_t e2_file, ext2_off_t e2_offset,
++				     int fd, uint64_t metadata_type,
++				     __u32 *written)
++{
++	return 0;
++}
++#endif /* fs-verity feature test */
+ 
++#if defined(FS_IOC_READ_VERITY_METADATA) && \
++    defined(FS_VERITY_METADATA_TYPE_MERKLE_TREE)
+ static errcode_t copy_fs_verity(ext2_filsys fs, int fd,
+ 				ext2_file_t e2_file, off_t st_size)
+ {
+@@ -703,6 +715,13 @@ static errcode_t copy_fs_verity(ext2_filsys fs, int fd,
+ 	inode->i_flags |= EXT4_VERITY_FL;
+ 	return ext2fs_write_inode(fs, ino, inode);
+ }
++#else /* no usable fs-verity support */
++static errcode_t copy_fs_verity(ext2_filsys fs, int fd,
++				ext2_file_t e2_file, off_t st_size)
++{
++	return 0;
++}
++#endif /* fs-verity feature test */
+ #endif
+ 
+ static errcode_t copy_file(ext2_filsys fs, int fd, struct stat *statbuf,
