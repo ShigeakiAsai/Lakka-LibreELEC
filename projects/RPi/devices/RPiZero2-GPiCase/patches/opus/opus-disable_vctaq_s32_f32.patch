@@ -1,0 +1,18 @@
+diff --git a/celt/arm/mathops_arm.h b/celt/arm/mathops_arm.h
+index b1f9169..e76d130 100644
+--- a/celt/arm/mathops_arm.h
++++ b/celt/arm/mathops_arm.h
+@@ -37,13 +37,9 @@
+ 
+ static inline int32x4_t vroundf(float32x4_t x)
+ {
+-#  if defined(__aarch64__) || (defined(__ARM_ARCH) && __ARM_ARCH >= 8)
+-    return vcvtaq_s32_f32(x);
+-#  else
+     uint32x4_t sign = vandq_u32(vreinterpretq_u32_f32(x), vdupq_n_u32(0x80000000));
+     uint32x4_t bias = vdupq_n_u32(0x3F000000);
+     return vcvtq_s32_f32(vaddq_f32(x, vreinterpretq_f32_u32(vorrq_u32(bias, sign))));
+-#  endif
+ }
+ 
+ static inline float vminvf(float32x4_t a)
