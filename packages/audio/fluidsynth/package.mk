@@ -16,3 +16,7 @@ PKG_CMAKE_OPTS_TARGET="-DBUILD_SHARED_LIBS=0 \
                        -Denable-libsndfile=1 \
                        -Denable-pulseaudio=0 \
                        -Denable-readline=0"
+
+if [ "${DISTRO}" = "Lakka" ]; then
+  PKG_CMAKE_OPTS_TARGET+=" -Denable-sdl3=0"
+fi
