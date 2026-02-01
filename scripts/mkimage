@@ -418,10 +418,13 @@ EOF
 # Overrides for RPiX-Composite build:
 #
 # AUDIO: internal 3.5mm jack - uncomment following line
-#audio_device="default:CARD=Headphones"
+#audio_device = "default:CARD=Headphones"
 #
 # AUDIO: USB audio - uncomment following line
-#audio_device="default:CARD=Device
+#audio_device = "default:CARD=Device"
+#
+# You might need to adapt above values in quotes to your
+# specific needs / USB DAC.
 #
 # PAL Users: uncomment following line(s):
 EOF
