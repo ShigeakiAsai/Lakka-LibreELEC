@@ -157,6 +157,7 @@ do
 		# show logs during build (non-dashboard build)
 		make ${out} OFFICIAL=yes PROJECT=${project} DEVICE=${device} ARCH=${arch} MTIMMEDIATE=${qf} ${tc}
 		ret_nondb=${?}
+		count=$(ls target/${distro}-${target_name}-*{.img.gz,kernel,system}* 2>/dev/null | wc -l)
 		if [ ${ret_nondb} -gt 0 -a "${BAILOUT_FAILED}" != "no" ]
 		then
 			exit ${ret_nondb}
