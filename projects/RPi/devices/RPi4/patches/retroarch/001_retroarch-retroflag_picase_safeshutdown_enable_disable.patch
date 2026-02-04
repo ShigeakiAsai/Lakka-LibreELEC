@@ -16,8 +16,8 @@ diff --git a/configuration.c b/configuration.c
 index 885c4f9135..3492ab6827 100644
 --- a/configuration.c
 +++ b/configuration.c
-@@ -2968,6 +2968,10 @@ void config_set_defaults(void *data)
-          settings->bools.bluetooth_enable, filestream_exists(LAKKA_BLUETOOTH_PATH));
+@@ -3044,6 +3044,10 @@
+          filestream_exists(LAKKA_BLUETOOTH_PATH) && !filestream_exists(LAKKA_BLUETOOTH_DISABLED_FILE_PATH));
     configuration_set_bool(settings, settings->bools.localap_enable, false);
     load_timezone(settings->arrays.timezone, TIMEZONE_LENGTH);
 +#ifdef HAVE_RETROFLAG
@@ -27,10 +27,10 @@ index 885c4f9135..3492ab6827 100644
  #endif
  
  #if __APPLE__
-@@ -4233,6 +4237,10 @@ static bool config_load_file(global_t *global,
-          settings->bools.samba_enable, filestream_exists(LAKKA_SAMBA_PATH));
+@@ -4414,6 +4418,10 @@
     configuration_set_bool(settings,
-          settings->bools.bluetooth_enable, filestream_exists(LAKKA_BLUETOOTH_PATH));
+          settings->bools.bluetooth_enable,
+          filestream_exists(LAKKA_BLUETOOTH_PATH) && !filestream_exists(LAKKA_BLUETOOTH_DISABLED_FILE_PATH));
 +#ifdef HAVE_RETROFLAG
 +   configuration_set_bool(settings,
 +         settings->bools.safeshutdown_enable, filestream_exists(LAKKA_SAFESHUTDOWN_PATH));
@@ -38,10 +38,10 @@ index 885c4f9135..3492ab6827 100644
  #endif
  
     if (    !retroarch_override_setting_is_set(RARCH_OVERRIDE_SETTING_SAVE_PATH, NULL)
-@@ -5494,6 +5502,14 @@ bool config_save_file(const char *path)
+@@ -5677,6 +5685,14 @@
+       filestream_close(filestream_open(LAKKA_BLUETOOTH_DISABLED_FILE_PATH,
+                RETRO_VFS_FILE_ACCESS_WRITE,
                 RETRO_VFS_FILE_ACCESS_HINT_NONE));
-    else
-       filestream_delete(LAKKA_BLUETOOTH_PATH);
 +#ifdef HAVE_RETROFLAG
 +   if (settings->bools.safeshutdown_enable)
 +      filestream_close(filestream_open(LAKKA_SAFESHUTDOWN_PATH,
@@ -121,32 +121,16 @@ diff --git a/lakka.h b/lakka.h
 index 625a7ab946..f149c344be 100644
 --- a/lakka.h
 +++ b/lakka.h
-@@ -18,13 +18,16 @@
- #ifndef __RARCH_LAKKA_H
- #define __RARCH_LAKKA_H
- 
--#define LAKKA_SSH_PATH                 "/storage/.cache/services/sshd.conf"
--#define LAKKA_SAMBA_PATH               "/storage/.cache/services/samba.conf"
--#define LAKKA_SAMBA_DISABLED_FILE_PATH "/storage/.cache/services/samba.disabled"
--#define LAKKA_BLUETOOTH_PATH           "/storage/.cache/services/bluez.conf"
--#define LAKKA_UPDATE_DIR               "/storage/.update/"
--#define LAKKA_CONNMAN_DIR              "/storage/.cache/connman/"
--#define LAKKA_LOCALAP_PATH             "/storage/.cache/services/localap.conf"
--#define LAKKA_TIMEZONE_PATH            "/storage/.cache/timezone"
-+#define LAKKA_SSH_PATH                 "/storage/.cache/services/sshd.conf"
-+#define LAKKA_SAMBA_PATH               "/storage/.cache/services/samba.conf"
-+#define LAKKA_SAMBA_DISABLED_FILE_PATH "/storage/.cache/services/samba.disabled"
-+#define LAKKA_BLUETOOTH_PATH           "/storage/.cache/services/bluez.conf"
+@@ -23,6 +23,9 @@
+ #define LAKKA_SAMBA_DISABLED_FILE_PATH     "/storage/.cache/services/samba.disabled"
+ #define LAKKA_BLUETOOTH_PATH               "/storage/.cache/services/bluez.conf"
+ #define LAKKA_BLUETOOTH_DISABLED_FILE_PATH "/storage/.cache/services/bluez.disabled"
 +#ifdef HAVE_RETROFLAG
-+#define LAKKA_SAFESHUTDOWN_PATH        "/storage/.cache/services/safeshutdown.conf"
++#define LAKKA_SAFESHUTDOWN_PATH            "/storage/.cache/services/safeshutdown.conf"
 +#endif
-+#define LAKKA_UPDATE_DIR               "/storage/.update/"
-+#define LAKKA_CONNMAN_DIR              "/storage/.cache/connman/"
-+#define LAKKA_LOCALAP_PATH             "/storage/.cache/services/localap.conf"
-+#define LAKKA_TIMEZONE_PATH            "/storage/.cache/timezone"
- 
- #define DEFAULT_TIMEZONE "UTC"
- #define TIMEZONE_LENGTH 255
+ #define LAKKA_UPDATE_DIR                   "/storage/.update/"
+ #define LAKKA_CONNMAN_DIR                  "/storage/.cache/connman/"
+ #define LAKKA_LOCALAP_PATH                 "/storage/.cache/services/localap.conf"
 diff --git a/menu/cbs/menu_cbs_sublabel.c b/menu/cbs/menu_cbs_sublabel.c
 index 162a14c852..a08ed8f12c 100644
 --- a/menu/cbs/menu_cbs_sublabel.c
