@@ -42,13 +42,6 @@ case "${LINUX}" in
     PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     ;;
-  raspberrypi-6.12.y)
-    PKG_VERSION="201575782c30fd948415a191a814e28fe0db90dc" # 6.12.66
-    PKG_SHA256="b89d4a38312f201514711a2e2c6d0bc8a07e6f59b4b96cd5e7b7693854bc7404"
-    PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
-    PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
-    PKG_PATCH_DIRS="rtlwifi/6.13 rtlwifi/6.14 rtlwifi/6.15 rtlwifi/6.18"
-    ;;
   L4T)
     if [ -z "${L4T_KERNEL_VERSION}" ]; then
       echo -n "${DEVICE:-${PROJECT}}: ${KERNEL} - you must set L4T_KERNEL_VERSION in projects/${PROJECT}/"

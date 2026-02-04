@@ -39,7 +39,3 @@
     if [ "${DISTRO}" = "Lakka" ]; then
       VULKAN="vulkan-loader"
     fi
-
-  # Kernel to use. values can be:
-  # default:  default mainline kernel
-    LINUX="raspberrypi-6.12.y"
