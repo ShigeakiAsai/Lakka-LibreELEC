@@ -1,12 +1,11 @@
 PKG_NAME="scummvm"
-PKG_VERSION="99c8afbf95e9c4e16648af63808ff6b7aa910da8"
+PKG_VERSION="a58821e3f8d6e0d22dd5652980b9428a9110b09b"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/scummvm"
 PKG_URL="${PKG_SITE}.git"
 PKG_DEPENDS_TARGET="toolchain curl fluidsynth flac libvorbis zlib faad2 freetype"
 PKG_LONGDESC="ScummVM with libretro backend."
 PKG_TOOLCHAIN="make"
-PKG_LR_UPDATE_TAG="yes"
 
 PKG_MAKE_OPTS_TARGET="all \
                       USE_CLOUD=1 \
