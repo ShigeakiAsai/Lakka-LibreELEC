@@ -67,6 +67,9 @@ targets="\
 	Rockchip|RK3288|arm| \
 	Rockchip|RK3328|aarch64| \
 	Rockchip|RK3399|aarch64| \
+	Rockchip|RK356X|aarch64| \
+	Rockchip|RK3576|aarch64| \
+	Rockchip|RK3588|aarch64| \
 	Samsung|Exynos|arm| \
 "
 
