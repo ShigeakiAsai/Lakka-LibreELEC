@@ -1,0 +1,26 @@
+diff --git a/mupen64plus-core/src/r4300/new_dynarec/new_dynarec.c b/mupen64plus-core/src/r4300/new_dynarec/new_dynarec.c
+index abbdc5a..edc9edf 100644
+--- a/mupen64plus-core/src/r4300/new_dynarec/new_dynarec.c
++++ b/mupen64plus-core/src/r4300/new_dynarec/new_dynarec.c
+@@ -358,7 +358,7 @@ void *TLB_refill_exception_new(u_int inst_addr, u_int mem_addr, int w);
+ 	int notcompiledCount = 0;
+ #endif
+ 
+-static void nullf(...) {}
++static void nullf() {}
+ 
+ #if defined( ASSEM_DEBUG )
+     #define assem_debug(...) DebugMessage(M64MSG_VERBOSE, __VA_ARGS__)
+diff --git a/mupen64plus-core/src/r4300/new_dynarec/new_dynarec_64.c b/mupen64plus-core/src/r4300/new_dynarec/new_dynarec_64.c
+index 00e653e..6a0798c 100644
+--- a/mupen64plus-core/src/r4300/new_dynarec/new_dynarec_64.c
++++ b/mupen64plus-core/src/r4300/new_dynarec/new_dynarec_64.c
+@@ -259,7 +259,7 @@ static void add_to_linker(intptr_t addr,u_int target,int ext);
+ static int verify_dirty(void *addr);
+ static int internal_branch(uint64_t i_is32, int addr);
+ 
+-static void nullf(...) {}
++static void nullf() {}
+ #if defined( ASSEM_DEBUG )
+     #define assem_debug(...) DebugMessage(M64MSG_VERBOSE, __VA_ARGS__)
+ #else

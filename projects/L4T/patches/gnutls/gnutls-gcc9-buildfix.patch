@@ -1,0 +1,15 @@
+diff --git a/lib/crau/crau.h b/lib/crau/crau.h
+index 0d4f9f1..b99283f 100644
+--- a/lib/crau/crau.h
++++ b/lib/crau/crau.h
+@@ -62,6 +62,10 @@
+ # define CRAU_CONTEXT_STACK_DEPTH 3
+ #endif /* CRAU_CONTEXT_STACK_DEPTH */
+ 
++#ifndef __has_c_attribute
++#define __has_c_attribute(x) 0
++#endif
++
+ struct crau_context_stack_st {
+ 	long stack[CRAU_CONTEXT_STACK_DEPTH];
+ 	size_t top;

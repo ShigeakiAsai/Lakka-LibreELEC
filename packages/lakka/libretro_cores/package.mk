@@ -221,6 +221,7 @@ elif [ "${PROJECT}" = "Generic" ]; then
 
 elif [ "${PROJECT}" = "L4T" ]; then
   EXCLUDE_LIBRETRO_CORES+=" citra \
+                            dolphin \
                             lr_moonlight \
                             mame \
                             melondsds \
@@ -301,6 +302,7 @@ elif [ "${PROJECT}" = "RPi" ]; then
                               openlara \
                               play \
                               ppsspp \
+                              scummvm \
                               vircon32 \
                               swanstation \
                               yabasanshiro"
