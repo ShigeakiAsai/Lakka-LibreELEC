@@ -63,28 +63,32 @@ post_makeinstall_target() {
   safe_remove ${INSTALL}/usr/bin/ciptool
 
   mkdir -p ${INSTALL}/etc/bluetooth
-    cp src/main.conf ${INSTALL}/etc/bluetooth
+    # main.conf
+    cp -Pv ${PKG_BUILD}/src/main.conf ${INSTALL}/etc/bluetooth
     sed -i ${INSTALL}/etc/bluetooth/main.conf \
         -e "s|^#\[Policy\]|\[Policy\]|g" \
         -e "s|^#AutoEnable.*|AutoEnable=true|g" \
         -e "s|^#JustWorksRepairing.*|JustWorksRepairing=always|g"
-    echo "[General]" >${INSTALL}/etc/bluetooth/input.conf
-    echo "ClassicBondedOnly=false" >>${INSTALL}/etc/bluetooth/input.conf
-
     if [ "${DISTRO}" = "Lakka" ] || [ "${PROJECT}" = "L4T" -a "${DEVICE}" = "Switch" ]; then
-      sed -i $INSTALL/etc/bluetooth/main.conf \
+      sed -i ${INSTALL}/etc/bluetooth/main.conf \
           -e "s|^#FastConnectable.*|FastConnectable=true|g" \
-          -e "s|^# Privacy =.*|Privacy = device|g"
+          -e "s|^#Privacy =.*|Privacy = device|g"
     fi
 
+    # input.conf
+    cp -Pv ${PKG_BUILD}/profiles/input/input.conf ${INSTALL}/etc/bluetooth
+    sed -i ${INSTALL}/etc/bluetooth/input.conf \
+        -e "s|^#ClassicBondedOnly.*|ClassicBondedOnly=false|g"
+
   mkdir -p ${INSTALL}/usr/share/services
-    cp -P ${PKG_DIR}/default.d/*.conf ${INSTALL}/usr/share/services
+    cp -Pv ${PKG_DIR}/default.d/*.conf ${INSTALL}/usr/share/services
 
   # bluez looks in /etc/firmware/
     ln -sf /usr/lib/firmware ${INSTALL}/etc/firmware
 
-  # kodi requires bluez pkgconfig
-    cp -P ${PKG_BUILD}/lib/bluez.pc ${SYSROOT_PREFIX}/usr/lib/pkgconfig
+  # pulseaudio checks for bluez via pkgconfig but lib is not actually needed
+    sed -i 's/-lbluetooth//g' ${PKG_BUILD}/lib/bluez.pc
+    cp -Pv ${PKG_BUILD}/lib/bluez.pc ${SYSROOT_PREFIX}/usr/lib/pkgconfig
 }
 
 post_install() {
