@@ -235,7 +235,7 @@ makeinstall_target() {
 
   # RPiZero2 + GPiCase2W (3rd Gen Retroflag GPiCase)
   if [ "${DEVICE}" = "RPiZero2-GPiCase2W" ]; then
-    sed -i ${ra_config} -e 's|^audio_device = .*|audio_device = "default:CARD=Headphone"|'
+    sed -i ${ra_config} -e 's|^audio_device = .*|audio_device = "default:CARD=Headphones"|'
     sed -i ${ra_config} -e 's|^audio_out_rate = .*|audio_out_rate = "44100"|'
     sed -i ${ra_config} -e 's|^xmb_layout = .*|xmb_layout = "2"|'
     sed -i ${ra_config} -e 's|^menu_widget_scale_auto = .*|menu_widget_scale_auto = "false"|'
