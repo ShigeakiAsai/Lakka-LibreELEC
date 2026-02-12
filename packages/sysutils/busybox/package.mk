@@ -8,19 +8,10 @@ PKG_SHA256="3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.busybox.net"
 PKG_URL="https://busybox.net/downloads/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
-PKG_DEPENDS_TARGET="toolchain hdparm dosfstools e2fsprogs usbutils parted procps-ng libtirpc"
+PKG_DEPENDS_TARGET="toolchain libtirpc"
 PKG_DEPENDS_INIT="toolchain libtirpc"
 PKG_LONGDESC="BusyBox combines tiny versions of many common UNIX utilities into a single small executable."
-PKG_BUILD_FLAGS="-parallel +lto"
-
-# nano text editor
-if [ "${NANO_EDITOR}" = "yes" ]; then
-  PKG_DEPENDS_TARGET+=" nano"
-fi
-
-if [ "${TARGET_ARCH}" = "x86_64" -o "${TARGET_ARCH}" = "i386" ]; then
-  PKG_DEPENDS_TARGET+=" pciutils"
-fi
+PKG_BUILD_FLAGS="-parallel +lto +size"
 
 pre_build_target() {
   PKG_MAKE_OPTS_TARGET="ARCH=${TARGET_ARCH} \
@@ -63,9 +54,6 @@ configure_target() {
       sed -i -e "s|^CONFIG_FEATURE_MOUNT_CIFS=.*$|# CONFIG_FEATURE_MOUNT_CIFS is not set|" .config
     fi
 
-    # optimize for size
-    CFLAGS=$(echo ${CFLAGS} | sed -e "s|-Ofast|-Os|")
-    CFLAGS=$(echo ${CFLAGS} | sed -e "s|-O.|-Os|")
     CFLAGS+=" -I${SYSROOT_PREFIX}/usr/include/tirpc"
 
     LDFLAGS+=" -fwhole-program"
@@ -81,9 +69,6 @@ configure_init() {
     # set install dir
     sed -i -e "s|^CONFIG_PREFIX=.*$|CONFIG_PREFIX=\"${INSTALL}/usr\"|" .config
 
-    # optimize for size
-    CFLAGS=$(echo ${CFLAGS} | sed -e "s|-Ofast|-Os|")
-    CFLAGS=$(echo ${CFLAGS} | sed -e "s|-O.|-Os|")
     CFLAGS+=" -I${SYSROOT_PREFIX}/usr/include/tirpc"
 
     LDFLAGS+=" -fwhole-program"
