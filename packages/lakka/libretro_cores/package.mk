@@ -9,6 +9,7 @@ LIBRETRO_CORES="\
                 2048 \
                 81 \
                 a5200 \
+                amiberry \
                 anarch \
                 ardens \
                 atari800 \
@@ -220,7 +221,8 @@ elif [ "${PROJECT}" = "Generic" ]; then
 			    vitaquake3"
 
 elif [ "${PROJECT}" = "L4T" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" citra \
+  EXCLUDE_LIBRETRO_CORES+=" amiberry \
+                            citra \
                             dolphin \
                             lr_moonlight \
                             mame \
