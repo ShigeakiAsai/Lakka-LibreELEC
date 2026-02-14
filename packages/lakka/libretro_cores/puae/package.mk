@@ -3,7 +3,7 @@ PKG_VERSION="0043cf9c061bd9b81dbc1869c2761017139cfc63"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/libretro/libretro-uae"
 PKG_URL="${PKG_SITE}.git"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_DEPENDS_TARGET="toolchain aros68kroms"
 PKG_LONGDESC="Portable Commodore Amiga Emulator"
 PKG_TOOLCHAIN="make"
 
