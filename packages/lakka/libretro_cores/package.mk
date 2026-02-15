@@ -67,6 +67,7 @@ LIBRETRO_CORES="\
                 gambatte \
                 gearboy \
                 geargrafx \
+                gearlynx \
                 gearsystem \
                 genesis_plus_gx \
                 genesis_plus_gx_wide \
