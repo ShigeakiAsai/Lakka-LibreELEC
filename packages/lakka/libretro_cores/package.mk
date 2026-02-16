@@ -66,6 +66,7 @@ LIBRETRO_CORES="\
                 freechaf \
                 freeintv \
                 fuse_libretro \
+                gam4980 \
                 gambatte \
                 gearboy \
                 geargrafx \
