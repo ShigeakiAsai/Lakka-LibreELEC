@@ -9,6 +9,7 @@ LIBRETRO_CORES="\
                 2048 \
                 81 \
                 a5200 \
+                amiarcadia \
                 amiberry \
                 anarch \
                 ardens \
