@@ -32,6 +32,7 @@ LIBRETRO_CORES="\
                 bsnes \
                 bsnes2014 \
                 bsnes_hd \
+                bsnes_jg \
                 bsnes_mercury \
                 cannonball \
                 cap32 \
