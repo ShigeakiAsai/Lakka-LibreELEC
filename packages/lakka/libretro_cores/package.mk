@@ -52,6 +52,7 @@ LIBRETRO_CORES="\
                 dosbox_core \
                 dosbox_pure \
                 dosbox_svn \
+                doublecherrygb \
                 doukutsu_rs \
                 easyrpg \
                 emux_sms\
