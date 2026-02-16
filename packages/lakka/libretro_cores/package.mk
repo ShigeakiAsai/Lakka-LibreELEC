@@ -38,6 +38,7 @@ LIBRETRO_CORES="\
                 cap32 \
                 chailove \
                 citra \
+                clownmdemu \
                 craft \
                 crocods \
                 daphne \
