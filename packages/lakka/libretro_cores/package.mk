@@ -143,6 +143,7 @@ LIBRETRO_CORES="\
                 sameboy \
                 sameduck \
                 scummvm \
+                skyemu \
                 snes9x \
                 snes9x2002 \
                 snes9x2005 \
