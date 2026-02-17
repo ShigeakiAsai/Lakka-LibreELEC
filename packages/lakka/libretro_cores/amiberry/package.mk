@@ -19,4 +19,7 @@ makeinstall_target() {
   mkdir -p ${INSTALL}/usr/share/retroarch/system/whdboot
     cp -vr ${PKG_BUILD}/whdboot/{game,save}-data ${INSTALL}/usr/share/retroarch/system/whdboot
     unzip ${PKG_BUILD}/whdboot/boot-data.zip -d ${INSTALL}/usr/share/retroarch/system/whdboot/save-data
+
+  # copy info file, as it is not yet in upstream
+  cp -v ${PKG_DIR}/files/amiberry_libretro.info ${INSTALL}/usr/lib/libretro
 }
