@@ -13,7 +13,7 @@ if target_has_feature neon; then
   PKG_MAKE_OPTS_TARGET+=" HAVE_NEON=1"
 fi
 
-if [ "${ARCH}" = "x86_64" -o "${ARCH}" = "aarm64" ]; then
+if [ "${ARCH}" = "x86_64" -o "${ARCH}" = "aarch64" ]; then
   PKG_MAKE_OPTS_TARGET+=" PTR_SIZE=-m64"
 else
   PKG_MAKE_OPTS_TARGET+=" PTR_SIZE=-m32"
