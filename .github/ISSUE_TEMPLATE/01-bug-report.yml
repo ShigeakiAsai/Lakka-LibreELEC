@@ -1,0 +1,77 @@
+name: Bug report
+description: This is not a forum or a help section, this is strictly developer oriented.
+title: "[BUG] <short description>"
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Only Lakka bugs should be filed here. Not core bugs or game bugs. Report core bugs only in case when the bug can only be reproduced on Lakka (e.g. the bug is not present when running other OS)
+      options:
+      - label: This is a bug in Lakka
+        required: true
+      - label: I have searched the existing issues
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Description of the actual behavior of the bug
+      placeholder: What is actually happening
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen
+
+  - type: textarea
+    id: reproduce_steps
+    attributes:
+      label: Steps to reproduce the bug
+      description: List all steps to reproduce the problem
+      placeholder: |
+        1. [First step]
+        2. [Second step]
+        3. [and so on...]
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version/Commit
+      description: You can find this information under Information/System Information
+      placeholder: 5.0 / nightly dated ... / devel dated ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: nigthly
+    attributes:
+      label: Present in the nightly version
+      description: Is the issue reproducible with current [nightly builds](https://nightly.builds.lakka.tv/latest/)?
+      options:
+        - I don't know
+        - Yes, this is reproduced in the nightly build
+        - No, looks like this is already resolved
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware platform
+      description: The hardware you're running Lakka on
+      placeholder: RPi4, PC, ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Paste or attach relevant [logs](https://www.lakka.tv/doc/Troubleshooting-Lakka/), if available. This will be automatically formatted into code, so no need for backticks.
+      render: shell

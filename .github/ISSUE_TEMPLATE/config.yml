@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://www.lakka.tv/doc/Home/
+    about: Check the documentation
+  - name: Forums
+    url: https://forums.libretro.com/c/libretro/lakka-tv-general
+    about: Check the forums
+  - name: Discord
+    url: https://discord.gg/BNFR4hM
+    about: Discuss on Discord
+  - name: Existing issues and bugs
+    url: https://github.com/libretro/Lakka-LibreELEC/issues
+    about: Check if your bug/issue is already reported
