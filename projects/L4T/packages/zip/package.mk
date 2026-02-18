@@ -12,7 +12,7 @@ PKG_LONGDESC="A compression and file packaging utility."
 PKG_TOOLCHAIN="manual"
 
 make_target() {
-  make CC=${CC} CPP=${CPP} RANLIB=${RANLIB} AR=${AR} STRIP=${STRIP} LOCAL_ZIP="${CFLAGS}" \
+  make CC="${CC} -std=gnu89" CPP=${CPP} RANLIB=${RANLIB} AR=${AR} STRIP=${STRIP} LOCAL_ZIP="${CFLAGS}" \
        -f unix/Makefile generic
 }
 
