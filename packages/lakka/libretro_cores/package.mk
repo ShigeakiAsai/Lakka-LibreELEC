@@ -12,6 +12,7 @@ LIBRETRO_CORES="\
                 amiarcadia \
                 amiberry \
                 anarch \
+                applewin \
                 ardens \
                 atari800 \
                 b2 \
