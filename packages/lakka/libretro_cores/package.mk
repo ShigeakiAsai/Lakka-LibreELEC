@@ -87,6 +87,7 @@ LIBRETRO_CORES="\
                 higan_sfc_balanced \
                 holani \
                 jaxe \
+                jollycv \
                 jumpnbump \
                 kronos \
                 lowres_nx \
