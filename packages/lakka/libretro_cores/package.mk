@@ -236,10 +236,8 @@ elif [ "${PROJECT}" = "Generic" ]; then
 			    vitaquake3"
 
 elif [ "${PROJECT}" = "L4T" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" amiberry \
-                            azahar \
+  EXCLUDE_LIBRETRO_CORES+=" azahar \
                             lr_moonlight \
-                            np2kai \
                             panda3ds"
 
 elif [ "${PROJECT}" = "NXP" ]; then
