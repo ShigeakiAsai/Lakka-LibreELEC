@@ -1,0 +1,20 @@
+diff -uNr a/libavcodec/nvv4l2_dec.c b/libavcodec/nvv4l2_dec.c
+--- a/libavcodec/nvv4l2_dec.c	2026-02-16 22:49:24.651862600 +0900
++++ b/libavcodec/nvv4l2_dec.c	2026-02-18 12:57:15.085634910 +0900
+@@ -994,13 +994,13 @@
+ 
+     switch (avctx->codec_id) {
+     case AV_CODEC_ID_H264:
+-        avctx->codec = &ff_h264_decoder;
++        avctx->codec = (const struct AVCodec *)&ff_h264_decoder;
+         break;
+     case AV_CODEC_ID_HEVC:
+-        avctx->codec = &ff_hevc_decoder;
++        avctx->codec = (const struct AVCodec *)&ff_hevc_decoder;
+         break;
+     case AV_CODEC_ID_VP9:
+-        avctx->codec = &ff_vp9_decoder;
++        avctx->codec = (const struct AVCodec *)&ff_vp9_decoder;
+         break;
+     default:
+         av_log(avctx, AV_LOG_ERROR, "Unsupported codec fallback!\n");
