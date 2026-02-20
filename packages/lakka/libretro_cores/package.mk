@@ -33,6 +33,7 @@ LIBRETRO_CORES="\
                 bluemsx \
                 bnes \
                 boom3 \
+                boytacean \
                 bsnes \
                 bsnes2014 \
                 bsnes_hd \
