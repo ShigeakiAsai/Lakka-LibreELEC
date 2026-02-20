@@ -144,6 +144,7 @@ LIBRETRO_CORES="\
                 race \
                 reminiscence \
                 retro8 \
+                rustation_ng \
                 same_cdi \
                 sameboy \
                 sameduck \
