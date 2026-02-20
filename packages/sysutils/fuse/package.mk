@@ -9,7 +9,9 @@ PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/libfuse/libfuse/"
 PKG_URL="https://github.com/libfuse/libfuse/archive/${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain"
-PKG_DEPENDS_INIT="toolchain"
+if [ "${PROJECT}" = "L4T" ]; then
+  PKG_DEPENDS_INIT="toolchain"
+fi
 PKG_LONGDESC="FUSE provides a simple interface for userspace programs to export a virtual filesystem to the Linux kernel."
 PKG_TOOLCHAIN="autotools"
 
@@ -21,13 +23,15 @@ PKG_CONFIGURE_OPTS_TARGET="MOUNT_FUSE_PATH=/usr/sbin \
                            --disable-rpath \
                            --with-gnu-ld"
 
-PKG_CONFIGURE_OPTS_INIT="MOUNT_FUSE_PATH=/usr/sbin \
-                         --enable-lib\
-                         --disable-util \
-                         --disable-examples \
-                         --enable-mtab \
-                         --disable-rpath \
-                         --with-gnu-ld"
+if [ "${PROJECT}" = "L4T" ]; then
+  PKG_CONFIGURE_OPTS_INIT="MOUNT_FUSE_PATH=/usr/sbin \
+                           --enable-lib\
+                           --disable-util \
+                           --disable-examples \
+                           --enable-mtab \
+                           --disable-rpath \
+                           --with-gnu-ld"
+fi
 
 post_makeinstall_target() {
   rm -rf ${INSTALL}/etc/init.d
@@ -35,8 +39,10 @@ post_makeinstall_target() {
 }
 
 post_makeinstall_init() {
-  rm -rf ${INSTALL}/usr/lib/pkgconfig
-  rm -rf ${INSTALL}/usr/include
-  rm -rf ${INSTALL}/etc/init.d
-  rm -rf ${INSTALL}/etc/udev
+  if [ "${PROJECT}" = "L4T" ]; then
+    rm -rf ${INSTALL}/usr/lib/pkgconfig
+    rm -rf ${INSTALL}/usr/include
+    rm -rf ${INSTALL}/etc/init.d
+    rm -rf ${INSTALL}/etc/udev
+  fi
 }
