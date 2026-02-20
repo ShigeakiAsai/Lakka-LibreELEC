@@ -31,23 +31,13 @@ PKG_CONFIGURE_OPTS_TARGET="BASH_SHELL=/bin/sh \
                            --with-__thread \
                            --with-binutils=${BUILD}/toolchain/bin \
                            --with-headers=${SYSROOT_PREFIX}/usr/include \
-                           --enable-kernel=6.6.0 \
+                           --enable-kernel=3.0.0 \
                            --without-cvs \
                            --without-gd \
                            --disable-build-nscd \
                            --disable-nscd \
-                           --disable-timezone-tools"
-
-if [ "${PROJECT}" = "L4T" ]; then
-  PKG_CONFIGURE_OPTS_TARGET="${PKG_CONFIGURE_OPTS_TARGET//--enable-kernel=6.6.0/--enable-kernel=3.0.0/}"
-  PKG_CONFIGURE_OPTS_TARGET+=" --disable-mathvec"
-elif [ "${PROJECT}" = "Ayn" ]; then
-  PKG_CONFIGURE_OPTS_TARGET="${PKG_CONFIGURE_OPTS_TARGET//--enable-kernel=6.6.0/--enable-kernel=5.19.0/}"
-elif [ "${PROJECT}" = "RPi" ]; then
-  if [ "${DEVICE}" = "RPi3-Composite" -o "${DEVICE}" = "RPi4-Composite" ]; then
-    PKG_CONFIGURE_OPTS_TARGET="${PKG_CONFIGURE_OPTS_TARGET//--enable-kernel=6.6.0/--enable-kernel=5.10.0/}"
-  fi
-fi
+                           --disable-timezone-tools \
+                           --disable-mathvec"
 
 if build_with_debug; then
   PKG_CONFIGURE_OPTS_TARGET+=" --enable-debug"
