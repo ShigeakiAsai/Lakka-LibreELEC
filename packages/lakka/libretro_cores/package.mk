@@ -15,6 +15,7 @@ LIBRETRO_CORES="\
                 applewin \
                 ardens \
                 atari800 \
+                azahar \
                 b2 \
                 beetle_bsnes \
                 beetle_lynx \
@@ -233,6 +234,7 @@ elif [ "${PROJECT}" = "Generic" ]; then
 
 elif [ "${PROJECT}" = "L4T" ]; then
   EXCLUDE_LIBRETRO_CORES+=" amiberry \
+                            azahar \
                             citra \
                             dolphin \
                             lr_moonlight \
