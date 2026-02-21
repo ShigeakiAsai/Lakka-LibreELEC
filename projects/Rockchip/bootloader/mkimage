@@ -6,6 +6,10 @@ if [ -z "${DTB}" ]; then
   mmd rockchip >"${SAVE_ERROR}" 2>&1 || show_error
   mcopy "${RELEASE_DIR}/3rdparty/bootloader/"*.dtb ::/rockchip >"${SAVE_ERROR}" 2>&1 || show_error
 
+  if [ "${DEVICE}" = "RK3326" -a "${UBOOT_SYSTEM}" = "rg351v" ]; then
+    EXTRA_CMDLINE = "${EXTRA_CMDLINE_NO_ROTATE}"
+  fi
+
   echo "image: copying extlinux.conf..."
   mkdir -p "${IMG_TMP}/extlinux"
   cat <<EOF >"${IMG_TMP}/extlinux/extlinux.conf"
@@ -24,6 +28,20 @@ if [ -n "${UBOOT_SYSTEM}" ]; then
     dd if="${BOOTLOADER_PATH}" of="${DISK}" bs=32k seek=1 conv=fsync,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
   else
     echo "image: bootloader ${BOOTLOADER_PATH} does not exist.";
+    exit 1
+  fi
+fi
+
+if [ "${DEVICE}" = "RK3326" ]; then
+  if [ -f "${RELEASE_DIR}/3rdparty/bootloader/boot.ini" ]; then
+    sed -e "s|@UUID_SYSTEM@|${UUID_SYSTEM}|" \
+        -e "s|@UUID_STORAGE@|${UUID_STORAGE}|" \
+        -e "s|@EXTRA_CMDLINE@|${EXTRA_CMDLINE}|" \
+        -i "${RELEASE_DIR}/3rdparty/bootloader/boot.ini"
+    echo "image: copy boot.ini to root..."
+    mcopy "${RELEASE_DIR}/3rdparty/bootloader/boot.ini" :: >"${SAVE_ERROR}" 2>&1 || show_error
+  else
+    echo "image: ${RELEASE_DIR}/3rdparty/bootloader/boot.ini does not exist.";
     exit 1
   fi
 fi
