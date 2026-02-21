@@ -1,0 +1,102 @@
+From a8c9bb0bb108aef16df9cf8037444b645925ad41 Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Sat, 14 Feb 2026 20:27:32 +0900
+Subject: [PATCH] Revert "gpiolib: Remove unused devm_gpio_request()"
+
+This reverts commit a5589313383074c48a1b3751d592a6e084ae0573.
+---
+ .../driver-api/driver-model/devres.rst        |  1 +
+ drivers/gpio/gpiolib-legacy.c                 | 38 +++++++++++++++++++
+ include/linux/gpio.h                          |  8 ++++
+ 3 files changed, 47 insertions(+)
+
+diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
+index 0198ac65e874..63403d181a3e 100644
+--- a/Documentation/driver-api/driver-model/devres.rst
++++ b/Documentation/driver-api/driver-model/devres.rst
+@@ -275,6 +275,7 @@ GPIO
+   devm_gpiod_put()
+   devm_gpiod_unhinge()
+   devm_gpiochip_add_data()
++  devm_gpio_request()
+   devm_gpio_request_one()
+ 
+ I2C
+diff --git a/drivers/gpio/gpiolib-legacy.c b/drivers/gpio/gpiolib-legacy.c
+index ef3f2ef30cf2..794bc2d33b80 100644
+--- a/drivers/gpio/gpiolib-legacy.c
++++ b/drivers/gpio/gpiolib-legacy.c
+@@ -73,6 +73,44 @@ static void devm_gpio_release(void *gpio)
+ 	gpio_free((unsigned)(unsigned long)gpio);
+ }
+ 
++/**
++ * devm_gpio_request - request a GPIO for a managed device
++ * @dev: device to request the GPIO for
++ * @gpio: GPIO to allocate
++ * @label: the name of the requested GPIO
++ *
++ * Except for the extra @dev argument, this function takes the
++ * same arguments and performs the same function as gpio_request().
++ * GPIOs requested with this function will be automatically freed
++ * on driver detach.
++ *
++ * **DEPRECATED** This function is deprecated and must not be used in new code.
++ *
++ * Returns:
++ * 0 on success, or negative errno on failure.
++ */
++int devm_gpio_request(struct device *dev, unsigned gpio, const char *label)
++{
++	unsigned *dr;
++	int rc;
++
++	dr = devres_alloc(devm_gpio_release, sizeof(unsigned), GFP_KERNEL);
++	if (!dr)
++		return -ENOMEM;
++
++	rc = gpio_request(gpio, label);
++	if (rc) {
++		devres_free(dr);
++		return rc;
++	}
++
++	*dr = gpio;
++	devres_add(dev, dr);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(devm_gpio_request);
++
+ /**
+  * devm_gpio_request_one - request a single GPIO with initial setup
+  * @dev: device to request for
+diff --git a/include/linux/gpio.h b/include/linux/gpio.h
+index 8f85ddb26429..2feb77fce17f 100644
+--- a/include/linux/gpio.h
++++ b/include/linux/gpio.h
+@@ -87,6 +87,7 @@ static inline int gpio_to_irq(unsigned gpio)
+ 
+ int gpio_request_one(unsigned gpio, unsigned long flags, const char *label);
+ 
++int devm_gpio_request(struct device *dev, unsigned gpio, const char *label);
+ int devm_gpio_request_one(struct device *dev, unsigned gpio,
+ 			  unsigned long flags, const char *label);
+ 
+@@ -164,6 +165,13 @@ static inline int gpio_to_irq(unsigned gpio)
+ 	return -EINVAL;
+ }
+ 
++static inline int devm_gpio_request(struct device *dev, unsigned gpio,
++				    const char *label)
++{
++	WARN_ON(1);
++	return -EINVAL;
++}
++
+ static inline int devm_gpio_request_one(struct device *dev, unsigned gpio,
+ 					unsigned long flags, const char *label)
+ {
+-- 
+2.43.0
+

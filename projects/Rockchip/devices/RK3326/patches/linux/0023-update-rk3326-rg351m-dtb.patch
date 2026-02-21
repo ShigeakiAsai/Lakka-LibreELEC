@@ -1,0 +1,106 @@
+diff -ur a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351m.dts b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351m.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351m.dts	2024-07-06 20:22:51.851745000 +0900
++++ b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351m.dts	2024-07-06 20:26:27.610924000 +0900
+@@ -6,66 +6,53 @@
+  */
+ 
+ /dts-v1/;
+-#include "rk3326-anbernic-rg351m.dtsi"
++#include "rk3326-odroid-go.dtsi"
+ 
+ / {
+ 	model = "Anbernic RG351M";
+ 	compatible = "anbernic,rg351m", "rockchip,rk3326";
+ 
+-	battery: battery {
+-			compatible = "simple-battery";
+-			charge-full-design-microamp-hours = <3500000>;
+-			charge-term-current-microamp = <350000>;
+-			constant-charge-current-max-microamp = <2000000>;
+-			constant-charge-voltage-max-microvolt = <4200000>;
+-			factory-internal-resistance-micro-ohms = <180000>;
+-			voltage-max-design-microvolt = <4100000>;
+-			voltage-min-design-microvolt = <3500000>;
+-
+-			ocv-capacity-celsius = <20>;
+-			ocv-capacity-table-0 =  <4046950 100>, <4001920 95>, <3967900 90>, <3919950 85>,
+-									<3888450 80>, <3861850 75>, <3831540 70>, <3799130 65>,
+-									<3768190 60>, <3745650 55>, <3726610 50>, <3711630 45>,
+-									<3696720 40>, <3685660 35>, <3674950 30>, <3663050 25>,
+-									<3649470 20>, <3635260 15>, <3616920 10>, <3592440 5>,
+-									<3574170 0>;
+-	};
+-
+-	rk817-sound {
+-		compatible = "simple-audio-card";
+-		simple-audio-card,name = "rk817_int";
+-		simple-audio-card,format = "i2s";
+-		simple-audio-card,hp-det-gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
+-		simple-audio-card,mclk-fs = <256>;
+-		simple-audio-card,widgets =
+-			"Microphone", "Mic Jack",
+-			"Headphone", "Headphones",
+-			"Speaker", "Speaker";
+-		simple-audio-card,routing =
+-			"MICL", "Mic Jack",
+-			"Headphones", "HPOL",
+-			"Headphones", "HPOR",
+-			"Speaker", "SPKO";
+-
+-		simple-audio-card,codec {
+-			sound-dai = <&rk817>;
+-		};
+-
+-		simple-audio-card,cpu {
+-			sound-dai = <&i2s1_2ch>;
+-		};
++        battery: battery {
++               compatible = "simple-battery";
++               charge-full-design-microamp-hours = <3500000>;
++               charge-term-current-microamp = <350000>;
++               constant-charge-current-max-microamp = <2000000>;
++               constant-charge-voltage-max-microvolt = <4200000>;
++               factory-internal-resistance-micro-ohms = <180000>;
++               voltage-max-design-microvolt = <4100000>;
++               voltage-min-design-microvolt = <3500000>;
++
++               ocv-capacity-celsius = <20>;
++               ocv-capacity-table-0 =  <4046950 100>, <4001920 95>, <3967900 90>, <3919950 85>,
++                                       <3888450 80>, <3861850 75>, <3831540 70>, <3799130 65>,
++                                       <3768190 60>, <3745650 55>, <3726610 50>, <3711630 45>,
++                                       <3696720 40>, <3685660 35>, <3674950 30>, <3663050 25>,
++                                       <3649470 20>, <3635260 15>, <3616920 10>, <3592440 5>,
++                                       <3574170 0>;
++       };
++
++	vibrator {
++		compatible = "pwm-vibrator";
++		pwms = <&pwm0 0 1000000 0>;
++		pwm-names = "enable";
+ 	};
+ };
+ 
++/delete-node/ &vcc_host; /* conflicts with pwm vibration motor */
++
+ &internal_display {
+ 	compatible = "elida,kd35t133";
+ 	iovcc-supply = <&vcc_lcd>;
+-	rotation = <270>;
+ 	vdd-supply = <&vcc_lcd>;
++	rotation = <270>;
++};
++
++&pwm0 {
++	status = "okay";
+ };
+ 
+ &rk817_charger {
+-	/* This device does not have a current sense resistor */
+-	//rockchip,resistor-sense-micro-ohms = <0>;
+-	monitored-battery = <&battery>;
+-};
+\ No newline at end of file
++       /* This device does not have a current sense resistor */
++       //rockchip,resistor-sense-micro-ohms = <0>;
++       monitored-battery = <&battery>;
++};
