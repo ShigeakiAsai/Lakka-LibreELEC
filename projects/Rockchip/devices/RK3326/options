@@ -57,9 +57,6 @@
   # e.g. FIRMWARE="dvb-firmware misc-firmware wlan-firmware"
     FIRMWARE="esp8089-firmware"
 
-  # additional drivers to install:
-    ADDITIONAL_DRIVERS+=" RTL88x2BU"
-
   # kernel serial console
     EXTRA_CMDLINE="console=tty0 net.iframes=0"
     EXTRA_CMDLINE_ROTATE="fbcon=rotate:3"
