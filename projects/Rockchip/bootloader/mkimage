@@ -6,10 +6,6 @@ if [ -z "${DTB}" ]; then
   mmd rockchip >"${SAVE_ERROR}" 2>&1 || show_error
   mcopy "${RELEASE_DIR}/3rdparty/bootloader/"*.dtb ::/rockchip >"${SAVE_ERROR}" 2>&1 || show_error
 
-  if [ "${DEVICE}" = "RK3326" -a "${UBOOT_SYSTEM}" != "rg351v" ]; then
-    EXTRA_CMDLINE+=" ${EXTRA_CMDLINE_ROTATE}"
-  fi
-
   echo "image: copying extlinux.conf..."
   mkdir -p "${IMG_TMP}/extlinux"
   cat <<EOF >"${IMG_TMP}/extlinux/extlinux.conf"
@@ -34,9 +30,13 @@ fi
 
 if [ "${DEVICE}" = "RK3326" ]; then
   if [ -f "${RELEASE_DIR}/3rdparty/bootloader/boot.ini" ]; then
+    # remove " fbcon=rotate:3" in /boot.ini when UBOOT_SYSTEM is rg351v
+    # because ANBERNIC RG351V does not need rotatation
+    [ "${UBOOT_SYSTEM}" = "rg351v" ] && EXTRA_CMDLINE="${EXTRA_CMDLINE// fbcon=rotate:3/}"
     sed -e "s|@UUID_SYSTEM@|${UUID_SYSTEM}|" \
         -e "s|@UUID_STORAGE@|${UUID_STORAGE}|" \
         -e "s|@EXTRA_CMDLINE@|${EXTRA_CMDLINE}|" \
+        -e "s|@DTB_FILE@|${DTB}|" \
         -i "${RELEASE_DIR}/3rdparty/bootloader/boot.ini"
     echo "image: copy boot.ini to root..."
     mcopy "${RELEASE_DIR}/3rdparty/bootloader/boot.ini" :: >"${SAVE_ERROR}" 2>&1 || show_error
