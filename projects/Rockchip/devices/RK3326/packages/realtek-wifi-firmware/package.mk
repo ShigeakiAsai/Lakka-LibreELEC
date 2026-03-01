@@ -16,7 +16,7 @@ makeinstall_target() {
   mkdir -p "${INSTALL}/$(get_kernel_overlay_dir)/lib/firmware/rtlwifi"
     cp -av rtlwifi/rtl8188eufw.bin "${INSTALL}/$(get_kernel_overlay_dir)/lib/firmware/rtlwifi"
 
-  # for RTW8822BU/RTW8812BU
+  # for RTW88 series
   mkdir -p "${INSTALL}/$(get_kernel_overlay_dir)/lib/firmware/rtw88"
-    cp -av rtw88/rtw8822b_fw.bin "${INSTALL}/$(get_kernel_overlay_dir)/lib/firmware/rtw88"
+    cp -av rtw88/* "${INSTALL}/$(get_kernel_overlay_dir)/lib/firmware/rtw88"
 }
