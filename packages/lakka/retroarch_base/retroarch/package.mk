@@ -197,6 +197,7 @@ makeinstall_target() {
   # RK3326 - HARDKERNEL OdroidGoAdvance or compatible devices
   if [ "${DEVICE}" = "RK3326" ]; then
     sed -i ${ra_config} -e 's|^xmb_layout = .*|xmb_layout = "2"|'
+    sed -i ${ra_config} -e 's|^input_menu_toggle_gamepad_combo = .*|input_menu_toggle_gamepad_combo = "4"|'
     sed -i ${ra_config} -e 's|^menu_widget_scale_auto = .*|menu_widget_scale_auto = "false"|'
     sed -i ${ra_config} -e 's|^menu_widget_scale_factor = .*|menu_widget_scale_factor = "2.250000"|'
   fi
