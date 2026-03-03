@@ -28,15 +28,15 @@ index 35bbaf5..89b42e9 100644
 -			    <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
 +	gpio_keys: odroidgo3-keys {
 +		compatible = "gpio-keys";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
++		pinctrl-0 = <&btn_pins_vol>;
++		pinctrl-names = "default";
 +		autorepeat;
-+		button@0 {
++		button-volume-up {
 +			label = "GPIO BTN-VOLUP";
 +			linux,code = <KEY_VOLUMEUP>;
 +			gpios = <&gpio2 RK_PA0 GPIO_ACTIVE_LOW>;
 +		};
-+		button@1 {
++		button-vol-down {
 +			label = "GPIO BTN-VOLDN";
 +			linux,code = <KEY_VOLUMEDOWN>;
 +			gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_LOW>;
