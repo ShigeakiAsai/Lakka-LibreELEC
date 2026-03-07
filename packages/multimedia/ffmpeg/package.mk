@@ -22,6 +22,9 @@ case "${PROJECT}" in
     PKG_SHA256="35b6b84a3e6542a4d96f9a0537c8dbf95176cc07452b0a63339a44b1590bf5f2"
     PKG_URL="https://github.com/jc-kynesim/rpi-ffmpeg/archive/${PKG_VERSION}.tar.gz"
     ;;
+  Rockchip)
+    PKG_PATCH_DIRS+=" v4l2-request v4l2-drmprime vf-deinterlace-v4l2m2m"
+    ;;
   RPi)
     PKG_FFMPEG_RPI="--disable-mmal --enable-sand"
     PKG_PATCH_DIRS+=" rpi"
