@@ -72,6 +72,7 @@ LIBRETRO_CORES="\
                 gam4980 \
                 gambatte \
                 gearboy \
+                gearcoleco \
                 geargrafx \
                 gearlynx \
                 gearsystem \
