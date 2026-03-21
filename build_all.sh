@@ -106,6 +106,7 @@ targets="\
 	RPi|RPiZero2-GPiCase|arm|image \
 	RPi|RPiZero2-GPiCase2W|aarch64|image \
 	Rockchip|RK3288|arm|image \
+	Rockchip|RK3326|aarch64|image \
 	Rockchip|RK3328|aarch64|image \
 	Rockchip|RK3399|aarch64|image \
 	Rockchip|RK356X|aarch64|image \
