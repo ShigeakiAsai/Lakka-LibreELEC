@@ -30,9 +30,10 @@ fi
 
 if [ "${DEVICE}" = "RK3326" ]; then
   if [ -f "${RELEASE_DIR}/3rdparty/bootloader/boot.ini" ]; then
-    # remove " fbcon=rotate:3" in /boot.ini when UBOOT_SYSTEM is rg351v
-    # because ANBERNIC RG351V does not need rotatation
+    # remove " fbcon=rotate:3" in /boot.ini when UBOOT_SYSTEM is rg351v or rg351mp
+    # because ANBERNIC RG351V and RG351MP do not need rotation
     [ "${UBOOT_SYSTEM}" = "rg351v" ] && EXTRA_CMDLINE="${EXTRA_CMDLINE// fbcon=rotate:3/}"
+    [ "${UBOOT_SYSTEM:0:7}" = "rg351mp" ] && EXTRA_CMDLINE="${EXTRA_CMDLINE// fbcon=rotate:3/}"
     sed -e "s|@UUID_SYSTEM@|${UUID_SYSTEM}|" \
         -e "s|@UUID_STORAGE@|${UUID_STORAGE}|" \
         -e "s|@EXTRA_CMDLINE@|${EXTRA_CMDLINE}|" \
