@@ -1,0 +1,290 @@
+diff -uNr a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
+--- a/arch/arm64/boot/dts/rockchip/Makefile	2026-02-09 06:03:27.000000000 +0900
++++ b/arch/arm64/boot/dts/rockchip/Makefile	2026-03-21 10:19:20.723305796 +0900
+@@ -21,6 +21,8 @@
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3308-sakurapi-rk3308b.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3318-a95x-z2.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3326-anbernic-rg351m.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3326-anbernic-rg351mp.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3326-anbernic-rg351mp-v2.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3326-anbernic-rg351v.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3326-gameforce-chi.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3326-odroid-go2.dtb
+diff -uNr a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp-v2.dts b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp-v2.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp-v2.dts	1970-01-01 09:00:00.000000000 +0900
++++ b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp-v2.dts	2026-03-21 14:43:06.194438432 +0900
+@@ -0,0 +1,15 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/dts-v1/;
++#include "rk3326-anbernic-rg351mp.dtsi"
++
++/ {
++	model = "Anbernic RG351MP (panel replaced)";
++	compatible = "anbernic,rg351mp-v2", "rockchip,rk3326";
++};
++
++&internal_display {
++	compatible = "anbernic,rg351v-panel-v2", "sitronix,st7703";
++	iovcc-supply = <&vcc_lcd>;
++	vdd-supply = <&vcc_lcd>;
++};
+diff -uNr a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp.dts b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp.dts	1970-01-01 09:00:00.000000000 +0900
++++ b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp.dts	2026-03-21 14:45:55.984038367 +0900
+@@ -0,0 +1,15 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/dts-v1/;
++#include "rk3326-anbernic-rg351mp.dtsi"
++
++/ {
++	model = "Anbernic RG351MP";
++	compatible = "anbernic,rg351mp", "rockchip,rk3326";
++};
++
++&internal_display {
++	compatible = "anbernic,rg351v-panel", "newvision,nv3051d";
++	iovcc-supply = <&vcc_lcd>;
++	vdd-supply = <&vcc_lcd>;
++};
+diff -uNr a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp.dtsi b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp.dtsi
+--- a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp.dtsi	1970-01-01 09:00:00.000000000 +0900
++++ b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351mp.dtsi	2026-03-21 15:11:53.430552996 +0900
+@@ -0,0 +1,236 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/dts-v1/;
++#include "rk3326-anbernic-rg351m.dtsi"
++
++/ {
++	gpio_keys: odroidgo3-keys {
++		compatible = "gpio-keys";
++		autorepeat;
++		pinctrl-0 = <&btn_pins_vol>;
++		pinctrl-names = "default";
++		button-vol-down {
++			gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_LOW>;
++			label = "VOLUMEDOWN";
++			linux,code = <KEY_VOLUMEDOWN>;
++		};
++		button-vol-up {
++			gpios = <&gpio2 RK_PA0 GPIO_ACTIVE_LOW>;
++			label = "VOLUMEUP";
++			linux,code = <KEY_VOLUMEUP>;
++		};
++	};
++
++	joypad: odroidgo3-joypad {
++		compatible = "odroidgo3-joypad";
++		joypad-name = "RG351MP GPIO Gamepad";
++		joypad-product = <0xa0a0>;
++		joypad-revision = <0x0100>;
++		status = "okay";
++		pinctrl-names = "default";
++		pinctrl-0 = <&btn_pins>;
++		io-channel-names = "amux_adc";
++		io-channels = <&saradc 1>;
++		amux-count = <4>;
++		amux-a-gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_LOW>;
++		amux-b-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
++		amux-en-gpios = <&gpio3 RK_PB5 GPIO_ACTIVE_LOW>;
++		button-adc-scale = <2>;
++		button-adc-deadzone = <64>;
++		button-adc-fuzz = <32>;
++		button-adc-flat = <32>;
++		abs_x-p-tuning = <180>;
++		abs_x-n-tuning = <180>;
++		abs_y-p-tuning = <180>;
++		abs_y-n-tuning = <170>;
++		abs_rx-p-tuning = <180>;
++		abs_rx-n-tuning = <180>;
++		abs_ry-p-tuning = <180>;
++		abs_ry-n-tuning = <170>;
++		poll-interval = <10>;
++
++		sw1 {
++			gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-UP";
++			linux,code = <BTN_DPAD_UP>; // 0x220
++		};
++		sw2 {
++			gpios = <&gpio1 RK_PB5 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-DOWN";
++			linux,code = <BTN_DPAD_DOWN>; // 0x221
++		};
++		sw3 {
++			gpios = <&gpio1 RK_PB6 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-LEFT";
++			linux,code = <BTN_DPAD_LEFT>; // 0x222
++		};
++		sw4 {
++			gpios = <&gpio1 RK_PB7 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-RIGHT";
++			linux,code = <BTN_DPAD_RIGHT>; // 0x223
++		};
++		sw5 {
++			gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_LOW>;
++			label = "GPIO KEY BTN-A";
++			linux,code = <BTN_EAST>; // 0x131
++		};
++		sw6 {
++			gpios = <&gpio1 RK_PA5 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-B";
++			linux,code = <BTN_SOUTH>; // 0x130
++		};
++		sw7 {
++			gpios = <&gpio1 RK_PA6 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-Y";
++			linux,code = <BTN_WEST>; // 0x134
++		};
++		sw8 {
++			gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-X";
++			linux,code = <BTN_NORTH>; // 0x133
++		};
++		sw11 {
++			gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_LOW>;
++			label = "GPIO F3";
++			linux,code = <BTN_TRIGGER_HAPPY3>; // 0x2c2
++		};
++		sw12 {
++			gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_LOW>;
++			label = "GPIO F4";
++			linux,code = <BTN_TRIGGER_HAPPY4>; // 0x2c3
++		};
++		sw15 {
++			gpios = <&gpio2 RK_PA6 GPIO_ACTIVE_LOW>;
++			label = "GPIO TOP-LEFT";
++			linux,code = <BTN_TL>; // 0x02
++		};
++		sw16 {
++			gpios = <&gpio2 RK_PA7 GPIO_ACTIVE_LOW>;
++			label = "GPIO TOP-RIGHT";
++			linux,code = <BTN_TR>; // 0x05
++		};
++		sw19 {
++			gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>;
++			label = "GPIO F1";
++			linux,code = <BTN_TRIGGER_HAPPY1>;
++		};
++		sw20 {
++			gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
++			label = "GPIO TOP-RIGHT2";
++			linux,code = <BTN_TR2>;
++		};
++		sw21 {
++			gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
++			label = "GPIO TOP-LEFT2";
++			linux,code = <BTN_TL2>;
++		};
++		sw22 {
++			gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
++			label = "GPIO F2";
++			linux,code = <BTN_TRIGGER_HAPPY2>;
++		};
++	};
++
++	battery: battery {
++		compatible = "simple-battery";
++		charge-full-design-microamp-hours = <3500000>;
++		charge-term-current-microamp = <350000>;
++		constant-charge-current-max-microamp = <2000000>;
++		constant-charge-voltage-max-microvolt = <4200000>;
++		factory-internal-resistance-micro-ohms = <180000>;
++		voltage-max-design-microvolt = <4100000>;
++		voltage-min-design-microvolt = <3500000>;
++		ocv-capacity-celsius = <20>;
++		ocv-capacity-table-0 =  <4046950 100>, <4001920 95>, <3967900 90>, <3919950 85>,
++					<3888450 80>, <3861850 75>, <3831540 70>, <3799130 65>,
++					<3768190 60>, <3745650 55>, <3726610 50>, <3711630 45>,
++					<3696720 40>, <3685660 35>, <3674950 30>, <3663050 25>,
++					<3649470 20>, <3635260 15>, <3616920 10>, <3592440 5>,
++					<3574170 0>;
++	};
++
++	rk817-sound {
++		compatible = "simple-audio-card";
++		pinctrl-names = "default";
++		pinctrl-0 = <&hp_det>;
++		simple-audio-card,name = "rk817_int";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,mclk-fs = <256>;
++		simple-audio-card,hp-det-gpio = <&gpio2 RK_PC6 GPIO_ACTIVE_LOW>;
++		simple-audio-card,hp-pin-name = "Headphones";
++		simple-audio-card,widgets =
++			"Microphone", "Mic Jack",
++			"Headphone", "Headphones",
++			"Speaker", "Speaker";
++		simple-audio-card,routing =
++			"MICL", "Mic Jack",
++			"Headphones", "HPOL",
++			"Headphones", "HPOR",
++			"Speaker", "SPKO";
++		simple-audio-card,codec {
++			sound-dai = <&rk817>;
++		};
++		simple-audio-card,cpu {
++			sound-dai = <&i2s1_2ch>;
++		};
++	};
++};
++
++&internal_display {
++	compatible = "anbernic,rg351v-panel", "newvision,nv3051d";
++	iovcc-supply = <&vcc_lcd>;
++	vdd-supply = <&vcc_lcd>;
++};
++
++&io_domains {
++	vccio1-supply = <&vccio_sd>;
++};
++
++&vcc_sd {
++	regulator-max-microvolt = <3000000>;
++	regulator-min-microvolt = <1800000>;
++};
++
++&vccio_sd {
++	regulator-max-microvolt = <1800000>;
++};
++
++&sdio {
++	// RG351V uses RK_PB4, RG351MP uses RK_PB6
++	cd-gpios = <&gpio3 RK_PB6 GPIO_ACTIVE_LOW>;
++	status = "okay";
++};
++
++&rk817_charger {
++       /* This device does not have a current sense resistor */
++       rockchip,resistor-sense-micro-ohms = <0>;
++       monitored-battery = <&battery>;
++};
++
++&pinctrl {
++	btns {
++		btn_pins_vol: btn-pins-vol {
++			rockchip,pins = <2 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>,
++					<2 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++		btn_pins: btn-pins {
++			rockchip,pins = <1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
++
++					<2 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
++					<2 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>,
++					<2 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>,
++					<2 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
++					<2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
++					<2 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
++					<3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>,
++					<3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
++};
