@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="systemd"
-PKG_VERSION="259.1"
-PKG_SHA256="7af4f36db512ad2f0f749a0f9886370edeb2bb5128014fc47cdf73702c7e1911"
+PKG_VERSION="260"
+PKG_SHA256="a42da890bf4e523fea1eb8b3bea45f03482e9453bf1134af70c599df63bfe1dc"
 PKG_LICENSE="LGPL2.1+"
 PKG_SITE="http://www.freedesktop.org/wiki/Software/systemd"
 PKG_URL="https://github.com/systemd/systemd/archive/v${PKG_VERSION}.tar.gz"
@@ -30,9 +30,7 @@ PKG_MESON_OPTS_TARGET="--libdir=/usr/lib \
                        -Dmicrohttpd=disabled \
                        -Dlibcryptsetup=disabled \
                        -Dlibcurl=disabled \
-                       -Dlibidn=disabled \
                        -Dlibidn2=enabled \
-                       -Dlibiptc=disabled \
                        -Dqrencode=disabled \
                        -Dgcrypt=disabled \
                        -Dgnutls=disabled \
@@ -115,7 +113,6 @@ pre_configure_target() {
 
 post_makeinstall_target() {
   # remove unneeded stuff
-  safe_remove ${INSTALL}/etc/init.d
   safe_remove ${INSTALL}/etc/systemd/system
   safe_remove ${INSTALL}/etc/xdg
   safe_remove ${INSTALL}/etc/X11
@@ -135,7 +132,6 @@ post_makeinstall_target() {
 
   if [ "${LOCAL_LOGIN}" = "no" ]; then
     # remove getty units, we dont want a console
-    safe_remove ${INSTALL}/usr/lib/systemd/system/autovt@.service
     safe_remove ${INSTALL}/usr/lib/systemd/system/console-getty.service
     safe_remove ${INSTALL}/usr/lib/systemd/system/container-getty@.service
     safe_remove ${INSTALL}/usr/lib/systemd/system/getty.target

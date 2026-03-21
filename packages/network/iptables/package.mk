@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="iptables"
-PKG_VERSION="1.8.11"
-PKG_SHA256="d87303d55ef8c92bcad4dd3f978b26d272013642b029425775f5bad1009fe7b2"
+PKG_VERSION="1.8.13"
+PKG_SHA256="1afcd33da9e8f913ace6a2126788162e207e26f5d5e29c6573c0e581ffc58b99"
 PKG_LICENSE="GPL"
 PKG_SITE="https://www.netfilter.org/"
 PKG_URL="https://www.netfilter.org/projects/iptables/files/${PKG_NAME}-${PKG_VERSION}.tar.xz"

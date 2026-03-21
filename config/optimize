@@ -21,7 +21,7 @@ HOST_CFLAGS="$HOST_CFLAGS -Wno-format-security"
 HOST_CXXFLAGS="$HOST_CXXFLAGS -Wno-format-security" 
 
 # lto flags
-FLAGS_OPTIM_LTO="-flto -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
+FLAGS_OPTIM_LTO="-flto=${CONCURRENCY_MAKE_LEVEL} -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
 FLAGS_OPTIM_LTO_NO_FAT="-fno-fat-lto-objects"
 FLAGS_OPTIM_LTO_FAT="-ffat-lto-objects"
 FLAGS_OPTIM_LTO_OFF="-fno-lto"
@@ -33,13 +33,13 @@ LDFLAGS_OPTIM_LINKER_GOLD="-fuse-ld=gold"
 LDFLAGS_OPTIM_LINKER_MOLD="-fuse-ld=mold"
 
 # default compiler optimization
-CFLAGS_OPTIM_DEFAULT="-O2 -fomit-frame-pointer -DNDEBUG"
+CFLAGS_OPTIM_DEFAULT="-O2 -fomit-frame-pointer"
 CXXFLAGS_OPTIM_DEFAULT="$CFLAGS_OPTIM_DEFAULT"
 # speed flag
-CFLAGS_OPTIM_SPEED="-O3 -fomit-frame-pointer -DNDEBUG"
+CFLAGS_OPTIM_SPEED="-O3 -fomit-frame-pointer"
 CXXFLAGS_OPTIM_SPEED="$CFLAGS_OPTIM_SPEED"
 # size flag
-CFLAGS_OPTIM_SIZE="-Os -fomit-frame-pointer -DNDEBUG"
+CFLAGS_OPTIM_SIZE="-Os -fomit-frame-pointer"
 CXXFLAGS_OPTIM_SIZE="$CFLAGS_OPTIM_SIZE"
 # debug settings
 CFLAGS_OPTIM_DEBUG="-ggdb -Og"

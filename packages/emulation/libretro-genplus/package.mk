@@ -2,8 +2,8 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libretro-genplus"
-PKG_VERSION="cecccacf767b1c8e86af3e315223b052a7f81b95"
-PKG_SHA256="8a3fa4dada19046a953f7ed65be9ff0f5eb47e169a917fe6e3616b5cf187acc7"
+PKG_VERSION="d446078a385a5acae701f4b3b6b3fd58476d73d3"
+PKG_SHA256="0e557796a003835ecca4be6e23ac7c89f60d977b640092a4c5af8dcfd75eb287"
 PKG_LICENSE="Non-commercial"
 PKG_SITE="https://github.com/ekeeke/Genesis-Plus-GX"
 PKG_URL="https://github.com/libretro/Genesis-Plus-GX/archive/${PKG_VERSION}.tar.gz"
