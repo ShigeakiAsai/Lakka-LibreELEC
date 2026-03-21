@@ -37,6 +37,8 @@ makeinstall_target() {
           "${INSTALL}/etc/retroarch-joypad-autoconfig/udev/GO-Advance Gamepad (rev 1.1).cfg"
     mv -v "${INSTALL}/etc/retroarch-joypad-autoconfig/udev/GO-Super_Gamepad.cfg" \
           "${INSTALL}/etc/retroarch-joypad-autoconfig/udev/GO-Super Gamepad.cfg"
+    mv -v "${INSTALL}/etc/retroarch-joypad-autoconfig/udev/RG351MP_GPIO_Gamepad.cfg" \
+          "${INSTALL}/etc/retroarch-joypad-autoconfig/udev/RG351MP GPIO Gamepad.cfg.cfg"
   fi
 }
 
