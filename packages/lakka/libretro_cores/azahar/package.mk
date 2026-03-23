@@ -1,5 +1,5 @@
 PKG_NAME="azahar"
-PKG_VERSION="f3fb0b729e7ca90e9697ca659643e5ef940ce41d"
+PKG_VERSION="9b045bf8370d035cacd99e5ad19a082df9e3b262"
 PKG_ARCH="x86_64 aarch64"
 PKG_LICENSE="GPL-2.0"
 PKG_SITE="https://github.com/azahar-emu/azahar"
@@ -29,5 +29,5 @@ fi
 
 makeinstall_target() {
   mkdir -p ${INSTALL}/usr/lib/libretro
-    cp -v bin/MinSizeRel/azahar_libretro.so ${INSTALL}/usr/lib/libretro/
+    cp -v bin/Release/azahar_libretro.so ${INSTALL}/usr/lib/libretro/
 }
