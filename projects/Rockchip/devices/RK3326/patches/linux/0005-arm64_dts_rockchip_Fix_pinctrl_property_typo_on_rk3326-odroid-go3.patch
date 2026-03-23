@@ -1,0 +1,31 @@
+From f45385c511141683379a6e090fe74c6002337b5e Mon Sep 17 00:00:00 2001
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Date: Thu, 8 Jan 2026 17:06:13 -0600
+Subject: [PATCH] arm64: dts: rockchip: Fix pinctrl property typo on
+ rk3326-odroid-go3
+
+"pinctrl" is not a defined property name. The correct name is
+"pinctrl-0".
+
+Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+[added missing pinctrl-names property]
+Link: https://patch.msgid.link/20260108230613.1349060-1-robh@kernel.org
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts
+index 35bbaf559ca32a..6b0563cb4d3a61 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go3.dts
+@@ -14,7 +14,8 @@
+ 
+ 	joystick_mux_controller: mux-controller {
+ 		compatible = "gpio-mux";
+-		pinctrl = <&mux_en_pins>;
++		pinctrl-0 = <&mux_en_pins>;
++		pinctrl-names = "default";
+ 		#mux-control-cells = <0>;
+ 
+ 		mux-gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_LOW>,
