@@ -23,8 +23,8 @@ case "${LINUX}" in
     PKG_PATCH_DIRS="default"
     ;;
   raspberrypi)
-    PKG_VERSION="201575782c30fd948415a191a814e28fe0db90dc" # 6.12.66
-    PKG_SHA256="b89d4a38312f201514711a2e2c6d0bc8a07e6f59b4b96cd5e7b7693854bc7404"
+    PKG_VERSION="b979ed0bcf372d0e063aeb488875bac6d6fd3c2e" # 6.12.77
+    PKG_SHA256="ac91eb7ca952122c448602b937c9838d030edbf96ae3d7406c7863ecfb5a28af"
     PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     PKG_PATCH_DIRS="raspberrypi rtlwifi/6.13 rtlwifi/6.14 rtlwifi/6.15 rtlwifi/6.18"
@@ -61,8 +61,8 @@ case "${LINUX}" in
     PKG_GIT_CLONE_BRANCH="sdm845-5.19.16"
     ;;
   *)
-    PKG_VERSION="6.18.7"
-    PKG_SHA256="b726a4d15cf9ae06219b56d87820776e34d89fbc137e55fb54a9b9c3015b8f1e"
+    PKG_VERSION="6.18.19"
+    PKG_SHA256="eaaf78271cd07c68ad9c4c9a70c72718b33abbd716239d82bac96b1751eb090c"
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
     PKG_PATCH_DIRS="default"
     ;;
