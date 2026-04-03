@@ -2,9 +2,9 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="oscam"
-PKG_VERSION="11907"
-PKG_SHA256="13172a4f873eb1251a37c4452b0bd087f2606ec72600790cb8449689596bfd3c"
-PKG_REV="8"
+PKG_VERSION="11942"
+PKG_SHA256="cf1017715b2044fa56838288edfc0b0e9f1948b16393e8416dc18ba7dc1f984e"
+PKG_REV="12"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://git.streamboard.tv/common/oscam/-/wikis"
