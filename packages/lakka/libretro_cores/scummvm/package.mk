@@ -21,6 +21,12 @@ pre_make_target() {
   CXXFLAGS+=" -DHAVE_POSIX_MEMALIGN=1"
   if [ "${DEVICE}" = "RK3326" ]; then
     PKG_MAKE_OPTS_TARGET+=" platform=oga_a35_neon_hardfloat"
+  elif [ "${DEVICE:0:4}" = "RPi3" ]; then
+    PKG_MAKE_OPTS_TARGET+=" platform=rpi3_64"
+  elif [ "${DEVICE}" = "RPi4" -o "${DEVICE}" = "RPi4-Composite" ]; then
+    PKG_MAKE_OPTS_TARGET+=" platform=rpi4_64"
+  elif [ "${DEVICE:0:4}" = "RPi5" ]; then
+    PKG_MAKE_OPTS_TARGET+=" platform=rpi5_64"
   else
     PKG_MAKE_OPTS_TARGET+=" platform=${TARGET_NAME}"
   fi
