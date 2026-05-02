@@ -14,6 +14,7 @@ LIBRETRO_CORES="\
                 anarch \
                 ardens \
                 atari800 \
+                azahar \
                 b2 \
                 beetle_bsnes \
                 beetle_lynx \
