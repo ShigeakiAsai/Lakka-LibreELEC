@@ -1,5 +1,5 @@
 PKG_NAME="amiarcadia"
-PKG_VERSION="4b84422985457b53dcc22ab46f525d7c34d3e51f"
+PKG_VERSION="34af1c9eb71c7ef58e7719e67d77881a99874c36"
 PKG_LICENSE="Non-commercial"
 PKG_SITE="https://git.libretro.com/libretro/amiarcadia"
 PKG_URL="${PKG_SITE}.git"
