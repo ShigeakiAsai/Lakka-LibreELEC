@@ -1,5 +1,5 @@
 PKG_NAME="doublecherrygb"
-PKG_VERSION="2e7a8bd5442ad7b2cb98ea07dbb5000ac95193e9"
+PKG_VERSION="1c42c1bddbe41f79db4ae2db9a959bd73ae6d2bf"
 PKG_LICENSE="AGPLv3"
 PKG_SITE="https://github.com/TimOelrichs/doublecherryGB-libretro"
 PKG_URL="${PKG_SITE}.git"
