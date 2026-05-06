@@ -1,5 +1,5 @@
 PKG_NAME="tic80"
-PKG_VERSION="6412f72d0f4725c153ce3d245729b829e713542e"
+PKG_VERSION="e7f48a30ea3e205810366aad910a2985edcd1f58"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/TIC-80"
 PKG_URL="${PKG_SITE}.git"
@@ -20,6 +20,6 @@ pre_configure_target() {
 }
 
 makeinstall_target() {
-  mkdir -p ${INSTALL}/usr/lib/libretro
-    cp -v lib/tic80_libretro.so ${INSTALL}/usr/lib/libretro/
+  mkdir -pv "${INSTALL}/usr/lib/libretro"
+    cp -v bin/tic80_libretro.so "${INSTALL}/usr/lib/libretro/"
 }
