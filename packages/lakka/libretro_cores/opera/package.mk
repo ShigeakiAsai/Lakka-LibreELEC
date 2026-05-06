@@ -1,5 +1,5 @@
 PKG_NAME="opera"
-PKG_VERSION="889e52a07cd93074577bf1b2ea260a2beae7ff7b"
+PKG_VERSION="4c4ca6bf741c40715723a8b8dae4b6187ff6ac30"
 PKG_LICENSE="LGPL with additional notes"
 PKG_SITE="https://github.com/libretro/opera-libretro"
 PKG_URL="${PKG_SITE}.git"
