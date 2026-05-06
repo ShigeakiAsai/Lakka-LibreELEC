@@ -1,5 +1,5 @@
 PKG_NAME="fmsx"
-PKG_VERSION="6b807c588d63677770f7f2ed8b94ca0e9da256ce"
+PKG_VERSION="3933db571485b7c6572968f154fa8621c5568357"
 PKG_LICENSE="Non-commercial"
 PKG_SITE="https://github.com/libretro/fmsx-libretro"
 PKG_URL="${PKG_SITE}.git"
