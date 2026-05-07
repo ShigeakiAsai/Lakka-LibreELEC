@@ -1,0 +1,13 @@
+diff --git a/Makefile.common b/Makefile.common
+index 21c8a52..c5ca9cf 100644
+--- a/Makefile.common
++++ b/Makefile.common
+@@ -104,7 +104,7 @@ endif
+ # native-build platforms (unix/osx/win). Cross-compile targets (vita, ps3,
+ # libnx, etc.) set platform explicitly and should not use host detection.
+ # Also skip when CC looks like a cross-compiler (e.g. arm-webos-linux-gnueabi-gcc).
+-BLITTER_CROSS_CC := $(findstring arm-,$(CC))$(findstring aarch64-,$(CC))$(findstring mips,$(CC))$(findstring powerpc,$(CC))
++BLITTER_CROSS_CC := $(findstring arm-,$(CC))$(findstring aarch64-,$(CC))$(findstring mips,$(CC))$(findstring powerpc,$(CC))$(findstring armv,$(CC))
+ ifeq ($(BLITTER_SIMD_SRC),)
+ ifeq ($(BLITTER_CROSS_CC),)
+ ifneq (,$(filter unix osx win,$(platform)))
