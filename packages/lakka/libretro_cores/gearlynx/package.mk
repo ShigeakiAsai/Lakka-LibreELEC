@@ -1,5 +1,5 @@
 PKG_NAME="gearlynx"
-PKG_VERSION="aed9775f3f53e84f9678f0f7473186ac3078a679"
+PKG_VERSION="6e102f9fad74bff59f9dc330fc1383e3a291d7fd"
 PKG_LICENSE="GPL-3.0"
 PKG_SITE="https://github.com/drhelius/Gearlynx"
 PKG_URL="${PKG_SITE}.git"

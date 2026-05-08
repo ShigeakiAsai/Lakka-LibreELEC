@@ -1,5 +1,5 @@
 PKG_NAME="px68k"
-PKG_VERSION="6545b5d54ad60cc14499d2e9696aa7bd02a61329"
+PKG_VERSION="45dfd4005434d1199b01fb74a5371ec9bc513164"
 PKG_LICENSE="Unknown"
 PKG_SITE="https://github.com/libretro/px68k-libretro"
 PKG_URL="${PKG_SITE}.git"

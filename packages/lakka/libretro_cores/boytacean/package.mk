@@ -1,5 +1,5 @@
 PKG_NAME="boytacean"
-PKG_VERSION="440213b507cfaefcc3adf6a62460097407379bcc"
+PKG_VERSION="bfb56ee4073f47f9bc1401a1d5206bfafb4ec901"
 PKG_LICENSE="Apache-2.0"
 PKG_ARCH="any !i386"
 PKG_SITE="https://github.com/joamag/boytacean"

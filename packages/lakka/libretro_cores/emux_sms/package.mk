@@ -1,5 +1,5 @@
 PKG_NAME="emux_sms"
-PKG_VERSION="640d4bae7d4757f5377dbeb42f2d02763895095c"
+PKG_VERSION="c664c757d088d87a1d40f34f683cea85d0b2bada"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/emux"
 PKG_URL="${PKG_SITE}.git"
