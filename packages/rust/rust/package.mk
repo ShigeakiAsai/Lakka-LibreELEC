@@ -2,8 +2,8 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="rust"
-PKG_VERSION="1.94.0"
-PKG_SHA256="b83f921cd3f321ff614f9c06a8b870d89299fc02888b48a5549683a36823474c"
+PKG_VERSION="1.95.0"
+PKG_SHA256="ea9b82a83e46967537c3569ce9d6fa16811c043a96e651376c349e70241ca515"
 PKG_LICENSE="MIT"
 PKG_SITE="https://www.rust-lang.org"
 PKG_URL="https://static.rust-lang.org/dist/rustc-${PKG_VERSION}-src.tar.gz"
@@ -19,18 +19,6 @@ pre_configure_host() {
 }
 
 configure_host() {
-
-  mkdir -p ${PKG_BUILD}/targets
-
-  case "${TARGET_ARCH}" in
-    "arm")
-      # the arm target is special because we specify the subarch. ie armv8a
-      cp -a ${PKG_DIR}/targets/arm-libreelec-linux-gnueabihf.json ${PKG_BUILD}/targets/${TARGET_NAME}.json
-      ;;
-    "aarch64" | "x86_64")
-      cp -a ${PKG_DIR}/targets/${TARGET_NAME}.json ${PKG_BUILD}/targets/${TARGET_NAME}.json
-      ;;
-  esac
 
   cat >${PKG_BUILD}/config.toml  <<END
 change-id = 148671
@@ -126,6 +114,4 @@ makeinstall_host() {
 
   mkdir -p ${TOOLCHAIN}/lib/rustlib
     cp -a build/${RUST_HOST}/stage2/lib/* ${TOOLCHAIN}/lib
-
-    cp -a ${PKG_BUILD}/targets/*.json ${TOOLCHAIN}/lib/rustlib/
 }

@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="mesa"
-PKG_VERSION="26.0.3"
-PKG_SHA256="ddb7443d328e89aa45b4b6b80f077bf937f099daeca8ba48cabe32aab769e134"
+PKG_VERSION="26.1.0"
+PKG_SHA256="a5095e6dc2986c78f0cef4c5555dc803e93b6bfe5670e991f9e8bd49395bae19"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.mesa3d.org/"
 PKG_URL="https://mesa.freedesktop.org/archive/mesa-${PKG_VERSION}.tar.xz"
@@ -19,12 +19,19 @@ if [ "${DEVICE}" = "Dragonboard" ]; then
 fi
 
 PKG_MESON_OPTS_HOST="-Dglvnd=disabled \
-                     -Dgallium-drivers=iris \
+                     -Dgallium-drivers= \
                      -Dplatforms= \
                      -Dglx=disabled \
                      -Dvulkan-drivers= \
                      -Dshared-llvm=disabled \
-                     -Dtools=panfrost"
+                     -Dtools=panfrost \
+                     -Dvideo-codecs= \
+                     -Dbuild-tests=false \
+                     -Denable-glcpp-tests=false \
+                     -Dmesa-clc=enabled \
+                     -Dinstall-mesa-clc=true \
+                     -Dprecomp-compiler=enabled \
+                     -Dinstall-precomp-compiler=true"
 
 PKG_MESON_OPTS_TARGET="-Dgallium-drivers=${GALLIUM_DRIVERS// /,} \
                        -Dgallium-extra-hud=false \

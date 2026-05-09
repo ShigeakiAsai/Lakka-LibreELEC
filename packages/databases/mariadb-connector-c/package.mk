@@ -20,6 +20,12 @@ PKG_CMAKE_OPTS_TARGET="-DWITH_EXTERNAL_ZLIB=ON
                        -DDEFAULT_SSL_VERIFY_SERVER_CERT=OFF
                       "
 
+pre_configure_target() {
+  # glibc-2.43 made strchr/strstr C23-compliant (const-preserving return type);
+  # mariadb assigns the result to non-const pointers; upstream bug: https://jira.mariadb.org/projects/CONC/issues/CONC-805
+  export CFLAGS+=" -Wno-discarded-qualifiers"
+}
+
 post_makeinstall_target() {
   # keep mariadb shared library and modern authentication plugins
   LIBDIR=${INSTALL}/usr/lib

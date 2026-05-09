@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libxml2"
-PKG_VERSION="2.15.2"
-PKG_SHA256="0444485702877ad65b1e0fcec2389230997d250d0ac8575eed8026e68355657e"
+PKG_VERSION="2.15.3"
+PKG_SHA256="635685ed77c202daf4d20e1427f70ba75c15b8ed8093afec581c8a8022763202"
 PKG_LICENSE="MIT"
 PKG_SITE="http://xmlsoft.org"
 PKG_URL="https://gitlab.gnome.org/GNOME/${PKG_NAME}/-/archive/v${PKG_VERSION}/${PKG_NAME}-v${PKG_VERSION}.tar.bz2"
@@ -16,7 +16,6 @@ PKG_TOOLCHAIN="cmake"
 PKG_CMAKE_OPTS_ALL="-DBUILD_SHARED_LIBS=ON \
                     -DLIBXML2_WITH_ICONV=OFF \
                     -DLIBXML2_WITH_ICU=OFF \
-                    -DLIBXML2_WITH_LZMA=OFF \
                     -DLIBXML2_WITH_TESTS=OFF \
                     -DLIBXML2_WITH_THREADS=ON \
                     -DLIBXML2_WITH_PYTHON=OFF \
