@@ -1,0 +1,9 @@
+diff -uNr a/src/core/loader/elf.cpp b/src/core/loader/elf.cpp
+--- a/src/core/loader/elf.cpp	2026-05-11 22:12:26.000000000 +0900
++++ b/src/core/loader/elf.cpp	2026-05-11 23:13:27.315624900 +0900
+@@ -1,4 +1,5 @@
+ #include <cstring>
++#include <cstdint>
+ 
+ #include "elfio/elfio.hpp"
+ #include "memory.hpp"
