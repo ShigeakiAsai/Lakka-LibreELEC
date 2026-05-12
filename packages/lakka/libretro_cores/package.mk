@@ -232,7 +232,8 @@ elif [ "${PROJECT}" = "Ayn" ]; then
                             vitaquake3"
 
 elif [ "${PROJECT}" = "Generic" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" lr_moonlight \
+  EXCLUDE_LIBRETRO_CORES+=" holani \
+                            lr_moonlight \
 			    vitaquake3"
 
 elif [ "${PROJECT}" = "L4T" ]; then
