@@ -42,7 +42,7 @@ make_target() {
   make CC=${CC} \
        AR=${AR} \
        RANLIB=${RANLIB} \
-       CFLAGS="-I${SYSROOT_PREFIX}/usr/include -fomit-frame-pointer -D_FILE_OFFSET_BITS=64" \
+       CFLAGS="-I${SYSROOT_PREFIX}/usr/include -fomit-frame-pointer -D_FILE_OFFSET_BITS=64 -Wno-attributes" \
        LDFLAGS="-L${SYSROOT_PREFIX}/usr/lib"
 }
 
