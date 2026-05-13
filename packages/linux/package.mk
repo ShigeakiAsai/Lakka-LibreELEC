@@ -391,6 +391,28 @@ pre_make_target() {
     fi
   fi
 
+  # rust is used in build from v7.0-rc1, but it has problem on cross compile.
+  # so Lakka doesn't use rust for building at some projects.
+  # PROJECT=Allwinner, Amlogic, Generic(i386), Rockchip and Samsung
+  if [ "${DISTRO}" = "Lakka" ]; then
+    case "${PROJECT}" in
+      "Allwinner" | "Amlogic" | "Rockchip" | "Samsung")
+        NO_RUST="1"
+        ;;
+      "Generic")
+        if [ "${TARGET_ARCH}" = "i386" ]; then
+          NO_RUST="1"
+        fi
+        ;;
+      *)
+        # Others are not set/used NO_RUST="1"
+        # PROJECT=Generic, RPi
+        #  Generic(x86_64): this is not cross compile
+        #  RPi: v6.18.21 this version does not use rust during build
+        ;;
+    esac
+  fi
+
   if [ -f "${DISTRO_DIR}/${DISTRO}/kernel_options" ]; then
     while read OPTION; do
       [ -z "${OPTION}" -o -n "$(echo "${OPTION}" | grep '^#')" ] && continue
@@ -464,6 +486,29 @@ make_target() {
           NO_LIBBABELTRACE=1 \
           NO_CAPSTONE=1 \
           NO_LIBPFM4=1 \
+          CROSS_COMPILE="${TARGET_PREFIX}" \
+          JOBS="${CONCURRENCY_MAKE_LEVEL}" \
+            make ${PERF_BUILD_ARGS}
+        elif [ "${NO_RUST}" = "1" ]; then
+          WERROR=0 \
+          NO_LIBPERL=1 \
+          NO_LIBPYTHON=1 \
+          NO_SLANG=1 \
+          NO_GTK2=1 \
+          NO_LIBNUMA=1 \
+          NO_LIBAUDIT=1 \
+          NO_LIBTRACEEVENT=1 \
+          NO_LZMA=1 \
+          NO_SDT=1 \
+          NO_LIBDEBUGINFOD=1 \
+          NO_JVMTI=1 \
+          NO_LIBLLVM=1 \
+          NO_LIBPFM4=1 \
+          NO_LIBBABELTRACE=1 \
+          NO_CAPSTONE=1 \
+          NO_LIBPFM4=1 \
+          NO_RUST=1 \
+          BUILD_BPF_SKEL=0 \
           CROSS_COMPILE="${TARGET_PREFIX}" \
           JOBS="${CONCURRENCY_MAKE_LEVEL}" \
             make ${PERF_BUILD_ARGS}
