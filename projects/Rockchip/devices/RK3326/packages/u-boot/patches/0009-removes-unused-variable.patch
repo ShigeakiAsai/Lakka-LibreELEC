@@ -1,0 +1,47 @@
+diff -uNr a/cmd/gpt.c b/cmd/gpt.c
+--- a/cmd/gpt.c	2020-12-05 14:59:23.000000000 +0900
++++ b/cmd/gpt.c	2026-05-13 18:58:04.622327166 +0900
+@@ -383,7 +383,8 @@
+ 	disk_partition_t *parts;
+ 	int errno = 0;
+ 	uint64_t size_ll, start_ll;
+-	lbaint_t offset = 0;
++	// Lakka removes 'offset', error: variable 'offset' set but not used [-Werror=unused-but-set-variable=]
++	// lbaint_t offset = 0;
+ 	int max_str_part = calc_parts_list_len(MAX_SEARCH_PARTITIONS);
+ 
+ 	debug("%s:  lba num: 0x%x %d\n", __func__,
+@@ -530,7 +531,8 @@
+ 			free(val);
+ 		}
+ 
+-		offset += parts[i].size + parts[i].start;
++		// Lakka removes 'offset', error: variable 'offset' set but not used [-Werror=unused-but-set-variable=]
++		// offset += parts[i].size + parts[i].start;
+ 
+ 		/* bootable */
+ 		if (found_key(tok, "bootable"))
+diff -uNr a/cmd/nvedit.c b/cmd/nvedit.c
+--- a/cmd/nvedit.c	2020-12-05 14:59:23.000000000 +0900
++++ b/cmd/nvedit.c	2026-05-13 18:57:01.012580473 +0900
+@@ -1089,7 +1089,9 @@
+ static int do_env_default(cmd_tbl_t *cmdtp, int __flag,
+ 			  int argc, char * const argv[])
+ {
+-	int all = 0, flag = 0;
++	// Lakka removes 'flag', error: variable 'flag' set but not used [-Werror=unused-but-set-variable=]
++	// int all = 0, flag = 0;
++	int all = 0;
+ 
+ 	debug("Initial value for argc=%d\n", argc);
+ 	while (--argc > 0 && **++argv == '-') {
+@@ -1101,7 +1103,8 @@
+ 				all = 1;
+ 				break;
+ 			case 'f':		/* force */
+-				flag |= H_FORCE;
++				// Lakka removes 'flag', error: variable 'flag' set but not used [-Werror=unused-but-set-variable=]
++				// flag |= H_FORCE;
+ 				break;
+ 			default:
+ 				return cmd_usage(cmdtp);
