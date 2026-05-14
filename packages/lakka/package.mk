@@ -21,6 +21,8 @@ if [ "${AVAHI_DAEMON}" = yes ]; then
   PKG_DEPENDS_TARGET+=" avahi nss-mdns"
 fi
 
+PKG_DEPENDS_TARGET+=" usb-modeswitch-lakka"
+
 if [ "${PROJECT}" = "Generic" ]; then
   PKG_DEPENDS_TARGET+=" wii-u-gc-adapter joycond"
 fi
