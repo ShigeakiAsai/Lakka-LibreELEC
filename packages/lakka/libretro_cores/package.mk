@@ -334,8 +334,10 @@ fi
 
 # disable cores that require rust until rust:host works for arm and i386
 if [ "${TARGET_ARCH}" = "arm" -o "${TARGET_ARCH}" = "i386" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" doukutsu_rs \
-                            holani"
+  EXCLUDE_LIBRETRO_CORES+=" boytacean \
+                            doukutsu_rs \
+                            holani \
+                            rustation_ng"
 fi
 
 # exclude some cores at build time via env EXCLUDE_LIBRETRO_CORES="core1 core2"
