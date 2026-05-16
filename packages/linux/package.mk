@@ -393,10 +393,10 @@ pre_make_target() {
 
   # rust is used in build from v7.0-rc1, but it has problem on cross compile.
   # so Lakka doesn't use rust for building at some projects.
-  # PROJECT=Allwinner, Amlogic, Generic(i386), Rockchip and Samsung
+  # PROJECT=Allwinner, Amlogic, Generic(i386), NXP, Rockchip and Samsung
   if [ "${DISTRO}" = "Lakka" ]; then
     case "${PROJECT}" in
-      "Allwinner" | "Amlogic" | "Rockchip" | "Samsung")
+      "Allwinner" | "Amlogic" | "NXP" | "Rockchip" | "Samsung")
         NO_RUST="1"
         ;;
       "Generic")
