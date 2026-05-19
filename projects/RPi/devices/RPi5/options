@@ -35,6 +35,9 @@
   # Kernel target
     KERNEL_TARGET="Image"
 
+  # build and install pipewire support (yes / no)
+    PIPEWIRE_SUPPORT="yes"
+
   # debug tty path
     DEBUG_TTY="/dev/ttyAMA10"
 
