@@ -95,6 +95,13 @@ else
   PKG_CONFIGURE_OPTS_TARGET+=" --disable-pulse"
 fi
 
+if [ "${PIPEWIRE_SUPPORT}" = yes ]; then
+  PKG_DEPENDS_TARGET+=" pipewire wireplumber"
+  PKG_CONFIGURE_OPTS_TARGET+=" --enable-pipewire"
+else
+  PKG_CONFIGURE_OPTS_TARGET+=" --disable-pipewire"
+fi
+
 if [ "${ALSA_SUPPORT}" = yes ]; then
   PKG_DEPENDS_TARGET+=" alsa-lib"
   PKG_CONFIGURE_OPTS_TARGET+=" --enable-alsa"
