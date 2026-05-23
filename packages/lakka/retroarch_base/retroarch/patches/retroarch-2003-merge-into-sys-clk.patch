@@ -5,41 +5,23 @@ Subject: [PATCH] sysclk-merge
 
 ---
  Makefile.common                        |   6 +-
- Makefile.common.orig                   |   4 +
  configuration.c                        |   2 +-
- configuration.c.orig                   |   7 +
  configuration.h                        |   2 +-
- configuration.h.orig                   |   6 +
  intl/msg_hash_lbl.h                    |   4 +-
- intl/msg_hash_lbl.h.orig               |  17 +
  intl/msg_hash_us.h                     |   4 +-
- intl/msg_hash_us.h.orig                |  48 ++
  menu/cbs/menu_cbs_deferred_push.c      |   4 +-
- menu/cbs/menu_cbs_deferred_push.c.orig |   7 +
  menu/cbs/menu_cbs_get_value.c          |  68 +-
- menu/cbs/menu_cbs_get_value.c.orig     |  81 +++
  menu/cbs/menu_cbs_left.c               | 176 +++---
- menu/cbs/menu_cbs_left.c.orig          |  58 +-
  menu/cbs/menu_cbs_ok.c                 |  10 +-
- menu/cbs/menu_cbs_ok.c.orig            |  13 +
  menu/cbs/menu_cbs_right.c              | 176 +++---
- menu/cbs/menu_cbs_right.c.orig         |  61 +-
  menu/cbs/menu_cbs_sublabel.c           |  30 +-
- menu/cbs/menu_cbs_sublabel.c.orig      |  24 +-
  menu/cbs/menu_cbs_title.c              |   4 +-
- menu/cbs/menu_cbs_title.c.orig         |   6 +
  menu/menu_cbs.h                        |   2 +-
- menu/menu_cbs.h.orig                   |   3 +
  menu/menu_displaylist.c                |  45 +-
- menu/menu_displaylist.c.orig           |  59 ++
  menu/menu_displaylist.h                |   2 +-
- menu/menu_displaylist.h.orig           |   3 +
  menu/menu_driver.c                     |  19 +-
- menu/menu_driver.c.orig                |  12 +
  menu/menu_driver.h                     |   2 +-
- menu/menu_driver.h.orig                |   5 +-
  menu/menu_setting.c                    |   2 +-
- menu/menu_setting.c.orig               |   9 +
  misc/cpufreq/cpufreq.c                 | 442 -------------
  misc/cpufreq/cpufreq.h                 | 108 ----
  misc/gpufreq/gpufreq.c                 | 434 -------------
@@ -47,11 +29,8 @@ Subject: [PATCH] sysclk-merge
  misc/sys-clk/sys-clk.c                 | 844 +++++++++++++++++++++++++
  misc/sys-clk/sys-clk.h                 | 159 +++++
  msg_hash.h                             |   6 +-
- msg_hash.h.orig                        |  22 +-
  retroarch.c                            |  21 +-
- retroarch.c.orig                       |  15 +
  runloop.c                              |  21 +-
- runloop.c.orig                         |  15 +
  48 files changed, 1783 insertions(+), 1383 deletions(-)
  delete mode 100644 misc/cpufreq/cpufreq.c
  delete mode 100644 misc/cpufreq/cpufreq.h
@@ -80,21 +59,6 @@ index dda5248..9413406 100644
  ifeq ($(HAVE_WIFI), 1)
     OBJ += network/wifi_driver.o
     OBJ += tasks/task_wifi.o
-diff --git a/Makefile.common.orig b/Makefile.common.orig
-index 6699fe3..dda5248 100644
---- a/Makefile.common.orig
-+++ b/Makefile.common.orig
-@@ -819,6 +819,10 @@ ifeq ($(HAVE_LAKKA), 1)
-    LIBS += -lsystemd
- endif
- 
-+ifeq ($(HAVE_LAKKA_SWITCH), 1)
-+      OBJ += misc/gpufreq/gpufreq.o
-+endif
-+
- ifeq ($(HAVE_WIFI), 1)
-    OBJ += network/wifi_driver.o
-    OBJ += tasks/task_wifi.o
 diff --git a/configuration.c b/configuration.c
 index e068fe7..574147e 100644
 --- a/configuration.c
@@ -108,24 +72,6 @@ index e068fe7..574147e 100644
     SETTING_UINT("gpu_scaling_mode",              &settings->uints.gpu_scaling_mode,    true,   0, false);
     SETTING_UINT("gpu_min_freq",                  &settings->uints.gpu_min_freq,        true,   1, false);
     SETTING_UINT("gpu_max_freq",                  &settings->uints.gpu_max_freq,        true, ~0U, false);
-diff --git a/configuration.c.orig b/configuration.c.orig
-index 19edf50..e068fe7 100644
---- a/configuration.c.orig
-+++ b/configuration.c.orig
-@@ -2654,6 +2654,13 @@ static struct config_uint_setting *populate_settings_uint(
-    SETTING_UINT("cpu_scaling_mode",              &settings->uints.cpu_scaling_mode,    true,   0, false);
-    SETTING_UINT("cpu_min_freq",                  &settings->uints.cpu_min_freq,        true,   1, false);
-    SETTING_UINT("cpu_max_freq",                  &settings->uints.cpu_max_freq,        true, ~0U, false);
-+
-+#ifdef HAVE_LAKKA_SWITCH
-+   SETTING_UINT("gpu_scaling_mode",              &settings->uints.gpu_scaling_mode,    true,   0, false);
-+   SETTING_UINT("gpu_min_freq",                  &settings->uints.gpu_min_freq,        true,   1, false);
-+   SETTING_UINT("gpu_max_freq",                  &settings->uints.gpu_max_freq,        true, ~0U, false);
-+#endif
-+
- #endif
- 
- #ifdef HAVE_MIST
 diff --git a/configuration.h b/configuration.h
 index 8f0d41e..3b9e8b8 100644
 --- a/configuration.h
@@ -139,23 +85,6 @@ index 8f0d41e..3b9e8b8 100644
        unsigned gpu_scaling_mode;
        unsigned gpu_min_freq;
        unsigned gpu_max_freq;
-diff --git a/configuration.h.orig b/configuration.h.orig
-index 81b30e8..8f0d41e 100644
---- a/configuration.h.orig
-+++ b/configuration.h.orig
-@@ -387,6 +387,12 @@ typedef struct settings
-       unsigned cpu_max_freq;
- #endif
- 
-+#ifdef HAVE_LAKKA_SWITCH
-+      unsigned gpu_scaling_mode;
-+      unsigned gpu_min_freq;
-+      unsigned gpu_max_freq;
-+#endif
-+
- #ifdef HAVE_MIST
-       unsigned steam_rich_presence_format;
- #endif
 diff --git a/intl/msg_hash_lbl.h b/intl/msg_hash_lbl.h
 index f051ce0..0210ec6 100644
 --- a/intl/msg_hash_lbl.h
@@ -178,41 +107,6 @@ index f051ce0..0210ec6 100644
  MSG_HASH(
     MENU_ENUM_LABEL_GPU_PERFPOWER,
     "gpu_perfpower_list"
-diff --git a/intl/msg_hash_lbl.h.orig b/intl/msg_hash_lbl.h.orig
-index d27a77d..f051ce0 100644
---- a/intl/msg_hash_lbl.h.orig
-+++ b/intl/msg_hash_lbl.h.orig
-@@ -1298,6 +1298,17 @@ MSG_HASH(
-    MENU_ENUM_LABEL_DEFERRED_MENU_SETTINGS_LIST,
-    "deferred_menu_settings_list"
-    )
-+
-+#ifdef HAVE_LAKKA_SWITCH
-+MSG_HASH(
-+   MENU_ENUM_LABEL_DEFERRED_GPU_PERFPOWER_LIST,
-+   "deferred_gpu_perfpower_list"
-+   )
-+MSG_HASH(
-+   MENU_ENUM_LABEL_DEFERRED_GPU_POLICY_ENTRY,
-+   "deferred_gpu_policy_list"
-+   )
-+#endif
- MSG_HASH(
-    MENU_ENUM_LABEL_APPICON_SETTINGS,
-    "appicon_settings"
-@@ -6370,6 +6381,12 @@ MSG_HASH(
-    MENU_ENUM_LABEL_QUICK_MENU_SHOW_RESUME_CONTENT,
-    "quick_menu_show_resume_content"
-    )
-+#ifdef HAVE_LAKKA_SWITCH
-+MSG_HASH(
-+   MENU_ENUM_LABEL_GPU_PERFPOWER,
-+   "gpu_perfpower_list"
-+   )
-+#endif
- MSG_HASH(
-    MENU_ENUM_LABEL_QUICK_MENU_SHOW_RESTART_CONTENT,
-    "quick_menu_show_restart_content"
 diff --git a/intl/msg_hash_us.h b/intl/msg_hash_us.h
 index 8c32f15..4e5f2b0 100644
 --- a/intl/msg_hash_us.h
@@ -232,65 +126,6 @@ index 8c32f15..4e5f2b0 100644
     )
 +#endif
 +#ifdef HAVE_LAKKA_SWITCH
- MSG_HASH(
-    MENU_ENUM_LABEL_VALUE_LAKKA_SWITCH_OPTIONS,
-    "Nintendo Switch Options"
-diff --git a/intl/msg_hash_us.h.orig b/intl/msg_hash_us.h.orig
-index d63ccc8..8c32f15 100644
---- a/intl/msg_hash_us.h.orig
-+++ b/intl/msg_hash_us.h.orig
-@@ -16608,6 +16608,54 @@ MSG_HASH(
-    "Displays a list of available timezones. After selecting a time zone, time and date is adjusted to the selected time zone. It assumes, that system/hardware clock is set to UTC."
-    )
- #ifdef HAVE_LAKKA_SWITCH
-+MSG_HASH(
-+   MENU_ENUM_LABEL_VALUE_GPU_PERFPOWER,
-+   "GPU Performance and Power"
-+   )
-+MSG_HASH(
-+   MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE,
-+   "Governing Mode"
-+   )
-+MSG_HASH(
-+   MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_MANAGED_PERF,
-+   "Performance (Managed)"
-+   )
-+MSG_HASH(
-+   MENU_ENUM_SUBLABEL_VALUE_GPU_PERF_MODE_MANAGED_PERF,
-+   "Default and recommended mode. Maximum performance while playing, while saving power when paused or browsing menus."
-+   )
-+MSG_HASH(
-+   MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_MAX_PERF,
-+   "Maximum Performance"
-+   )
-+MSG_HASH(
-+   MENU_ENUM_SUBLABEL_VALUE_GPU_PERF_MODE_MAX_PERF,
-+   "Always maximum performance: highest frequencies for best experience."
-+   )
-+MSG_HASH(
-+   MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_MIN_POWER,
-+   "Minimum Power"
-+   )
-+MSG_HASH(
-+   MENU_ENUM_SUBLABEL_VALUE_GPU_PERF_MODE_MIN_POWER,
-+   "Use the lowest frequency available to save power. Useful on battery powered devices but performance will be significantly reduced."
-+   )
-+MSG_HASH(
-+   MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_BALANCED,
-+   "Balanced"
-+   )
-+MSG_HASH(
-+   MENU_ENUM_SUBLABEL_VALUE_GPU_PERF_MODE_BALANCED,
-+   "Adapts to the current workload. Works well with most devices and emulators and helps to save power. Demanding games and cores might suffer a performance drop on some devices."
-+   )
-+MSG_HASH(
-+   MENU_ENUM_LABEL_VALUE_GPU_MANAGED_MIN_FREQ,
-+   "Minimum Core Frequency"
-+   )
-+MSG_HASH(
-+   MENU_ENUM_LABEL_VALUE_GPU_MANAGED_MAX_FREQ,
-+   "Maximum Core Frequency"
-+   )
  MSG_HASH(
     MENU_ENUM_LABEL_VALUE_LAKKA_SWITCH_OPTIONS,
     "Nintendo Switch Options"
@@ -316,31 +151,6 @@ index 8dbefea..be49e7c 100644
        {MENU_ENUM_LABEL_DEFERRED_GPU_PERFPOWER_LIST, deferred_push_gpu_perfpower},
  #endif
        {MENU_ENUM_LABEL_DEFERRED_REMAPPINGS_PORT_LIST, deferred_push_remappings_port },
-diff --git a/menu/cbs/menu_cbs_deferred_push.c.orig b/menu/cbs/menu_cbs_deferred_push.c.orig
-index dfd7765..8dbefea 100644
---- a/menu/cbs/menu_cbs_deferred_push.c.orig
-+++ b/menu/cbs/menu_cbs_deferred_push.c.orig
-@@ -274,6 +274,10 @@ GENERIC_DEFERRED_PUSH(deferred_push_cpu_perfpower,                  DISPLAYLIST_
- GENERIC_DEFERRED_PUSH(deferred_push_cpu_policy,                     DISPLAYLIST_CPU_POLICY_LIST)
- #endif
- 
-+#ifdef HAVE_LAKKA_SWITCH
-+GENERIC_DEFERRED_PUSH(deferred_push_gpu_perfpower,                  DISPLAYLIST_GPU_PERFPOWER_LIST)
-+#endif
-+
- GENERIC_DEFERRED_PUSH(deferred_push_manual_content_scan_list,       DISPLAYLIST_MANUAL_CONTENT_SCAN_LIST)
- GENERIC_DEFERRED_PUSH(deferred_push_manual_content_scan_dat_file,   DISPLAYLIST_MANUAL_CONTENT_SCAN_DAT_FILES)
- 
-@@ -805,6 +809,9 @@ static int menu_cbs_init_bind_deferred_push_compare_label(
- #if defined(HAVE_LAKKA)
-       {MENU_ENUM_LABEL_DEFERRED_CPU_PERFPOWER_LIST, deferred_push_cpu_perfpower},
-       {MENU_ENUM_LABEL_DEFERRED_CPU_POLICY_ENTRY, deferred_push_cpu_policy},
-+#endif
-+#ifdef HAVE_LAKKA_SWITCH
-+      {MENU_ENUM_LABEL_DEFERRED_GPU_PERFPOWER_LIST, deferred_push_gpu_perfpower},
- #endif
-       {MENU_ENUM_LABEL_DEFERRED_REMAPPINGS_PORT_LIST, deferred_push_remappings_port },
-       {MENU_ENUM_LABEL_DEFERRED_ACCOUNTS_LIST, deferred_push_accounts_list},
 diff --git a/menu/cbs/menu_cbs_get_value.c b/menu/cbs/menu_cbs_get_value.c
 index 4b6e677..186ff85 100644
 --- a/menu/cbs/menu_cbs_get_value.c
@@ -498,113 +308,6 @@ index 4b6e677..186ff85 100644
           case MENU_ENUM_LABEL_GPU_PERF_MODE:
              BIND_ACTION_GET_VALUE(cbs,
                    menu_action_setting_disp_gpu_gov_mode);
-diff --git a/menu/cbs/menu_cbs_get_value.c.orig b/menu/cbs/menu_cbs_get_value.c.orig
-index f8862f0..4b6e677 100644
---- a/menu/cbs/menu_cbs_get_value.c.orig
-+++ b/menu/cbs/menu_cbs_get_value.c.orig
-@@ -47,6 +47,11 @@
- #include "../../playlist.h"
- #include "../../manual_content_scan.h"
- #include "../misc/cpufreq/cpufreq.h"
-+
-+#ifdef HAVE_LAKKA_SWITCH
-+#include "../misc/gpufreq/gpufreq.h"
-+#endif
-+
- #include "../../audio/audio_driver.h"
- 
- #ifdef HAVE_NETWORKING
-@@ -723,7 +728,73 @@ static size_t menu_action_cpu_governor_label(
-    return strlcpy(s, d->scaling_governor, len);
- }
- #endif
-+#ifdef HAVE_LAKKA_SWITCH
-+static void menu_action_setting_disp_gpu_gov_mode(
-+      file_list_t* list,
-+      unsigned *w, unsigned type, unsigned i,
-+      const char *label,
-+      char *s, size_t len,
-+      const char *path,
-+      char *s2, size_t len2)
-+{
-+   const char *alt        = list->list[i].alt
-+         ? list->list[i].alt
-+         : list->list[i].path;
-+   enum gpu_scaling_mode mode = get_gpu_scaling_mode(NULL);
-+
-+   if (alt)
-+      strlcpy(s2, alt, len2);
-+
-+   strlcpy(s, msg_hash_to_str(
-+      MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_MANAGED_PERF + (int)mode), len);
-+}
-+
-+static void menu_action_gpu_managed_freq_label(
-+      file_list_t* list,
-+      unsigned *w, unsigned type, unsigned i,
-+      const char *label,
-+      char *s, size_t len,
-+      const char *path,
-+      char *s2, size_t len2)
-+{
-+   gpu_scaling_opts_t opts;
-+   uint32_t freq              = 0;
-+   enum gpu_scaling_mode mode = get_gpu_scaling_mode(&opts);
- 
-+   switch (type)
-+   {
-+      case MENU_SETTINGS_GPU_MANAGED_SET_MINFREQ:
-+         strlcpy(s2, msg_hash_to_str(
-+                  MENU_ENUM_LABEL_VALUE_GPU_MANAGED_MIN_FREQ), len2);
-+         freq = opts.min_freq;
-+         break;
-+      case MENU_SETTINGS_GPU_MANAGED_SET_MAXFREQ:
-+         strlcpy(s2, msg_hash_to_str(
-+                  MENU_ENUM_LABEL_VALUE_GPU_MANAGED_MAX_FREQ), len2);
-+         freq = opts.max_freq;
-+         break;
-+   };
-+
-+   if (freq == 1)
-+   {
-+      s[0] = 'M';
-+      s[1] = 'i';
-+      s[2] = 'n';
-+      s[3] = '.';
-+      s[4] = '\0';
-+   }
-+   else if (freq == ~0U)
-+   {
-+      s[0] = 'M';
-+      s[1] = 'a';
-+      s[2] = 'x';
-+      s[3] = '.';
-+      s[4] = '\0';
-+   }
-+   else
-+      snprintf(s, len, "%u MHz", freq / 1000000);
-+}
-+#endif
- static size_t menu_action_setting_disp_set_label_core_lock(
-       file_list_t* list,
-       unsigned *w, unsigned type, unsigned i,
-@@ -2070,6 +2141,16 @@ static int menu_cbs_init_bind_get_string_representation_compare_label(
-             BIND_ACTION_GET_VALUE(cbs,
-                   menu_action_setting_disp_set_label_manual_content_scan_core_name);
-             break;
-+#ifdef HAVE_LAKKA_SWITCH
-+         case MENU_ENUM_LABEL_GPU_PERF_MODE:
-+            BIND_ACTION_GET_VALUE(cbs,
-+                  menu_action_setting_disp_gpu_gov_mode);
-+            break;
-+         case MENU_ENUM_LABEL_GPU_MANAGED_MIN_FREQ:
-+         case MENU_ENUM_LABEL_GPU_MANAGED_MAX_FREQ:
-+            BIND_ACTION_GET_VALUE(cbs, menu_action_gpu_managed_freq_label);
-+            break;
-+#endif
- #ifdef HAVE_NETWORKING
-          case MENU_ENUM_LABEL_CORE_UPDATER_ENTRY:
-             BIND_ACTION_GET_VALUE(cbs,
 diff --git a/menu/cbs/menu_cbs_left.c b/menu/cbs/menu_cbs_left.c
 index a05a443..5e99695 100644
 --- a/menu/cbs/menu_cbs_left.c
@@ -880,90 +583,6 @@ index a05a443..5e99695 100644
              case MENU_ENUM_LABEL_GPU_PERF_MODE:
                 BIND_ACTION_LEFT(cbs, gpu_policy_mode_change);
                 break;
-diff --git a/menu/cbs/menu_cbs_left.c.orig b/menu/cbs/menu_cbs_left.c.orig
-index afd6de0..a05a443 100644
---- a/menu/cbs/menu_cbs_left.c.orig
-+++ b/menu/cbs/menu_cbs_left.c.orig
-@@ -47,7 +47,9 @@
- #include "../../playlist.h"
- #include "../../manual_content_scan.h"
- #include "../misc/cpufreq/cpufreq.h"
--
-+#ifdef HAVE_LAKKA_SWITCH
-+#include "../misc/gpufreq/gpufreq.h"
-+#endif
- #ifndef BIND_ACTION_LEFT
- #define BIND_ACTION_LEFT(cbs, name) (cbs)->action_left = (name)
- #endif
-@@ -785,7 +787,52 @@ static int cpu_policy_freq_tweak(unsigned type, const char *label,
-    return 0;
- }
- #endif
-+#ifdef HAVE_LAKKA_SWITCH
-+static int gpu_policy_mode_change(unsigned type, const char *label,
-+      bool wraparound)
-+{
-+   struct menu_state *menu_st = menu_state_get_ptr();
-+   gpu_scaling_opts_t opts;
-+   enum gpu_scaling_mode mode = get_gpu_scaling_mode(&opts);
-+   if (mode != GPUSCALING_MANAGED_PERFORMANCE)
-+      mode--;
-+   set_gpu_scaling_mode(mode, &opts);
-+   menu_st->flags |=  MENU_ST_FLAG_ENTRIES_NEED_REFRESH;
-+   return 0;
-+}
-+
-+static int gpu_policy_freq_managed_tweak(unsigned type, const char *label,
-+      bool wraparound)
-+{
-+   bool refresh = false;
-+   gpu_scaling_opts_t opts;
-+   gpu_scaling_driver_t **drivers = get_gpu_scaling_drivers(false);
-+   unsigned policyid = atoi(label);
-+   enum gpu_scaling_mode mode = get_gpu_scaling_mode(&opts);
-+
-+   if (!drivers)
-+     return 0;
-+
-+   switch (type) {
-+   case MENU_SETTINGS_GPU_MANAGED_SET_MINFREQ:
-+      if((*drivers)->available_freqs)
-+       opts.min_freq = get_gpu_scaling_next_frequency(drivers[policyid], opts.min_freq, -1);
-+      else
-+        opts.min_freq = get_gpu_scaling_next_frequency_limit(opts.min_freq, -1);
-+      set_gpu_scaling_mode(mode, &opts);
-+      break;
-+   case MENU_SETTINGS_GPU_MANAGED_SET_MAXFREQ:
-+      if((*drivers)->available_freqs)
-+        opts.max_freq = get_gpu_scaling_next_frequency(drivers[policyid], opts.max_freq, -1);
-+      else
-+        opts.max_freq = get_gpu_scaling_next_frequency_limit(opts.max_freq, -1);
-+      set_gpu_scaling_mode(mode, &opts);
-+      break;
-+   };
- 
-+   return 0;
-+}
-+#endif
- static int core_setting_left(unsigned type, const char *label,
-       bool wraparound)
- {
-@@ -1104,6 +1151,15 @@ static int menu_cbs_init_bind_left_compare_label(menu_file_list_cbs_t *cbs,
-                BIND_ACTION_LEFT(cbs, cpu_policy_freq_managed_gov);
-                break;
-             #endif
-+            #ifdef HAVE_LAKKA_SWITCH
-+            case MENU_ENUM_LABEL_GPU_PERF_MODE:
-+               BIND_ACTION_LEFT(cbs, gpu_policy_mode_change);
-+               break;
-+            case MENU_ENUM_LABEL_GPU_MANAGED_MIN_FREQ:
-+            case MENU_ENUM_LABEL_GPU_MANAGED_MAX_FREQ:
-+               BIND_ACTION_LEFT(cbs, gpu_policy_freq_managed_tweak);
-+               break;
-+            #endif
-             default:
-                return -1;
-          }
 diff --git a/menu/cbs/menu_cbs_ok.c b/menu/cbs/menu_cbs_ok.c
 index ee7d386..f37a487 100644
 --- a/menu/cbs/menu_cbs_ok.c
@@ -1006,51 +625,6 @@ index ee7d386..f37a487 100644
           {MENU_ENUM_LABEL_GPU_PERFPOWER,                       action_ok_gpu_perfpower_list},
  #endif
           {MENU_ENUM_LABEL_MENU_SOUNDS,                         action_ok_menu_sounds_list},
-diff --git a/menu/cbs/menu_cbs_ok.c.orig b/menu/cbs/menu_cbs_ok.c.orig
-index 5283b05..ee7d386 100644
---- a/menu/cbs/menu_cbs_ok.c.orig
-+++ b/menu/cbs/menu_cbs_ok.c.orig
-@@ -411,6 +411,10 @@ static enum msg_hash_enums action_ok_dl_to_enum(unsigned lbl)
-          return MENU_ENUM_LABEL_DEFERRED_CPU_PERFPOWER_LIST;
-       case ACTION_OK_DL_CPU_POLICY_SETTINGS_LIST:
-          return MENU_ENUM_LABEL_DEFERRED_CPU_POLICY_ENTRY;
-+#ifdef HAVE_LAKKA_SWITCH
-+      case ACTION_OK_DL_GPU_PERFPOWER_SETTINGS_LIST:
-+         return MENU_ENUM_LABEL_DEFERRED_GPU_PERFPOWER_LIST;
-+#endif
-       case ACTION_OK_DL_MENU_SOUNDS_LIST:
-          return MENU_ENUM_LABEL_DEFERRED_MENU_SOUNDS_LIST;
-       case ACTION_OK_DL_MENU_FILE_BROWSER_SETTINGS_LIST:
-@@ -1794,6 +1798,9 @@ int generic_action_ok_displaylist_push(
-       case ACTION_OK_DL_POWER_MANAGEMENT_SETTINGS_LIST:
-       case ACTION_OK_DL_CPU_PERFPOWER_SETTINGS_LIST:
-       case ACTION_OK_DL_CPU_POLICY_SETTINGS_LIST:
-+#ifdef HAVE_LAKKA_SWITCH
-+      case ACTION_OK_DL_GPU_PERFPOWER_SETTINGS_LIST:
-+#endif
-       case ACTION_OK_DL_MENU_SOUNDS_LIST:
-       case ACTION_OK_DL_MENU_FILE_BROWSER_SETTINGS_LIST:
-       case ACTION_OK_DL_RETRO_ACHIEVEMENTS_SETTINGS_LIST:
-@@ -6560,6 +6567,9 @@ STATIC_DEFAULT_ACTION_OK_FUNC(action_ok_quick_menu_views_list, ACTION_OK_DL_QUIC
- STATIC_DEFAULT_ACTION_OK_FUNC(action_ok_power_management_list, ACTION_OK_DL_POWER_MANAGEMENT_SETTINGS_LIST)
- STATIC_DEFAULT_ACTION_OK_FUNC(action_ok_cpu_perfpower_list, ACTION_OK_DL_CPU_PERFPOWER_SETTINGS_LIST)
- STATIC_DEFAULT_ACTION_OK_FUNC(action_ok_cpu_policy_entry, ACTION_OK_DL_CPU_POLICY_SETTINGS_LIST)
-+#ifdef HAVE_LAKKA_SWITCH
-+DEFAULT_ACTION_OK_FUNC(action_ok_gpu_perfpower_list, ACTION_OK_DL_GPU_PERFPOWER_SETTINGS_LIST)
-+#endif
- STATIC_DEFAULT_ACTION_OK_FUNC(action_ok_menu_sounds_list, ACTION_OK_DL_MENU_SOUNDS_LIST)
- STATIC_DEFAULT_ACTION_OK_FUNC(action_ok_user_interface_list, ACTION_OK_DL_USER_INTERFACE_SETTINGS_LIST)
- STATIC_DEFAULT_ACTION_OK_FUNC(action_ok_menu_file_browser_list, ACTION_OK_DL_MENU_FILE_BROWSER_SETTINGS_LIST)
-@@ -9337,6 +9347,9 @@ static int menu_cbs_init_bind_ok_compare_label(menu_file_list_cbs_t *cbs,
-          {MENU_ENUM_LABEL_POWER_MANAGEMENT_SETTINGS,           action_ok_power_management_list},
-          {MENU_ENUM_LABEL_CPU_PERFPOWER,                       action_ok_cpu_perfpower_list},
-          {MENU_ENUM_LABEL_CPU_POLICY_ENTRY,                    action_ok_cpu_policy_entry},
-+#ifdef HAVE_LAKKA_SWITCH
-+         {MENU_ENUM_LABEL_GPU_PERFPOWER,                       action_ok_gpu_perfpower_list},
-+#endif
-          {MENU_ENUM_LABEL_MENU_SOUNDS,                         action_ok_menu_sounds_list},
-          {MENU_ENUM_LABEL_MENU_FILE_BROWSER_SETTINGS,          action_ok_menu_file_browser_list},
-          {MENU_ENUM_LABEL_FILE_BROWSER_OPEN_UWP_PERMISSIONS,   action_ok_open_uwp_permission_settings},
 diff --git a/menu/cbs/menu_cbs_right.c b/menu/cbs/menu_cbs_right.c
 index de5bb6a..60c90f3 100644
 --- a/menu/cbs/menu_cbs_right.c
@@ -1330,92 +904,6 @@ index de5bb6a..60c90f3 100644
              case MENU_ENUM_LABEL_GPU_PERF_MODE:
                 BIND_ACTION_RIGHT(cbs, gpu_policy_mode_change);
                 break;
-diff --git a/menu/cbs/menu_cbs_right.c.orig b/menu/cbs/menu_cbs_right.c.orig
-index 775a295..de5bb6a 100644
---- a/menu/cbs/menu_cbs_right.c.orig
-+++ b/menu/cbs/menu_cbs_right.c.orig
-@@ -48,7 +48,9 @@
- #include "../../playlist.h"
- #include "../../manual_content_scan.h"
- #include "../misc/cpufreq/cpufreq.h"
--
-+#ifdef HAVE_LAKKA_SWITCH
-+#include "../misc/gpufreq/gpufreq.h"
-+#endif
- #ifndef BIND_ACTION_RIGHT
- #define BIND_ACTION_RIGHT(cbs, name) (cbs)->action_right = (name)
- #endif
-@@ -907,6 +909,54 @@ static int cpu_policy_freq_tweak(unsigned type, const char *label,
-    return 0;
- }
- #endif
-+#ifdef HAVE_LAKKA_SWITCH
-+static int gpu_policy_mode_change(unsigned type, const char *label,
-+      bool wraparound)
-+{
-+   struct menu_state *menu_st = menu_state_get_ptr();
-+   gpu_scaling_opts_t opts;
-+   enum gpu_scaling_mode mode = get_gpu_scaling_mode(&opts);
-+   if (mode != GPUSCALING_BALANCED)
-+      mode++;
-+   set_gpu_scaling_mode(mode, &opts);
-+   menu_st->flags |= MENU_ST_FLAG_ENTRIES_NEED_REFRESH;
-+   return 0;
-+}
-+
-+static int gpu_policy_freq_managed_tweak(unsigned type, const char *label,
-+      bool wraparound)
-+{
-+   bool refresh = false;
-+   gpu_scaling_opts_t opts;
-+   gpu_scaling_driver_t **drivers = get_gpu_scaling_drivers(false);
-+   unsigned policyid = atoi(label);
-+   enum gpu_scaling_mode mode = get_gpu_scaling_mode(&opts);
-+
-+   if (!drivers)
-+     return 0 ;
-+
-+   switch (type)
-+   {
-+      case MENU_SETTINGS_GPU_MANAGED_SET_MINFREQ:
-+        if((*drivers)->available_freqs)
-+            opts.min_freq = get_gpu_scaling_next_frequency(drivers[policyid], opts.min_freq, 1);
-+        else
-+          opts.min_freq = get_gpu_scaling_next_frequency_limit(opts.min_freq, 1);
-+         set_gpu_scaling_mode(mode, &opts);
-+         break;
-+      case MENU_SETTINGS_GPU_MANAGED_SET_MAXFREQ:
-+        if((*drivers)->available_freqs) {
-+           opts.max_freq = get_gpu_scaling_next_frequency(drivers[policyid], opts.max_freq, 1);
-+        }
-+        else
-+           opts.max_freq = get_gpu_scaling_next_frequency_limit(opts.max_freq, 1);
-+         set_gpu_scaling_mode(mode, &opts);
-+         break;
-+   }
-+
-+   return 0;
-+}
-+#endif
- 
- static int core_setting_right(unsigned type, const char *label,
-       bool wraparound)
-@@ -1246,6 +1296,15 @@ static int menu_cbs_init_bind_right_compare_label(menu_file_list_cbs_t *cbs,
-                BIND_ACTION_RIGHT(cbs, cpu_policy_freq_managed_gov);
-                break;
-             #endif
-+            #ifdef HAVE_LAKKA_SWITCH
-+            case MENU_ENUM_LABEL_GPU_PERF_MODE:
-+               BIND_ACTION_RIGHT(cbs, gpu_policy_mode_change);
-+               break;
-+            case MENU_ENUM_LABEL_GPU_MANAGED_MIN_FREQ:
-+            case MENU_ENUM_LABEL_GPU_MANAGED_MAX_FREQ:
-+               BIND_ACTION_RIGHT(cbs, gpu_policy_freq_managed_tweak);
-+               break;
-+            #endif
-             default:
-                return -1;
-          }
 diff --git a/menu/cbs/menu_cbs_sublabel.c b/menu/cbs/menu_cbs_sublabel.c
 index f31d7f8..e837c9c 100644
 --- a/menu/cbs/menu_cbs_sublabel.c
@@ -1489,62 +977,6 @@ index f31d7f8..e837c9c 100644
           case MENU_ENUM_LABEL_GPU_PERF_MODE:
              BIND_ACTION_SUBLABEL(cbs, action_bind_sublabel_gpu_perf_mode);
              break;
-diff --git a/menu/cbs/menu_cbs_sublabel.c.orig b/menu/cbs/menu_cbs_sublabel.c.orig
-index 57fa8db..f31d7f8 100644
---- a/menu/cbs/menu_cbs_sublabel.c.orig
-+++ b/menu/cbs/menu_cbs_sublabel.c.orig
-@@ -36,7 +36,9 @@
- #include "../../bluetooth/bluetooth_driver.h"
- #endif
- #include "../../misc/cpufreq/cpufreq.h"
--
-+#ifdef HAVE_LAKKA_SWITCH
-+#include "../../misc/gpufreq/gpufreq.h"
-+#endif
- #ifdef HAVE_NETWORKING
- #include "../../network/netplay/netplay.h"
- #endif
-@@ -1521,7 +1523,7 @@ static int action_bind_sublabel_cpu_policy_entry_list(
-       int idx     = atoi(path);
-       size_t _len = strlcpy(s, drivers[idx]->scaling_governor, len);
-       snprintf(s + _len, len - _len, " | Freq: %u MHz\n",
--            drivers[idx]->current_frequency / 1000);
-+            drivers[idx]->current_frequency / 1000000);
-       return 0;
-    }
- 
-@@ -1540,7 +1542,20 @@ static int action_bind_sublabel_cpu_perf_mode(
-    return 0;
- }
- #endif
--
-+#ifdef HAVE_LAKKA_SWITCH
-+static int action_bind_sublabel_gpu_perf_mode(
-+      file_list_t *list,
-+      unsigned type, unsigned i,
-+      const char *label, const char *path,
-+      char *s, size_t len)
-+{
-+   /* Displays info about the mode selected */
-+   enum gpu_scaling_mode mode = get_gpu_scaling_mode(NULL);
-+   strlcpy(s, msg_hash_to_str(
-+      MENU_ENUM_SUBLABEL_VALUE_GPU_PERF_MODE_MANAGED_PERF + (int)mode), len);
-+   return 0;
-+}
-+#endif
- #ifdef HAVE_CHEEVOS
- static int action_bind_sublabel_cheevos_entry(
-       file_list_t *list,
-@@ -5498,6 +5513,9 @@ int menu_cbs_init_bind_sublabel(menu_file_list_cbs_t *cbs,
-          case MENU_ENUM_LABEL_BLUETOOTH_ERTM_DISABLE:
-             BIND_ACTION_SUBLABEL(cbs, action_bind_sublabel_bluetooth_ertm_disable);
-             break;
-+         case MENU_ENUM_LABEL_GPU_PERF_MODE:
-+            BIND_ACTION_SUBLABEL(cbs, action_bind_sublabel_gpu_perf_mode);
-+            break;
- #endif
-          case MENU_ENUM_LABEL_USER_LANGUAGE:
-             BIND_ACTION_SUBLABEL(cbs, action_bind_sublabel_user_language);
 diff --git a/menu/cbs/menu_cbs_title.c b/menu/cbs/menu_cbs_title.c
 index b7c53f7..1c8b929 100644
 --- a/menu/cbs/menu_cbs_title.c
@@ -1567,30 +999,6 @@ index b7c53f7..1c8b929 100644
        {MENU_ENUM_LABEL_DEFERRED_GPU_PERFPOWER_LIST,                   action_get_gpu_perfpower_settings_list},
  #endif
        {MENU_ENUM_LABEL_DEFERRED_MENU_SOUNDS_LIST,                     action_get_menu_sounds_list},
-diff --git a/menu/cbs/menu_cbs_title.c.orig b/menu/cbs/menu_cbs_title.c.orig
-index 8ecd9f1..b7c53f7 100644
---- a/menu/cbs/menu_cbs_title.c.orig
-+++ b/menu/cbs/menu_cbs_title.c.orig
-@@ -668,6 +668,9 @@ DEFAULT_TITLE_MACRO(action_get_accessibility_settings_list,     MENU_ENUM_LABEL_
- DEFAULT_TITLE_MACRO(action_get_power_management_settings_list,  MENU_ENUM_LABEL_VALUE_POWER_MANAGEMENT_SETTINGS)
- DEFAULT_TITLE_MACRO(action_get_cpu_perfpower_settings_list,     MENU_ENUM_LABEL_VALUE_CPU_PERFPOWER)
- DEFAULT_TITLE_MACRO(action_get_cpu_policy_entry_list,           MENU_ENUM_LABEL_VALUE_CPU_POLICY_ENTRY)
-+#ifdef HAVE_LAKKA_SWITCH
-+DEFAULT_TITLE_MACRO(action_get_gpu_perfpower_settings_list,     MENU_ENUM_LABEL_VALUE_GPU_PERFPOWER)
-+#endif
- DEFAULT_TITLE_MACRO(action_get_menu_sounds_list,                MENU_ENUM_LABEL_VALUE_MENU_SOUNDS)
- DEFAULT_TITLE_MACRO(action_get_menu_file_browser_settings_list, MENU_ENUM_LABEL_VALUE_MENU_FILE_BROWSER_SETTINGS)
- DEFAULT_TITLE_MACRO(action_get_retro_achievements_settings_list,MENU_ENUM_LABEL_VALUE_RETRO_ACHIEVEMENTS_SETTINGS)
-@@ -1023,6 +1026,9 @@ static int menu_cbs_init_bind_title_compare_label(menu_file_list_cbs_t *cbs,
-       {MENU_ENUM_LABEL_DEFERRED_POWER_MANAGEMENT_SETTINGS_LIST,       action_get_power_management_settings_list},
-       {MENU_ENUM_LABEL_DEFERRED_CPU_PERFPOWER_LIST,                   action_get_cpu_perfpower_settings_list},
-       {MENU_ENUM_LABEL_DEFERRED_CPU_POLICY_ENTRY,                     action_get_cpu_policy_entry_list},
-+#ifdef HAVE_LAKKA_SWITCH
-+      {MENU_ENUM_LABEL_DEFERRED_GPU_PERFPOWER_LIST,                   action_get_gpu_perfpower_settings_list},
-+#endif
-       {MENU_ENUM_LABEL_DEFERRED_MENU_SOUNDS_LIST,                     action_get_menu_sounds_list},
-       {MENU_ENUM_LABEL_DEFERRED_MENU_FILE_BROWSER_SETTINGS_LIST,      action_get_menu_file_browser_settings_list},
-       {MENU_ENUM_LABEL_DEFERRED_RETRO_ACHIEVEMENTS_SETTINGS_LIST,     action_get_retro_achievements_settings_list},
 diff --git a/menu/menu_cbs.h b/menu/menu_cbs.h
 index a3317a4..12c97e3 100644
 --- a/menu/menu_cbs.h
@@ -1604,20 +1012,6 @@ index a3317a4..12c97e3 100644
     ACTION_OK_DL_GPU_PERFPOWER_SETTINGS_LIST,
  #endif
     ACTION_OK_DL_MENU_SOUNDS_LIST,
-diff --git a/menu/menu_cbs.h.orig b/menu/menu_cbs.h.orig
-index 67c8f41..a3317a4 100644
---- a/menu/menu_cbs.h.orig
-+++ b/menu/menu_cbs.h.orig
-@@ -205,6 +205,9 @@ enum
-    ACTION_OK_DL_POWER_MANAGEMENT_SETTINGS_LIST,
-    ACTION_OK_DL_CPU_PERFPOWER_SETTINGS_LIST,
-    ACTION_OK_DL_CPU_POLICY_SETTINGS_LIST,
-+#ifdef HAVE_LAKKA_SWITCH
-+   ACTION_OK_DL_GPU_PERFPOWER_SETTINGS_LIST,
-+#endif
-    ACTION_OK_DL_MENU_SOUNDS_LIST,
-    ACTION_OK_DL_MENU_FILE_BROWSER_SETTINGS_LIST,
-    ACTION_OK_DL_RETRO_ACHIEVEMENTS_SETTINGS_LIST,
 diff --git a/menu/menu_displaylist.c b/menu/menu_displaylist.c
 index 0c44b00..37b65b7 100644
 --- a/menu/menu_displaylist.c
@@ -1744,91 +1138,6 @@ index 0c44b00..37b65b7 100644
           }
  
           info->flags       |= MD_FLAG_NEED_REFRESH
-diff --git a/menu/menu_displaylist.c.orig b/menu/menu_displaylist.c.orig
-index f976a49..0c44b00 100644
---- a/menu/menu_displaylist.c.orig
-+++ b/menu/menu_displaylist.c.orig
-@@ -129,7 +129,14 @@
- #include "../runtime_file.h"
- #include "../manual_content_scan.h"
- #include "../core_backup.h"
-+#ifdef HAVE_LAKKA
- #include "../misc/cpufreq/cpufreq.h"
-+
-+#ifdef HAVE_LAKKA_SWITCH
-+#include "../misc/gpufreq/gpufreq.h"
-+#endif
-+
-+#endif
- #include "../input/input_remapping.h"
- 
- #ifdef HAVE_MICROPHONE
-@@ -11263,6 +11270,10 @@ unsigned menu_displaylist_build_list(
-                {MENU_ENUM_LABEL_FASTFORWARD_FRAMESKIP,      PARSE_ONLY_BOOL},
-                {MENU_ENUM_LABEL_SUSTAINED_PERFORMANCE_MODE, PARSE_ONLY_BOOL},
-                {MENU_ENUM_LABEL_CPU_PERFPOWER,              PARSE_ACTION},
-+
-+#ifdef HAVE_LAKKA_SWITCH
-+               {MENU_ENUM_LABEL_GPU_PERFPOWER,              PARSE_ACTION},
-+#endif
- #ifdef HAVE_LAKKA
-                {MENU_ENUM_LABEL_GAMEMODE_ENABLE,            PARSE_ONLY_BOOL},
- #endif /*HAVE_LAKKA*/
-@@ -12973,6 +12984,54 @@ bool menu_displaylist_ctl(enum menu_displaylist_ctl_state type,
-                break;
-             }
- #endif
-+#ifdef HAVE_LAKKA_SWITCH
-+      case DISPLAYLIST_GPU_PERFPOWER_LIST:
-+      {
-+         gpu_scaling_driver_t **drivers = get_gpu_scaling_drivers(true);
-+         menu_entries_clear(info->list);
-+         if (drivers)
-+         {
-+            int count = 0;
-+
-+            menu_entries_append(info->list,
-+               msg_hash_to_str(MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE),
-+               msg_hash_to_str(MENU_ENUM_LABEL_GPU_PERF_MODE),
-+               MENU_ENUM_LABEL_GPU_PERF_MODE,
-+               0, 0, 0, NULL);
-+
-+            switch (get_gpu_scaling_mode(NULL))
-+            {
-+               case GPUSCALING_MANAGED_PERFORMANCE:
-+                  /* Allow users to choose max/min frequencies */
-+                  menu_entries_append(info->list,
-+                        "0",
-+                        "0",
-+                        MENU_ENUM_LABEL_GPU_MANAGED_MIN_FREQ,
-+                        MENU_SETTINGS_GPU_MANAGED_SET_MINFREQ,
-+                        0, 0, NULL);
-+
-+                  menu_entries_append(info->list,
-+                        "1",
-+                        "1",
-+                        MENU_ENUM_LABEL_GPU_MANAGED_MAX_FREQ,
-+                        MENU_SETTINGS_GPU_MANAGED_SET_MAXFREQ,
-+                        0, 0, NULL);
-+
-+                  break;
-+               case GPUSCALING_MAX_PERFORMANCE:
-+               case GPUSCALING_MIN_POWER:
-+               case GPUSCALING_BALANCED:
-+                  /* No settings for these modes */
-+                  break;
-+            };
-+         }
-+
-+         info->flags       |= MD_FLAG_NEED_REFRESH
-+                            | MD_FLAG_NEED_PUSH
-+                            | MD_FLAG_NEED_CLEAR;
-+         break;
-+      }
-+#endif
- #if defined(HAVE_LIBNX)
-          case DISPLAYLIST_SWITCH_CPU_PROFILE:
-             {
 diff --git a/menu/menu_displaylist.h b/menu/menu_displaylist.h
 index 222aace..7cf1e39 100644
 --- a/menu/menu_displaylist.h
@@ -1842,20 +1151,6 @@ index 222aace..7cf1e39 100644
     DISPLAYLIST_GPU_PERFPOWER_LIST,
  #endif
  #ifdef HAVE_GAME_AI
-diff --git a/menu/menu_displaylist.h.orig b/menu/menu_displaylist.h.orig
-index 90192b2..222aace 100644
---- a/menu/menu_displaylist.h.orig
-+++ b/menu/menu_displaylist.h.orig
-@@ -296,6 +296,9 @@ enum menu_displaylist_ctl_state
-    DISPLAYLIST_CPU_PERFPOWER_LIST,
-    DISPLAYLIST_CPU_POLICY_LIST,
- #endif
-+#ifdef HAVE_LAKKA_SWITCH
-+   DISPLAYLIST_GPU_PERFPOWER_LIST,
-+#endif
- #ifdef HAVE_GAME_AI
-    DISPLAYLIST_OPTIONS_GAME_AI,
- #endif
 diff --git a/menu/menu_driver.c b/menu/menu_driver.c
 index d9cbc8e..ba8fe58 100644
 --- a/menu/menu_driver.c
@@ -1900,45 +1195,6 @@ index d9cbc8e..ba8fe58 100644
  #endif
  #ifdef HAVE_OVERLAY
        /* Inhibits pointer 'select' and 'cancel' actions
-diff --git a/menu/menu_driver.c.orig b/menu/menu_driver.c.orig
-index a4b23c1..d9cbc8e 100644
---- a/menu/menu_driver.c.orig
-+++ b/menu/menu_driver.c.orig
-@@ -71,8 +71,14 @@
- #include "../input/input_remapping.h"
- #include "../performance_counters.h"
- #include "../version.h"
-+#ifdef HAVE_LAKKA
- #include "../misc/cpufreq/cpufreq.h"
- 
-+#ifdef HAVE_LAKKA_SWITCH
-+#include "../misc/gpufreq/gpufreq.h"
-+#endif
-+
-+#endif
- #ifdef HAVE_LIBNX
- #include <switch.h>
- #include "../switch_performance_profiles.h"
-@@ -6498,6 +6504,9 @@ void menu_driver_toggle(
-    {
- #ifdef HAVE_LAKKA
-       set_cpu_scaling_signal(CPUSCALING_EVENT_FOCUS_MENU);
-+#ifdef HAVE_LAKKA_SWITCH
-+      set_gpu_scaling_signal(GPUSCALING_EVENT_FOCUS_MENU);
-+#endif
- #endif
- #ifdef HAVE_OVERLAY
-       /* If an overlay was displayed before the toggle
-@@ -6519,6 +6528,9 @@ void menu_driver_toggle(
-    {
- #ifdef HAVE_LAKKA
-       set_cpu_scaling_signal(CPUSCALING_EVENT_FOCUS_CORE);
-+#ifdef HAVE_LAKKA_SWITCH
-+      set_gpu_scaling_signal(GPUSCALING_EVENT_FOCUS_CORE);
-+#endif
- #endif
- #ifdef HAVE_OVERLAY
-       /* Inhibits pointer 'select' and 'cancel' actions
 diff --git a/menu/menu_driver.h b/menu/menu_driver.h
 index fa1037b..a419edb 100644
 --- a/menu/menu_driver.h
@@ -1952,22 +1208,6 @@ index fa1037b..a419edb 100644
     MENU_SETTINGS_GPU_MANAGED_SET_MINFREQ,
     MENU_SETTINGS_GPU_MANAGED_SET_MAXFREQ,
  #endif
-diff --git a/menu/menu_driver.h.orig b/menu/menu_driver.h.orig
-index 21d958b..fa1037b 100644
---- a/menu/menu_driver.h.orig
-+++ b/menu/menu_driver.h.orig
-@@ -264,7 +264,10 @@ enum menu_settings_type
-    MENU_SETTINGS_CPU_POLICY_SET_GOVERNOR,
-    MENU_SETTINGS_CPU_MANAGED_SET_MINFREQ,
-    MENU_SETTINGS_CPU_MANAGED_SET_MAXFREQ,
--
-+#ifdef HAVE_LAKKA_SWITCH
-+   MENU_SETTINGS_GPU_MANAGED_SET_MINFREQ,
-+   MENU_SETTINGS_GPU_MANAGED_SET_MAXFREQ,
-+#endif
-    MENU_SET_CDROM_LIST,
-    MENU_SET_LOAD_CDROM_LIST,
-    MENU_SET_EJECT_DISC,
 diff --git a/menu/menu_setting.c b/menu/menu_setting.c
 index 4969f35..6750c3f 100644
 --- a/menu/menu_setting.c
@@ -1981,26 +1221,6 @@ index 4969f35..6750c3f 100644
           CONFIG_ACTION(
                 list, list_info,
                 MENU_ENUM_LABEL_GPU_PERFPOWER,
-diff --git a/menu/menu_setting.c.orig b/menu/menu_setting.c.orig
-index 52d6c50..4969f35 100644
---- a/menu/menu_setting.c.orig
-+++ b/menu/menu_setting.c.orig
-@@ -20623,6 +20623,15 @@ static bool setting_append_list(
-                &subgroup_info,
-                parent_group);
- #endif
-+#ifdef HAVE_LAKKA_SWITCH
-+         CONFIG_ACTION(
-+               list, list_info,
-+               MENU_ENUM_LABEL_GPU_PERFPOWER,
-+               MENU_ENUM_LABEL_VALUE_GPU_PERFPOWER,
-+               &group_info,
-+               &subgroup_info,
-+               parent_group);
-+#endif
- #ifndef HAVE_LAKKA
-          if (frontend_driver_has_gamemode())
-             CONFIG_BOOL(
 diff --git a/misc/cpufreq/cpufreq.c b/misc/cpufreq/cpufreq.c
 deleted file mode 100644
 index 12197c8..0000000
@@ -4153,53 +3373,6 @@ index 5426969..a990f6a 100644
     MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_MANAGED_PERF,
     MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_MAX_PERF,
     MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_MIN_POWER,
-diff --git a/msg_hash.h.orig b/msg_hash.h.orig
-index 25a1423..5426969 100644
---- a/msg_hash.h.orig
-+++ b/msg_hash.h.orig
-@@ -2137,6 +2137,10 @@ enum msg_hash_enums
-    MENU_ENUM_LABEL_DEFERRED_POWER_MANAGEMENT_SETTINGS_LIST,
-    MENU_ENUM_LABEL_DEFERRED_CPU_PERFPOWER_LIST,
-    MENU_ENUM_LABEL_DEFERRED_CPU_POLICY_ENTRY,
-+#ifdef HAVE_LAKKA_SWITCH
-+   MENU_ENUM_LABEL_DEFERRED_GPU_PERFPOWER_LIST,
-+   MENU_ENUM_LABEL_DEFERRED_GPU_POLICY_ENTRY,
-+#endif
-    MENU_ENUM_LABEL_DEFERRED_MENU_SOUNDS_LIST,
-    MENU_ENUM_LABEL_DEFERRED_MENU_FILE_BROWSER_SETTINGS_LIST,
-    MENU_ENUM_LABEL_DEFERRED_RETRO_ACHIEVEMENTS_SETTINGS_LIST,
-@@ -4037,6 +4041,12 @@ enum msg_hash_enums
-    MENU_LABEL(CPU_POLICY_MENU_GOVERNOR),
-    MENU_LABEL(CPU_MANAGED_MIN_FREQ),
-    MENU_LABEL(CPU_MANAGED_MAX_FREQ),
-+#ifdef HAVE_LAKKA_SWITCH
-+   MENU_LABEL(GPU_PERF_MODE),
-+   MENU_LABEL(GPU_PERFPOWER),
-+   MENU_LABEL(GPU_MANAGED_MIN_FREQ),
-+   MENU_LABEL(GPU_MANAGED_MAX_FREQ),
-+#endif
-    MENU_LBL_H(GAMEMODE_ENABLE),
-    MENU_ENUM_SUBLABEL_GAMEMODE_ENABLE_LINUX,
- 
-@@ -4053,7 +4063,17 @@ enum msg_hash_enums
-    MENU_ENUM_SUBLABEL_VALUE_CPU_PERF_MODE_MIN_POWER,
-    MENU_ENUM_SUBLABEL_VALUE_CPU_PERF_MODE_BALANCED,
-    MENU_ENUM_SUBLABEL_VALUE_CPU_PERF_MODE_MANUAL,
--
-+#ifdef HAVE_LAKKA_SWITCH
-+   MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_MANAGED_PERF,
-+   MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_MAX_PERF,
-+   MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_MIN_POWER,
-+   MENU_ENUM_LABEL_VALUE_GPU_PERF_MODE_BALANCED,
-+
-+   MENU_ENUM_SUBLABEL_VALUE_GPU_PERF_MODE_MANAGED_PERF,
-+   MENU_ENUM_SUBLABEL_VALUE_GPU_PERF_MODE_MAX_PERF,
-+   MENU_ENUM_SUBLABEL_VALUE_GPU_PERF_MODE_MIN_POWER,
-+   MENU_ENUM_SUBLABEL_VALUE_GPU_PERF_MODE_BALANCED,
-+#endif
-    MENU_ENUM_LABEL_CHEAT_HANDLER_TYPE_EMU,
-    MENU_ENUM_LABEL_CHEAT_HANDLER_TYPE_RETRO,
-    MENU_ENUM_LABEL_CHEAT_TYPE_DISABLED,
 diff --git a/retroarch.c b/retroarch.c
 index c1fd706..29570c0 100644
 --- a/retroarch.c
@@ -4246,47 +3419,6 @@ index c1fd706..29570c0 100644
  #endif
  }
  
-diff --git a/retroarch.c.orig b/retroarch.c.orig
-index a0d1bd0..c1fd706 100644
---- a/retroarch.c.orig
-+++ b/retroarch.c.orig
-@@ -190,7 +190,12 @@
- #ifdef HAVE_BLUETOOTH
- #include "bluetooth/bluetooth_driver.h"
- #endif
-+#ifdef HAVE_LAKKA
- #include "misc/cpufreq/cpufreq.h"
-+#ifdef HAVE_LAKKA_SWITCH
-+#include "misc/gpufreq/gpufreq.h"
-+#endif
-+#endif
- #include "led/led_driver.h"
- #include "midi_driver.h"
- #include "core.h"
-@@ -1771,6 +1776,11 @@ void drivers_init(
- 
- #ifdef HAVE_LAKKA
-    cpu_scaling_driver_init();
-+
-+#ifdef HAVE_LAKKA_SWITCH
-+   gpu_scaling_driver_init();
-+#endif
-+
- #endif
- 
- #ifdef HAVE_MENU
-@@ -1876,6 +1886,11 @@ void driver_uninit(int flags, enum driver_lifetime_flags lifetime_flags)
- 
- #ifdef HAVE_LAKKA
-    cpu_scaling_driver_free();
-+
-+#ifdef HAVE_LAKKA_SWITCH
-+   gpu_scaling_driver_free();
-+#endif
-+
- #endif
- }
- 
 diff --git a/runloop.c b/runloop.c
 index 5bf18cd..f6ce8fe 100644
 --- a/runloop.c
@@ -4330,47 +3462,6 @@ index 5bf18cd..f6ce8fe 100644
 -
 +      sys_clk_set_signal(SYS_CLK_DOMAIN_CPU, SYS_CLK_EVENT_FOCUS_CORE);
 +      sys_clk_set_signal(SYS_CLK_DOMAIN_GPU, SYS_CLK_EVENT_FOCUS_CORE);
- #endif
- 
-       /* Restore frame limit. */
-diff --git a/runloop.c.orig b/runloop.c.orig
-index 679517b..5bf18cd 100644
---- a/runloop.c.orig
-+++ b/runloop.c.orig
-@@ -200,7 +200,12 @@
- #ifdef HAVE_BLUETOOTH
- #include "bluetooth/bluetooth_driver.h"
- #endif
-+#ifdef HAVE_LAKKA
- #include "misc/cpufreq/cpufreq.h"
-+#ifdef HAVE_LAKKA_SWITCH
-+#include "misc/gpufreq/gpufreq.h"
-+#endif
-+#endif
- #include "led/led_driver.h"
- #include "midi_driver.h"
- #include "location_driver.h"
-@@ -4879,6 +4884,11 @@ void runloop_pause_checks(void)
- 
- #ifdef HAVE_LAKKA
-       set_cpu_scaling_signal(CPUSCALING_EVENT_FOCUS_MENU);
-+
-+#ifdef HAVE_LAKKA_SWITCH
-+      set_gpu_scaling_signal(GPUSCALING_EVENT_FOCUS_MENU);
-+#endif
-+
- #endif
- 
-       /* Limit paused frames to video refresh. */
-@@ -4891,6 +4901,11 @@ void runloop_pause_checks(void)
-    {
- #ifdef HAVE_LAKKA
-       set_cpu_scaling_signal(CPUSCALING_EVENT_FOCUS_CORE);
-+
-+#ifdef HAVE_LAKKA_SWITCH
-+      set_gpu_scaling_signal(GPUSCALING_EVENT_FOCUS_CORE);
-+#endif
-+
  #endif
  
        /* Restore frame limit. */
