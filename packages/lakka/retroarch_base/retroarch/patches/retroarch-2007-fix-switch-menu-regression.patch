@@ -1,0 +1,78 @@
+From f882c68d718d0b49fb5496aebb4b787b2316c62a Mon Sep 17 00:00:00 2001
+From: Claude <claude@local>
+Date: Fri, 22 May 2026 20:20:41 +0000
+Subject: [PATCH] menu: stop gating GPU CONFIG_ACTION on sys-clk availability
+
+Patch 09 added a runtime sys_clk_domain_available() check around
+the GPU_PERFPOWER CONFIG_ACTION in menu_setting.c, intending to keep
+the entry off the settings tree on builds with no usable GPU. This
+broke the Switch GPU menu entirely.
+
+Root cause: the settings tree is built once, at menu_driver_init
+time, via menu_setting_new(). retroarch.c::drivers_init() calls
+menu_driver_init() before sys_clk_driver_init(), so when the
+CONFIG_ACTION runs, sys_clk's GPU drivers list is still NULL and
+the guard rejects the entry. Because the settings tree is only
+torn down at menu free, the rejection is permanent for the life
+of the program - even after sys-clk init runs successfully right
+after, the entry is gone for good and any displaylist that tries
+to PARSE_ACTION it gets nothing.
+
+This commit reverts the menu_setting.c portion of patch 09: the
+GPU_PERFPOWER setting is always registered when HAVE_LAKKA is
+defined, matching pre-patch-09 behavior. The runtime guard in
+menu_displaylist.c's DISPLAYLIST_POWER_MANAGEMENT_SETTINGS_LIST
+case stays - displaylists are rebuilt on every menu navigation,
+and by the time the user opens the Power Management page sys-clk
+init has long since finished, so the runtime check there is both
+correct and effective at hiding the entry on builds with no GPU.
+
+The sys-clk-side changes from patch 09 (sys_clk_domain_available,
+the init-time skip of sys_clk_set_mode when drivers is NULL, the
+early-outs in set_signal/set_mode) all remain in place; they were
+not the cause of the regression.
+---
+ menu/menu_setting.c | 20 +++++++-------------
+ 1 file changed, 7 insertions(+), 13 deletions(-)
+
+diff --git a/menu/menu_setting.c b/menu/menu_setting.c
+index 9fe9798..68afeb0 100644
+--- a/menu/menu_setting.c
++++ b/menu/menu_setting.c
+@@ -106,9 +106,6 @@
+ #include "../performance_counters.h"
+ #include "../setting_list.h"
+ #include "../lakka.h"
+-#ifdef HAVE_LAKKA
+-#include "../misc/sys-clk/sys-clk.h"
+-#endif
+ #ifdef HAVE_LAKKA_SWITCH
+ #include "../lakka-switch.h"
+ #endif
+@@ -21370,16 +21367,13 @@ static bool setting_append_list(
+                parent_group);
+ #endif
+ #ifdef HAVE_LAKKA
+-         /* Only expose the GPU performance entry if the sys-clk
+-          * backend found a usable GPU device on this build/host. */
+-         if (sys_clk_domain_available(SYS_CLK_DOMAIN_GPU))
+-            CONFIG_ACTION(
+-                  list, list_info,
+-                  MENU_ENUM_LABEL_GPU_PERFPOWER,
+-                  MENU_ENUM_LABEL_VALUE_GPU_PERFPOWER,
+-                  &group_info,
+-                  &subgroup_info,
+-                  parent_group);
++         CONFIG_ACTION(
++               list, list_info,
++               MENU_ENUM_LABEL_GPU_PERFPOWER,
++               MENU_ENUM_LABEL_VALUE_GPU_PERFPOWER,
++               &group_info,
++               &subgroup_info,
++               parent_group);
+ #endif
+ #ifndef HAVE_LAKKA
+          if (frontend_driver_has_gamemode())
+-- 
+2.43.0
+
