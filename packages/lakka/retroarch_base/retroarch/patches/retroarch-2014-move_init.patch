@@ -1,0 +1,40 @@
+From 83a1390febdc422436ed474d6dc9e215bbbe0e63 Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Mon, 25 May 2026 13:21:43 +0900
+Subject: [PATCH] retroarch: retroarch-2014-move_init.patch
+
+---
+ retroarch.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/retroarch.c b/retroarch.c
+index 29570c04f2..1bcf587a71 100644
+--- a/retroarch.c
++++ b/retroarch.c
+@@ -1726,6 +1726,11 @@ void drivers_init(
+       gfx_display_init_first_driver(p_disp, video_is_threaded);
+    }
+ 
++#ifdef HAVE_LAKKA
++   sys_clk_driver_init(SYS_CLK_DOMAIN_CPU);
++   sys_clk_driver_init(SYS_CLK_DOMAIN_GPU);
++#endif
++
+ #ifdef HAVE_MENU
+    if (flags & DRIVER_VIDEO_MASK)
+    {
+@@ -1771,11 +1776,6 @@ void drivers_init(
+    if (flags & DRIVER_MIDI_MASK)
+       midi_driver_init(settings);
+ 
+-#ifdef HAVE_LAKKA
+-   sys_clk_driver_init(SYS_CLK_DOMAIN_CPU);
+-   sys_clk_driver_init(SYS_CLK_DOMAIN_GPU);
+-#endif
+-
+ #ifdef HAVE_MENU
+    srand(time(NULL));
+ #endif
+-- 
+2.43.0
+
