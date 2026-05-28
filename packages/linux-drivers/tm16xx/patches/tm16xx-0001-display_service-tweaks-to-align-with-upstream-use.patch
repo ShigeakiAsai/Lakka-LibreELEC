@@ -1,0 +1,43 @@
+From 1b380d7d36958df5f5dcca8b4162394bb1490c67 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 9 Sep 2025 08:10:35 +0000
+Subject: [PATCH] display.service: tweaks to align with upstream use
+
+Set 'After' and 'Wants' conditions so the service does not
+run until after `time-sync.target` so the clock displayed
+shows correct time. Devices without an RTC chip (most ARM
+SoC devices) will initially show an incorrect time as the
+system clock starts from the installed libc version release
+date until the network is up and NTP corrects it.
+
+Set 'ConditionPathIsDirectory' so the service only starts
+if modules have been loaded by the kernel (and the /sys/class
+path exists). Distros need to support hardware with/without
+VFD displays with a single image so this avoids user-visible
+systemd failure messages during boot on devices with no VFD
+hardware.
+
+Remove 'ExecStartPre' as the kernel is responsible for the
+loading of modules via device-tree compatibles.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ display.service | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/display.service b/display.service
+index b6e96d4..2bb316e 100644
+--- a/display.service
++++ b/display.service
+@@ -1,8 +1,10 @@
+ [Unit]
+ Description=TM16xx Display Service
++ConditionPathIsDirectory=/sys/class/leds/display
++After=time-sync.target
++Wants=time-sync.target
+ 
+ [Service]
+-ExecStartPre=/sbin/modprobe tm16xx
+ ExecStart=/usr/sbin/display-service
+ ExecStop=/bin/kill -s SIGTERM $MAINPID
+ Restart=always
