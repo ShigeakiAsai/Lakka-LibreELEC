@@ -1,10 +1,6 @@
 PKG_NAME="virtualxt"
 PKG_VERSION="1f074e7c3f32d2c523d730d51b9f974c65e530e7"
 PKG_LICENSE="zlib"
-# temporarily disable on arm because build failure is occurred.
-# https://github.com/virtualxt/virtualxt/issues/97
-# please enable (remove "!arm" in PKG_ARCH ) when build failure is fixed.
-PKG_ARCH="any !arm"
 PKG_SITE="https://codeberg.org/virtualxt/virtualxt"
 PKG_URL="${PKG_SITE}.git"
 PKG_DEPENDS_TARGET="toolchain"
