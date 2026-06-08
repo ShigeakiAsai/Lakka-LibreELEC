@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index fb41ab9..23e7e38 100644
+--- a/Makefile
++++ b/Makefile
+@@ -31,7 +31,7 @@ CFLAGS = -W -Wall -O3
+ LDFLAGS = -s
+ ARFLAGS = -rcs
+ 
+-PREFIX = /usr/local
++PREFIX = /usr
+ BINDIR = bin
+ LIBDIR = lib
+ INCDIR = include
