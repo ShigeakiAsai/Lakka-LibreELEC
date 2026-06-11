@@ -27,3 +27,8 @@
   # Kernel to use. values can be:
   # default:  default mainline kernel
     LINUX="raspberrypi-5.10.y"
+
+  # enable bluealsa_device_arrangements for Lakka
+    if [ "${DISTRO}" = "Lakka" ]; then
+      ADDITIONAL_PACKAGES+=" bluealsa_device_arrangements"
+    fi

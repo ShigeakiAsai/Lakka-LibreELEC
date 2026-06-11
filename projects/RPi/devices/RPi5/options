@@ -45,3 +45,8 @@
     if [ "${DISTRO}" = "Lakka" ]; then
       VULKAN="vulkan-loader"
     fi
+
+  # enable bluealsa_device_arrangements for Lakka
+    if [ "${DISTRO}" = "Lakka" ]; then
+      ADDITIONAL_PACKAGES+=" bluealsa_device_arrangements"
+    fi

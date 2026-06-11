@@ -40,3 +40,8 @@
 
   # serial console
     EXTRA_CMDLINE="console=ttyAMA10,115200 console=tty0 video=Composite-1:720x480,tv_mode=NTSC-J drm_rp1_vec.cmode=27000:721/16/64/58,480/6/6/34"
+
+  # enable bluealsa_device_arrangements for Lakka
+    if [ "${DISTRO}" = "Lakka" ]; then
+      ADDITIONAL_PACKAGES+=" bluealsa_device_arrangements"
+    fi

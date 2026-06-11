@@ -20,3 +20,8 @@
 
   # NOOBS supported model versions
     NOOBS_SUPPORTED_MODELS='"Pi 3"'
+
+  # enable bluealsa_device_arrangements for Lakka
+    if [ "${DISTRO}" = "Lakka" ]; then
+      ADDITIONAL_PACKAGES+=" bluealsa_device_arrangements"
+    fi
