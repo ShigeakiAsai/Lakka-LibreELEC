@@ -1,0 +1,13 @@
+[Unit]
+Description=BlueALSA Device Arrangements Daemon
+After=bluetooth.target sound.target
+Requires=bluetooth.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bluealsa_device_arrangements.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
