@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2026-present Team LibreELEC (https://libreelec.tv)
 
-PKG_NAME="usb-modeswitch-RK3326"
+PKG_NAME="usb-modeswitch-lakka"
 PKG_VERSION="2.6.2"
 PKG_SHA256="f7abd337784a9d1bd39cb8a587518aff6f2a43d916145eafd80b1b8b7146db66"
 PKG_LICENSE="GPL"
