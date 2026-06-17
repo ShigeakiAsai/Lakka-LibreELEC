@@ -1,0 +1,103 @@
+diff -uNr a/intl/msg_hash_lbl.h b/intl/msg_hash_lbl.h
+--- a/intl/msg_hash_lbl.h	2026-01-17 09:26:07.000000000 +0900
++++ b/intl/msg_hash_lbl.h	2026-06-16 17:18:42.575335289 +0900
+@@ -436,6 +436,10 @@
+    "bluetooth_enable"
+    )
+ MSG_HASH(
++   MENU_ENUM_LABEL_LAKKA_DATE_AND_TIME,
++   "lakka_date_and_time"
++   )
++MSG_HASH(
+    MENU_ENUM_LABEL_TIMEZONE,
+    "timezone"
+    )
+diff -uNr a/intl/msg_hash_us.h b/intl/msg_hash_us.h
+--- a/intl/msg_hash_us.h	2026-01-17 09:26:07.000000000 +0900
++++ b/intl/msg_hash_us.h	2026-06-16 17:21:22.075076819 +0900
+@@ -16596,6 +16596,14 @@
+    "Enable or disable Wi-Fi Access Point."
+    )
+ MSG_HASH(
++   MENU_ENUM_LABEL_VALUE_LAKKA_DATE_AND_TIME,
++   "Date & Time"
++   )
++MSG_HASH(
++   MENU_ENUM_SUBLABEL_LAKKA_DATE_AND_TIME,
++   "Adjust the system date and time."
++   )
++MSG_HASH(
+    MENU_ENUM_LABEL_VALUE_TIMEZONE,
+    "Time zone"
+    )
+diff -uNr a/menu/menu_displaylist.c b/menu/menu_displaylist.c
+--- a/menu/menu_displaylist.c	2026-01-17 09:26:07.000000000 +0900
++++ b/menu/menu_displaylist.c	2026-06-16 17:22:21.614979406 +0900
+@@ -10243,6 +10243,7 @@
+                {MENU_ENUM_LABEL_SAMBA_ENABLE,                                          PARSE_ONLY_BOOL},
+                {MENU_ENUM_LABEL_BLUETOOTH_ENABLE,                                      PARSE_ONLY_BOOL},
+                {MENU_ENUM_LABEL_LOCALAP_ENABLE,                                        PARSE_ONLY_BOOL},
++               {MENU_ENUM_LABEL_LAKKA_DATE_AND_TIME,                                   PARSE_ACTION},
+                {MENU_ENUM_LABEL_TIMEZONE,                                              PARSE_ONLY_STRING_OPTIONS},
+             };
+ 
+diff -uNr a/menu/menu_setting.c b/menu/menu_setting.c
+--- a/menu/menu_setting.c	2026-06-16 10:46:08.765881400 +0900
++++ b/menu/menu_setting.c	2026-06-16 17:26:34.204572423 +0900
+@@ -149,6 +149,10 @@
+ #include "../intl/progress.h"
+ #endif
+ 
++#ifdef HAVE_LAKKA
++#include "../tasks/task_content.h"
++#endif
++
+ #define _3_SECONDS  3000000
+ #define _6_SECONDS  6000000
+ #define _9_SECONDS  9000000
+@@ -9318,6 +9322,18 @@
+ }
+ #endif
+ 
++static int lakka_date_and_time_action_callback(rarch_setting_t *setting, size_t idx, bool wraparound)
++{
++   const char *core_path = "/usr/lib/libretro/lakkasimpleclock_libretro.so";
++   (void)setting;
++   (void)idx;
++   (void)wraparound;
++
++   task_push_load_contentless_core_from_menu(core_path);
++
++   return 0;
++}
++
+ static void timezone_change_handler(rarch_setting_t *setting)
+ {
+    RFILE *tzfp;
+@@ -23570,6 +23586,15 @@
+             (*list)[list_info->index - 1].change_handler = localap_enable_toggle_change_handler;
+ #endif
+ 
++            CONFIG_ACTION(
++                  list, list_info,
++                  MENU_ENUM_LABEL_LAKKA_DATE_AND_TIME,
++                  MENU_ENUM_LABEL_VALUE_LAKKA_DATE_AND_TIME,
++                  &group_info,
++                  &subgroup_info,
++                  parent_group);
++            (*list)[list_info->index - 1].action_ok = lakka_date_and_time_action_callback;
++
+             CONFIG_STRING_OPTIONS(
+                   list, list_info,
+                   settings->arrays.timezone,
+diff -uNr a/msg_hash.h b/msg_hash.h
+--- a/msg_hash.h	2026-01-17 09:26:07.000000000 +0900
++++ b/msg_hash.h	2026-06-16 17:27:45.024460775 +0900
+@@ -2513,6 +2513,7 @@
+    MENU_LABEL(SAMBA_ENABLE),
+    MENU_LABEL(BLUETOOTH_ENABLE),
+    MENU_LABEL(LOCALAP_ENABLE),
++   MENU_LABEL(LAKKA_DATE_AND_TIME),
+    MENU_LBL_H(TIMEZONE),
+ #endif
+ #ifdef HAVE_LAKKA_SWITCH
