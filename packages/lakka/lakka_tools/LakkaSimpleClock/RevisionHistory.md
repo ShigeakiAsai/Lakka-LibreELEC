@@ -1,3 +1,11 @@
+## [0.3] - 2026-06-24
+### Changed
+- Re-formatted and stylized core source code topology (`clock_core.c`, `clock_render.c`, `font.h`) and package scripts (`package.mk`) to rigidly comply with the Lakka/LibreELEC coding standard guidelines using a strict 3-space indentation alignment.
+- Stripped all multibyte character notations and non-ASCII symbols from runtime source code comments to guarantee seamless universal compilation across strict toolchains.
+
+### Fixed
+- Preserved baseline definitions for `makefile`, `link.options`, and `png_to_header.py` to circumvent build system syntax parsing errors.
+
 ## [0.2] - 2026-06-24
 ### Changed
 - Completely stripped redundant external shell `date` execution vectors to protect runtime context from BusyBox drop errors.

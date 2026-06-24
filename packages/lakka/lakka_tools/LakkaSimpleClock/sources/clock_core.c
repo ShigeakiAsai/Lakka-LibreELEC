@@ -28,7 +28,7 @@
 #include "clock_render.h"
 
 /* LakkaSimpleClock core version */
-#define CORE_VERSION "0.2"
+#define CORE_VERSION "0.3"
 
 /* Master resolution parameters sync with render pipeline */
 #define WIDTH 320
@@ -72,149 +72,149 @@ static bool last_start_state = false;
  * This completely immunizes the core from stale text residues left in connman runtime files.
  */
 static bool check_network_status(void) {
-    FILE *fp = fopen("/proc/net/route", "r");
-    if (!fp) return false;
+   FILE *fp = fopen("/proc/net/route", "r");
+   if (!fp) return false;
 
-    char line[128];
-    char iface[16];
-    unsigned long dest, gateway;
-    bool has_default_route = false;
+   char line[128];
+   char iface[16];
+   unsigned long dest, gateway;
+   bool has_default_route = false;
 
-    /* Skip the first header line safely */
-    if (fgets(line, sizeof(line), fp)) {
-        /* Parse subsequent route parameters sequentially line-by-line */
-        while (fgets(line, sizeof(line), fp)) {
-            /* Read Interface name, Destination Hex, and Gateway Hex fields */
-            if (sscanf(line, "%15s %lx %lx", iface, &dest, &gateway) == 3) {
-                /* ★Fixed syntax: Removed rogue semicolons inside if condition operands */
-                if (dest == 0 && gateway != 0) {
-                    has_default_route = true;
-                    break;
-                }
+   /* Skip the first header line safely */
+   if (fgets(line, sizeof(line), fp)) {
+      /* Parse subsequent route parameters sequentially line-by-line */
+      while (fgets(line, sizeof(line), fp)) {
+         /* Read Interface name, Destination Hex, and Gateway Hex fields */
+         if (sscanf(line, "%15s %lx %lx", iface, &dest, &gateway) == 3) {
+            /* Removed rogue semicolons inside if condition operands */
+            if (dest == 0 && gateway != 0) {
+               has_default_route = true;
+               break;
             }
-        }
-    }
-    fclose(fp);
-    return has_default_route;
+         }
+      }
+   }
+   fclose(fp);
+   return has_default_route;
 }
 
 /* Hard write system clock values back to the OS via standard Linux API */
 static void apply_time_to_system_direct(const struct tm *target_tm) {
-    struct timespec ts;
-    struct tm mutable_tm = *target_tm;
-    time_t target_time = mktime(&mutable_tm);
+   struct timespec ts;
+   struct tm mutable_tm = *target_tm;
+   time_t target_time = mktime(&mutable_tm);
 
-    retro_log_printf_t active_log_cb = NULL;
-    struct retro_log_callback log_interface;
-    if (environ_cb && environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log_interface)) {
-        active_log_cb = log_interface.log;
-    }
+   retro_log_printf_t active_log_cb = NULL;
+   struct retro_log_callback log_interface;
+   if (environ_cb && environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log_interface)) {
+      active_log_cb = log_interface.log;
+   }
 
-    if (active_log_cb) {
-        active_log_cb(RETRO_LOG_INFO, "[LakkaSimpleClock_LOG] Target Epoch timestamp to set: %ld\n", (long)target_time);
-    }
+   if (active_log_cb) {
+      active_log_cb(RETRO_LOG_INFO, "[LakkaSimpleClock_LOG] Target Epoch timestamp to set: %ld\n", (long)target_time);
+   }
 
-    if (target_time == (time_t)-1) {
-        if (active_log_cb) {
-            active_log_cb(RETRO_LOG_ERROR, "[LakkaSimpleClock_LOG] Failed to convert calendar structures into Unix Epoch.\n");
-        }
-        return;
-    }
+   if (target_time == (time_t)-1) {
+      if (active_log_cb) {
+         active_log_cb(RETRO_LOG_ERROR, "[LakkaSimpleClock_LOG] Failed to convert calendar structures into Unix Epoch.\n");
+      }
+      return;
+   }
 
-    /*
-     * Migrated from crude external shell 'date' execution to pure POSIX system clock API.
-     * Bundles localized timestamps cleanly into high-precision timespec registers.
-     */
-    ts.tv_sec = target_time;
-    ts.tv_nsec = 0;
+   /*
+    * Migrated from crude external shell 'date' execution to pure POSIX system clock API.
+    * Bundles localized timestamps cleanly into high-precision timespec registers.
+    */
+   ts.tv_sec = target_time;
+   ts.tv_nsec = 0;
 
-    if (clock_settime(CLOCK_REALTIME, &ts) == 0) {
-        if (active_log_cb) {
-            active_log_cb(RETRO_LOG_INFO, "[LakkaSimpleClock_LOG] clock_settime execution result: SUCCESS.\n");
-        }
-        system("hwclock -w >/dev/null");
-    } else {
-        /*
-         * Explicitly catch and visualize the EPERM capability refusal on Nintendo Switch
-         * without inducing system fatal locks, providing perfect hardware traceability.
-         */
-        if (active_log_cb) {
-            active_log_cb(RETRO_LOG_ERROR, "[LakkaSimpleClock_LOG] clock_settime execution result: FAILED! (OS Kernel rejected authorization)\n");
-        }
+   if (clock_settime(CLOCK_REALTIME, &ts) == 0) {
+      if (active_log_cb) {
+         active_log_cb(RETRO_LOG_INFO, "[LakkaSimpleClock_LOG] clock_settime execution result: SUCCESS.\n");
+      }
+      system("hwclock -w >/dev/null");
+   } else {
+      /*
+       * Explicitly catch and visualize the EPERM capability refusal on Nintendo Switch
+       * without inducing system fatal locks, providing perfect hardware traceability.
+       */
+      if (active_log_cb) {
+         active_log_cb(RETRO_LOG_ERROR, "[LakkaSimpleClock_LOG] clock_settime execution result: FAILED! (OS Kernel rejected authorization)\n");
+      }
 
-        /* Local generalized fallback anchor to keep execution flowing safely */
-        current_time = *target_tm;
-        frame_count = 0;
-    }
+      /* Local generalized fallback anchor to keep execution flowing safely */
+      current_time = *target_tm;
+      frame_count = 0;
+   }
 }
 
 /* Handle automatic standard internal increments */
 static void increment_one_second(void) {
-    time_t t = mktime(&current_time);
-    t += 1;
-    struct tm *next = localtime(&t);
-    if (next) {
-        current_time = *next;
-    }
+   time_t t = mktime(&current_time);
+   t += 1;
+   struct tm *next = localtime(&t);
+   if (next) {
+      current_time = *next;
+   }
 }
 
 /* Dedicated manual navigation processor inside configuration mode */
 static void handle_input(void) {
-    if (input_delay_timer > 0) {
-        input_delay_timer--;
-        return;
-    }
+   if (input_delay_timer > 0) {
+      input_delay_timer--;
+      return;
+   }
 
     if (!input_state_cb) {
         return;
     }
 
-    bool press_left  = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT);
-    bool press_right = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT);
-    bool press_up    = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP);
-    bool press_down  = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN);
+   bool press_left  = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT);
+   bool press_right = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT);
+   bool press_up    = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP);
+   bool press_down  = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN);
 
-    if (press_left) {
-        edit_cursor = (edit_cursor - 1 + 6) % 6;
-        input_delay_timer = INPUT_DELAY_LIMIT;
-    } else if (press_right) {
-        edit_cursor = (edit_cursor + 1) % 6;
-        input_delay_timer = INPUT_DELAY_LIMIT;
-    } else if (press_up || press_down) {
-        int delta = press_up ? 1 : -1;
-        switch (edit_cursor) {
-            case CURSOR_DAY:
-                current_time.tm_mday += delta;
-                if (current_time.tm_mday > 31) current_time.tm_mday = 1;
-                if (current_time.tm_mday < 1)  current_time.tm_mday = 31;
-                break;
-            case CURSOR_MONTH:
-                current_time.tm_mon += delta;
-                if (current_time.tm_mon > 11) current_time.tm_mon = 0;
-                if (current_time.tm_mon < 0)  current_time.tm_mon = 11;
-                break;
-            case CURSOR_YEAR:
-                current_time.tm_year += delta;
-                break;
-            case CURSOR_HOUR:
-                current_time.tm_hour += delta;
-                if (current_time.tm_hour > 23) current_time.tm_hour = 0;
-                if (current_time.tm_hour < 0)  current_time.tm_hour = 23;
-                break;
-            case CURSOR_MIN:
-                current_time.tm_min += delta;
-                if (current_time.tm_min > 59) current_time.tm_min = 0;
-                if (current_time.tm_min < 0)  current_time.tm_min = 59;
-                break;
-            case CURSOR_SEC:
-                current_time.tm_sec += delta;
-                if (current_time.tm_sec > 59) current_time.tm_sec = 0;
-                if (current_time.tm_sec < 0)  current_time.tm_sec = 59;
-                break;
-        }
-        mktime(&current_time); /* Recalculate calendar pointers automatically */
-        input_delay_timer = INPUT_DELAY_LIMIT;
-    }
+   if (press_left) {
+      edit_cursor = (edit_cursor - 1 + 6) % 6;
+      input_delay_timer = INPUT_DELAY_LIMIT;
+   } else if (press_right) {
+      edit_cursor = (edit_cursor + 1) % 6;
+      input_delay_timer = INPUT_DELAY_LIMIT;
+   } else if (press_up || press_down) {
+      int delta = press_up ? 1 : -1;
+      switch (edit_cursor) {
+         case CURSOR_DAY:
+            current_time.tm_mday += delta;
+            if (current_time.tm_mday > 31) current_time.tm_mday = 1;
+            if (current_time.tm_mday < 1)  current_time.tm_mday = 31;
+            break;
+         case CURSOR_MONTH:
+            current_time.tm_mon += delta;
+            if (current_time.tm_mon > 11) current_time.tm_mon = 0;
+            if (current_time.tm_mon < 0)  current_time.tm_mon = 11;
+            break;
+         case CURSOR_YEAR:
+            current_time.tm_year += delta;
+            break;
+         case CURSOR_HOUR:
+            current_time.tm_hour += delta;
+            if (current_time.tm_hour > 23) current_time.tm_hour = 0;
+            if (current_time.tm_hour < 0)  current_time.tm_hour = 23;
+            break;
+         case CURSOR_MIN:
+            current_time.tm_min += delta;
+            if (current_time.tm_min > 59) current_time.tm_min = 0;
+            if (current_time.tm_min < 0)  current_time.tm_min = 59;
+            break;
+         case CURSOR_SEC:
+            current_time.tm_sec += delta;
+            if (current_time.tm_sec > 59) current_time.tm_sec = 0;
+            if (current_time.tm_sec < 0)  current_time.tm_sec = 59;
+            break;
+      }
+      mktime(&current_time); /* Recalculate calendar pointers automatically */
+      input_delay_timer = INPUT_DELAY_LIMIT;
+   }
 }
 
 /* --- Libretro API Standard Implementations --- */
@@ -230,105 +230,105 @@ void retro_set_input_poll(retro_input_poll_t cb) { input_poll_cb = cb; }
 void retro_set_input_state(retro_input_state_t cb) { input_state_cb = cb; }
 
 void retro_set_environment(retro_environment_t cb) {
-    environ_cb = cb;
-    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
-    cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt);
+   environ_cb = cb;
+   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+   cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt);
 
-    /* Inform RetroArch that this core can boot directly standalone without needing any dummy content file */
-    bool support_no_game = true;
-    cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &support_no_game);
+   /* Inform RetroArch that this core can boot directly standalone without needing any dummy content file */
+   bool support_no_game = true;
+   cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &support_no_game);
 }
 
 void retro_get_system_info(struct retro_system_info *info) {
-    memset(info, 0, sizeof(*info));
-    info->library_name     = "LakkaSimpleClock";
-    info->library_version  = CORE_VERSION;
-    info->need_fullpath    = false;
-    info->valid_extensions = "";
+   memset(info, 0, sizeof(*info));
+   info->library_name     = "LakkaSimpleClock";
+   info->library_version  = CORE_VERSION;
+   info->need_fullpath    = false;
+   info->valid_extensions = "";
 }
 
 void retro_get_system_av_info(struct retro_system_av_info *info) {
-    memset(info, 0, sizeof(*info));
-    info->timing.fps            = 60.0;
-    info->timing.sample_rate    = 44100.0;
-    info->geometry.base_width   = WIDTH;
-    info->geometry.base_height  = HEIGHT;
-    info->geometry.max_width    = WIDTH;
-    info->geometry.max_height   = HEIGHT;
-    info->geometry.aspect_ratio = 4.0 / 3.0;
+   memset(info, 0, sizeof(*info));
+   info->timing.fps            = 60.0;
+   info->timing.sample_rate    = 44100.0;
+   info->geometry.base_width   = WIDTH;
+   info->geometry.base_height  = HEIGHT;
+   info->geometry.max_width    = WIDTH;
+   info->geometry.max_height   = HEIGHT;
+   info->geometry.aspect_ratio = 4.0 / 3.0;
 }
 
 bool retro_load_game(const struct retro_game_info *game) {
-    (void)game;
-    time_t t = time(NULL);
-    struct tm *local = localtime(&t);
-    current_time = *local;
-    is_network_online = check_network_status();
-    init_lakka_logo();
-    return true;
+   (void)game;
+   time_t t = time(NULL);
+   struct tm *local = localtime(&t);
+   current_time = *local;
+   is_network_online = check_network_status();
+   init_lakka_logo();
+   return true;
 }
 
 void retro_unload_game(void) {}
 
 void retro_run(void) {
-    if (input_poll_cb) {
-        input_poll_cb();
-    }
-    frame_count++;
+   if (input_poll_cb) {
+      input_poll_cb();
+   }
+   frame_count++;
 
-    /* Query network status periodically */
-    if (frame_count % 60 == 0) {
-        is_network_online = check_network_status();
-        if (is_network_online && is_edit_mode) {
+   /* Query network status periodically */
+   if (frame_count % 60 == 0) {
+      is_network_online = check_network_status();
+      if (is_network_online && is_edit_mode) {
+         is_edit_mode = false;
+      }
+   }
+
+   /* Handle clock increments or manual edit inputs */
+   if (!is_edit_mode) {
+      if (frame_count >= 60) {
+         frame_count = 0;
+         increment_one_second();
+      }
+   } else {
+      handle_input();
+   }
+
+   if (input_state_cb) {
+      /* START button toggle detection */
+      bool current_start_state = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START);
+      if (current_start_state && !last_start_state) {
+         if (is_network_online) {
             is_edit_mode = false;
-        }
-    }
-
-    /* Handle clock increments or manual edit inputs */
-    if (!is_edit_mode) {
-        if (frame_count >= 60) {
-            frame_count = 0;
-            increment_one_second();
-        }
-    } else {
-        handle_input();
-    }
-
-    if (input_state_cb) {
-        /* START button toggle detection */
-        bool current_start_state = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START);
-        if (current_start_state && !last_start_state) {
-            if (is_network_online) {
-                is_edit_mode = false;
-            } else {
-                is_edit_mode = !is_edit_mode;
-                if (!is_edit_mode) {
-                    apply_time_to_system_direct(&current_time);
-                }
+         } else {
+            is_edit_mode = !is_edit_mode;
+            if (!is_edit_mode) {
+               apply_time_to_system_direct(&current_time);
             }
-            input_delay_timer = 0;
-        }
-        last_start_state = current_start_state;
+         }
+         input_delay_timer = 0;
+      }
+      last_start_state = current_start_state;
 
-        /* SELECT button detection for Core exit */
-        if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT)) {
-            if (environ_cb) {
-                environ_cb(RETRO_ENVIRONMENT_SHUTDOWN, NULL);
-                return;
-            }
-        }
-    }
+      /* SELECT button detection for Core exit */
+      if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT)) {
+         if (environ_cb) {
+            environ_cb(RETRO_ENVIRONMENT_SHUTDOWN, NULL);
+            return;
+         }
+      }
+   }
 
-    /* Frame refresh clearing step */
-    memset(video_buffer, 0, sizeof(video_buffer));
+   /* Frame refresh clearing step */
+   memset(video_buffer, 0, sizeof(video_buffer));
 
-    /* Call external dual rendering systems */
-    draw_analog_clock(160, 80, 65, &current_time);
-    draw_digital_clock(170, &current_time, is_edit_mode, edit_cursor, frame_count, is_network_online);
+   /* Call external dual rendering systems */
+   draw_analog_clock(160, 80, 65, &current_time);
+   draw_digital_clock(170, &current_time, is_edit_mode, edit_cursor, frame_count, is_network_online);
 
-    if (video_cb) {
-        video_cb(video_buffer, WIDTH, HEIGHT, WIDTH * sizeof(uint16_t));
-    }
+   if (video_cb) {
+      video_cb(video_buffer, WIDTH, HEIGHT, WIDTH * sizeof(uint16_t));
+   }
 }
 
 void retro_reset(void) {}
