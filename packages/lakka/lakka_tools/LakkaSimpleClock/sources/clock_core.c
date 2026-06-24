@@ -27,8 +27,12 @@
 #include "libretro.h"
 #include "clock_render.h"
 
+#ifdef __SWITCH__
+#include <dbus/dbus.h>
+#endif
+
 /* LakkaSimpleClock core version */
-#define CORE_VERSION "0.3"
+#define CORE_VERSION "0.4"
 
 /* Master resolution parameters sync with render pipeline */
 #define WIDTH 320
@@ -86,7 +90,6 @@ static bool check_network_status(void) {
       while (fgets(line, sizeof(line), fp)) {
          /* Read Interface name, Destination Hex, and Gateway Hex fields */
          if (sscanf(line, "%15s %lx %lx", iface, &dest, &gateway) == 3) {
-            /* Removed rogue semicolons inside if condition operands */
             if (dest == 0 && gateway != 0) {
                has_default_route = true;
                break;
@@ -142,6 +145,90 @@ static void apply_time_to_system_direct(const struct tm *target_tm) {
          active_log_cb(RETRO_LOG_ERROR, "[LakkaSimpleClock_LOG] clock_settime execution result: FAILED! (OS Kernel rejected authorization)\n");
       }
 
+#ifdef __SWITCH__
+      if (active_log_cb) {
+         active_log_cb(RETRO_LOG_WARN, "[LakkaSimpleClock_LOG] Switch environment fallback engaged: Initializing native 2-step libdbus pipeline.\n");
+      }
+
+      DBusError err;
+      DBusConnection *conn;
+      DBusMessage *msg_mode, *msg_time;
+      DBusMessageIter args_mode, variant_mode, args_time, variant_time;
+
+      dbus_uint64_t usec_time = (dbus_uint64_t)target_time;
+      const char *prop_mode = "TimeUpdates";
+      const char *val_mode = "manual";
+      const char *prop_time = "Time";
+
+      dbus_error_init(&err);
+
+      /* 1. Connect to the system message bus safely */
+      conn = dbus_bus_get(DBUS_BUS_SYSTEM, &err);
+      if (dbus_error_is_set(&err)) {
+         if (active_log_cb) {
+            active_log_cb(RETRO_LOG_ERROR, "[LakkaSimpleClock_LOG] D-Bus Connection Error: %s\n", err.message);
+         }
+         dbus_error_free(&err);
+      } else if (conn) {
+         /*
+          * 2. Step a) Direct Injection to force ConnMan TimeUpdates mode into "manual".
+          * This safely unlocks the kernel time-protection gates without needing host OS reboots.
+          */
+         msg_mode = dbus_message_new_method_call("net.connman", "/", "net.connman.Clock", "SetProperty");
+         if (!msg_mode) {
+            if (active_log_cb) {
+               active_log_cb(RETRO_LOG_ERROR, "[LakkaSimpleClock_LOG] Native libdbus Error: Failed to allocate memory for msg_mode descriptor.\n");
+            }
+         } else {
+            if (active_log_cb) {
+               active_log_cb(RETRO_LOG_INFO, "[LakkaSimpleClock_LOG] Native libdbus Pipeline: msg_mode generated successfully in active user memory.\n");
+            }
+
+            dbus_message_iter_init_append(msg_mode, &args_mode);
+            dbus_message_iter_append_basic(&args_mode, DBUS_TYPE_STRING, &prop_mode);
+
+            /* Build dynamic container variant signature "v" holding string payload ("s") */
+            dbus_message_iter_open_container(&args_mode, DBUS_TYPE_VARIANT, "s", &variant_mode);
+            dbus_message_iter_append_basic(&variant_mode, DBUS_TYPE_STRING, &val_mode);
+            dbus_message_iter_close_container(&args_mode, &variant_mode);
+
+            dbus_connection_send(conn, msg_mode, NULL);
+            dbus_message_unref(msg_mode);
+         }
+
+         /*
+          * 3. Step b) Direct Injection to overwrite the actual Unix Epoch Clock Time registers.
+          * Accepted instantly by ConnMan because the protection layer was disabled in Step a)
+          */
+         msg_time = dbus_message_new_method_call("net.connman", "/", "net.connman.Clock", "SetProperty");
+         if (!msg_time) {
+            if (active_log_cb) {
+               active_log_cb(RETRO_LOG_ERROR, "[LakkaSimpleClock_LOG] Native libdbus Error: Failed to allocate memory for msg_time descriptor.\n");
+            }
+         } else {
+            if (active_log_cb) {
+               active_log_cb(RETRO_LOG_INFO, "[LakkaSimpleClock_LOG] Native libdbus Pipeline: msg_time generated successfully in active user memory.\n");
+            }
+
+            dbus_message_iter_init_append(msg_time, &args_time);
+            dbus_message_iter_append_basic(&args_time, DBUS_TYPE_STRING, &prop_time);
+
+            /* Build dynamic container variant signature "v" holding uint64 payload ("t") */
+            dbus_message_iter_open_container(&args_time, DBUS_TYPE_VARIANT, "t", &variant_time);
+            dbus_message_iter_append_basic(&variant_time, DBUS_TYPE_UINT64, &usec_time);
+            dbus_message_iter_close_container(&args_time, &variant_time);
+
+            dbus_connection_send(conn, msg_time, NULL);
+            dbus_message_unref(msg_time);
+         }
+         dbus_connection_flush(conn);
+         dbus_connection_unref(conn);
+      }
+
+      /* Rigidly clear internal clocks to force cache refresh synchronization */
+      tzset();
+#endif
+
       /* Local generalized fallback anchor to keep execution flowing safely */
       current_time = *target_tm;
       frame_count = 0;
@@ -165,9 +252,9 @@ static void handle_input(void) {
       return;
    }
 
-    if (!input_state_cb) {
-        return;
-    }
+   if (!input_state_cb) {
+      return;
+   }
 
    bool press_left  = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT);
    bool press_right = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT);
@@ -231,6 +318,15 @@ void retro_set_input_state(retro_input_state_t cb) { input_state_cb = cb; }
 
 void retro_set_environment(retro_environment_t cb) {
    environ_cb = cb;
+
+   /* Set the performance level explicitly */
+   unsigned performance_level = 0;
+   cb(RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL, &performance_level);
+
+   /* Set serialization quirks (Libretro master logging requirement rule) */
+   uint64_t quirks = RETRO_SERIALIZATION_QUIRK_MUST_INITIALIZE;
+   cb(RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS, &quirks);
+
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
    cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt);
 

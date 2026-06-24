@@ -2,12 +2,16 @@
 # Copyright (C) 2026-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="LakkaSimpleClock"
-PKG_VERSION="0.3"
+PKG_VERSION="0.4"
 PKG_ARCH="any"
 PKG_LICENSE="MIT"
 PKG_DEPENDS_TARGET="toolchain retroarch"
 PKG_LONGDESC="LakkaSimpleClock: Simple clock for no network devices"
 PKG_TOOLCHAIN="manual"
+
+if [ "${DEVICE}" = "Switch" ]; then
+   PKG_DEPENDS_TARGET+=" dbus"
+fi
 
 pre_make_target() {
    echo "Starting Lakka Clock Asset Pipeline: Compiling Lakka.png into the source header..."
@@ -29,7 +33,15 @@ pre_make_target() {
 make_target() {
    cd "${PKG_BUILD}"
    make clean
-   make platform=unix
+
+   if [ "${DEVICE}" = "Switch" ]; then
+      echo "Building for Nintendo Switch with native D-Bus integration..."
+      make platform=unix \
+           REAL_CFLAGS="-D__SWITCH__ \$(shell pkg-config --cflags dbus-1) \$(CFLAGS) -fpic -O2 -Wall -I." \
+           REAL_LDFLAGS="\$(LDFLAGS) -ldbus-1 -lm"
+   else
+      make platform=unix
+   fi
 }
 
 makeinstall_target() {
