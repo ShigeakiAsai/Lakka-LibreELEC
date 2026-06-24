@@ -2,7 +2,7 @@
 # Copyright (C) 2026-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="LakkaSimpleClock"
-PKG_VERSION="0.1"
+PKG_VERSION="0.2"
 PKG_ARCH="any"
 PKG_LICENSE="MIT"
 PKG_DEPENDS_TARGET="toolchain retroarch"

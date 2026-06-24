@@ -6,7 +6,8 @@ A lightweight, standalone pixel-art analog and digital clock core designed speci
 
 - **No-Game Standalone Booting**: Fully implements `RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME`. Launch the clock app directly from the Lakka core menu without requiring any dummy `.txt` content files.
 - **Universal Date Layout**: Formatted to the international global standard `DD/MMM/YYYY` (e.g., `14/JUN/2026`) with pixel-perfect rigid centering vectors.
-- **Native OS Network Sync**: Bypasses missing `systemd-timedated` service blocks by directly parsing ConnMan's active memory runtime ramdisk state at `/var/run/connman/resolv.conf` to dynamically trigger the green `Network ONLINE` status indicator.
+- **Native OS Network Sync**: Bypasses missing `systemd-timedated` service blocks by directly parsing the Linux kernel runtime routing tables at `/proc/net/route` to dynamically trigger the green `Network ONLINE` status indicator.
+- **Pure POSIX Time Adjustment**: Utilizes the standard POSIX `clock_settime(CLOCK_REALTIME)` API to directly and safely update the host system clock without relying on external BusyBox `date` shell commands.
 - **Intuitive Visual Configuration**: Press **START** to enter Edit Mode. The custom blit compiler synchronizes control vectors with the visual layout grid sequentially from left-to-right (Day → Month → Year → Hour → Minute → Second).
 - **Embedded Alpha Layer Branding**: Automatically loads the native compiled color byte array structure overlaying the official Lakka asset emblem seamlessly at the top layer priority plane.
 
@@ -26,4 +27,4 @@ scripts/build LakkaSimpleClock
 
 ## License
 
-This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)** - see the source header configurations for details. Designed with passion for the global retro emulation development ecosystem.
+This project is open-source software licensed under the **MIT License** [LakkaSimpleClock_GPLv2_and_MIT]. Designed with passion for the global retro emulation development ecosystem.

@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://gnu.org>.
  */
 
+#define _POSIX_C_SOURCE 199309L
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -24,6 +26,9 @@
 #include <stdbool.h>
 #include "libretro.h"
 #include "clock_render.h"
+
+/* LakkaSimpleClock core version */
+#define CORE_VERSION "0.2"
 
 /* Master resolution parameters sync with render pipeline */
 #define WIDTH 320
@@ -93,14 +98,53 @@ static bool check_network_status(void) {
     return has_default_route;
 }
 
-/* Hard write system clock values back to the OS via standard date command */
+/* Hard write system clock values back to the OS via standard Linux API */
 static void apply_time_to_system_direct(const struct tm *target_tm) {
-    char cmd[128];
-    snprintf(cmd, sizeof(cmd), "date -s '%04d-%02d-%02d %02d:%02d:%02d' >/dev/null 2>&1",
-             target_tm->tm_year + 1900, target_tm->tm_mon + 1, target_tm->tm_mday,
-             target_tm->tm_hour, target_tm->tm_min, target_tm->tm_sec);
-    if (system(cmd) == 0) {
-        system("hwclock -w >/dev/null 2>&1");
+    struct timespec ts;
+    struct tm mutable_tm = *target_tm;
+    time_t target_time = mktime(&mutable_tm);
+
+    retro_log_printf_t active_log_cb = NULL;
+    struct retro_log_callback log_interface;
+    if (environ_cb && environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log_interface)) {
+        active_log_cb = log_interface.log;
+    }
+
+    if (active_log_cb) {
+        active_log_cb(RETRO_LOG_INFO, "[LakkaSimpleClock_LOG] Target Epoch timestamp to set: %ld\n", (long)target_time);
+    }
+
+    if (target_time == (time_t)-1) {
+        if (active_log_cb) {
+            active_log_cb(RETRO_LOG_ERROR, "[LakkaSimpleClock_LOG] Failed to convert calendar structures into Unix Epoch.\n");
+        }
+        return;
+    }
+
+    /*
+     * Migrated from crude external shell 'date' execution to pure POSIX system clock API.
+     * Bundles localized timestamps cleanly into high-precision timespec registers.
+     */
+    ts.tv_sec = target_time;
+    ts.tv_nsec = 0;
+
+    if (clock_settime(CLOCK_REALTIME, &ts) == 0) {
+        if (active_log_cb) {
+            active_log_cb(RETRO_LOG_INFO, "[LakkaSimpleClock_LOG] clock_settime execution result: SUCCESS.\n");
+        }
+        system("hwclock -w >/dev/null");
+    } else {
+        /*
+         * Explicitly catch and visualize the EPERM capability refusal on Nintendo Switch
+         * without inducing system fatal locks, providing perfect hardware traceability.
+         */
+        if (active_log_cb) {
+            active_log_cb(RETRO_LOG_ERROR, "[LakkaSimpleClock_LOG] clock_settime execution result: FAILED! (OS Kernel rejected authorization)\n");
+        }
+
+        /* Local generalized fallback anchor to keep execution flowing safely */
+        current_time = *target_tm;
+        frame_count = 0;
     }
 }
 
@@ -118,6 +162,10 @@ static void increment_one_second(void) {
 static void handle_input(void) {
     if (input_delay_timer > 0) {
         input_delay_timer--;
+        return;
+    }
+
+    if (!input_state_cb) {
         return;
     }
 
@@ -194,7 +242,7 @@ void retro_set_environment(retro_environment_t cb) {
 void retro_get_system_info(struct retro_system_info *info) {
     memset(info, 0, sizeof(*info));
     info->library_name     = "LakkaSimpleClock";
-    info->library_version  = "0.1";
+    info->library_version  = CORE_VERSION;
     info->need_fullpath    = false;
     info->valid_extensions = "";
 }
@@ -223,7 +271,9 @@ bool retro_load_game(const struct retro_game_info *game) {
 void retro_unload_game(void) {}
 
 void retro_run(void) {
-    input_poll_cb();
+    if (input_poll_cb) {
+        input_poll_cb();
+    }
     frame_count++;
 
     /* Query network status periodically */
@@ -244,26 +294,28 @@ void retro_run(void) {
         handle_input();
     }
 
-    /* START button toggle detection */
-    bool current_start_state = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START);
-    if (current_start_state && !last_start_state) {
-        if (is_network_online) {
-            is_edit_mode = false;
-        } else {
-            is_edit_mode = !is_edit_mode;
-            if (!is_edit_mode) {
-                apply_time_to_system_direct(&current_time);
+    if (input_state_cb) {
+        /* START button toggle detection */
+        bool current_start_state = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START);
+        if (current_start_state && !last_start_state) {
+            if (is_network_online) {
+                is_edit_mode = false;
+            } else {
+                is_edit_mode = !is_edit_mode;
+                if (!is_edit_mode) {
+                    apply_time_to_system_direct(&current_time);
+                }
             }
+            input_delay_timer = 0;
         }
-        input_delay_timer = 0;
-    }
-    last_start_state = current_start_state;
+        last_start_state = current_start_state;
 
-    /* SELECT button detection for Core exit */
-    if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT)) {
-        if (environ_cb) {
-            environ_cb(RETRO_ENVIRONMENT_SHUTDOWN, NULL);
-            return;
+        /* SELECT button detection for Core exit */
+        if (input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT)) {
+            if (environ_cb) {
+                environ_cb(RETRO_ENVIRONMENT_SHUTDOWN, NULL);
+                return;
+            }
         }
     }
 
@@ -274,7 +326,9 @@ void retro_run(void) {
     draw_analog_clock(160, 80, 65, &current_time);
     draw_digital_clock(170, &current_time, is_edit_mode, edit_cursor, frame_count, is_network_online);
 
-    video_cb(video_buffer, WIDTH, HEIGHT, WIDTH * sizeof(uint16_t));
+    if (video_cb) {
+        video_cb(video_buffer, WIDTH, HEIGHT, WIDTH * sizeof(uint16_t));
+    }
 }
 
 void retro_reset(void) {}
