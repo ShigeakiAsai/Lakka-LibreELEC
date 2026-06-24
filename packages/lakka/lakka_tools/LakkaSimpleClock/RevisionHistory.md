@@ -1,3 +1,11 @@
+## [0.4] - 2026-06-24
+### Added
+- Integrated native Nintendo Switch (L4T Linux) hardware synchronization capabilities via a specialized 2-step `libdbus` communication pipeline.
+- Added dynamic target platform detection inside `package.mk` to conditionally inject `dbus-1` dependencies and toolchain flags (`-D__SWITCH__`) exclusively during Switch target builds.
+
+### Changed
+- Refactored build runtime hooks to cleanly intercept `clock_settime` capability refus (`EPERM`) and gracefully fall back to ConnMan network system service injection without blocking general Linux platforms (PC, Raspberry Pi 5).
+
 ## [0.3] - 2026-06-24
 ### Changed
 - Re-formatted and stylized core source code topology (`clock_core.c`, `clock_render.c`, `font.h`) and package scripts (`package.mk`) to rigidly comply with the Lakka/LibreELEC coding standard guidelines using a strict 3-space indentation alignment.
