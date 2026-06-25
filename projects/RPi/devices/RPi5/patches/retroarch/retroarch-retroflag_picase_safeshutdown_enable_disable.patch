@@ -173,20 +173,19 @@ index 162a14c852..a08ed8f12c 100644
           case MENU_ENUM_LABEL_TIMEZONE:
              BIND_ACTION_SUBLABEL(cbs, action_bind_sublabel_timezone);
              break;
-diff --git a/menu/menu_displaylist.c b/menu/menu_displaylist.c
-index 58fa628db9..5a78d490d2 100644
---- a/menu/menu_displaylist.c
-+++ b/menu/menu_displaylist.c
-@@ -10028,6 +10028,9 @@ unsigned menu_displaylist_build_list(
+diff -uNr a/menu/menu_displaylist.c b/menu/menu_displaylist.c
+--- a/menu/menu_displaylist.c	2026-06-16 20:14:36.030525300 +0900
++++ b/menu/menu_displaylist.c	2026-06-16 20:22:32.149938471 +0900
+@@ -10243,6 +10243,9 @@
                 {MENU_ENUM_LABEL_SAMBA_ENABLE,                                          PARSE_ONLY_BOOL},
                 {MENU_ENUM_LABEL_BLUETOOTH_ENABLE,                                      PARSE_ONLY_BOOL},
                 {MENU_ENUM_LABEL_LOCALAP_ENABLE,                                        PARSE_ONLY_BOOL},
 +#ifdef HAVE_RETROFLAG
 +               {MENU_ENUM_LABEL_SAFESHUTDOWN_ENABLE,                                   PARSE_ONLY_BOOL},
 +#endif
+                {MENU_ENUM_LABEL_LAKKA_DATE_AND_TIME,                                   PARSE_ACTION},
                 {MENU_ENUM_LABEL_TIMEZONE,                                              PARSE_ONLY_STRING_OPTIONS},
              };
- 
 diff --git a/menu/menu_setting.c b/menu/menu_setting.c
 index 3696fd7e24..13218d4e13 100644
 --- a/menu/menu_setting.c
@@ -231,17 +230,16 @@ index 3696fd7e24..13218d4e13 100644
              CONFIG_STRING_OPTIONS(
                    list, list_info,
                    settings->arrays.timezone,
-diff --git a/msg_hash.h b/msg_hash.h
-index e4be9553e0..36c02fb207 100644
---- a/msg_hash.h
-+++ b/msg_hash.h
-@@ -2507,6 +2507,9 @@ enum msg_hash_enums
+diff -uNr a/msg_hash.h b/msg_hash.h
+--- a/msg_hash.h	2026-06-16 20:14:36.030525300 +0900
++++ b/msg_hash.h	2026-06-16 20:27:14.699696370 +0900
+@@ -2513,6 +2513,9 @@
     MENU_LABEL(SAMBA_ENABLE),
     MENU_LABEL(BLUETOOTH_ENABLE),
     MENU_LABEL(LOCALAP_ENABLE),
 +#ifdef HAVE_RETROFLAG
 +   MENU_LABEL(SAFESHUTDOWN_ENABLE),
 +#endif
+    MENU_LABEL(LAKKA_DATE_AND_TIME),
     MENU_LBL_H(TIMEZONE),
  #endif
- #ifdef HAVE_LAKKA_SWITCH
