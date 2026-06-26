@@ -190,8 +190,7 @@ makeinstall_target() {
   fi
 
   if [ "${PROJECT}" = "Samsung" -a "${DEVICE}" = "Exynos" ]; then
-    # workaround the 55fps bug
-    sed -i ${ra_config} -e 's|^audio_out_rate = .*|audio_out_rate = "44100"|'
+    sed -i ${ra_config} -e 's|^audio_device = .*|audio_device = "hw:0,2"|'
   fi
 
   # RK3326 - HARDKERNEL OdroidGoAdvance or compatible devices
