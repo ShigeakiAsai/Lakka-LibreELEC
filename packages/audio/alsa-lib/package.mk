@@ -41,4 +41,19 @@ post_install() {
     sed -e "s|^options snd-usb-audio index=.*$|options snd-usb-audio index=0|g" \
         -i ${INSTALL}/usr/lib/modprobe.d/alsa-base.conf
   fi
+  if [ "${DISTRO}" = "Lakka" ] && [ "${PROJECT}" = "Samsung" ] && [ "${DEVICE}" = "Exynos" ]; then
+    mkdir -p ${INSTALL}/etc
+    cat << 'EOF' > ${INSTALL}/etc/asound.conf
+pcm.!default {
+    type hw
+    card 0
+    device 2
+}
+
+ctl.!default {
+    type hw
+    card 0
+}
+EOF
+  fi
 }
