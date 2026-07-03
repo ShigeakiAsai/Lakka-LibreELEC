@@ -1,7 +1,10 @@
 ath9k_htc
 rtl_nic/rtl8153a-3.fw
-rtlwifi/rtl8192cufw_TMSC.bin
 rtlwifi/rtl8192cufw.bin
+rtlwifi/rtl8192cufw_A.bin
+rtlwifi/rtl8192cufw_B.bin
+rtlwifi/rtl8192cufw_TMSC.bin
+mediatek/mt7601u.bin
 mediatek/*MT7961*.bin
 s5p-mfc-v8.fw
 rtw88/rtw8821c_fw.bin
