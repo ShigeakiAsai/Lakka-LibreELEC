@@ -42,7 +42,7 @@ fi
 if [ "${OPENGLES_SUPPORT}" = yes ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
   PKG_CONFIGURE_OPTS_TARGET+=" --enable-opengles"
-  if [ "${DEVICE:0:4}" =  "RPi4" ] || [ "${DEVICE:0:4}" = "RPi5" ] || [ "${DEVICE}" = "RK3288" ] || [ "${DEVICE}" = "RK3326" ] || [ "${DEVICE}" = "RK3399" ] || [ "${PROJECT}" = "Generic" ] || [ "${DEVICE}" = "Odin" ]; then
+  if [ "${DEVICE:0:4}" =  "RPi4" ] || [ "${DEVICE:0:4}" = "RPi5" ] || [ "${DEVICE}" = "RK3288" ] || [ "${DEVICE}" = "RK3326" ] || [ "${DEVICE}" = "RK3399" ] || [ "${PROJECT}" = "Generic" ] || [ "${DEVICE}" = "Odin" ] || [ "${DEVICE}" = "H700" ]; then
     PKG_CONFIGURE_OPTS_TARGET+=" --enable-opengles3 \
                                  --enable-opengles3_1"
     if [ "${PROJECT}" = "Generic" ]; then
@@ -182,8 +182,8 @@ makeinstall_target() {
 
   # Power settings
   # Use ondemand for all RPi devices (for backwards compatibility?)
-  # and any battery powered device (OGA and RPi case)
-  if [ "${PROJECT}" = "RPi" ] || [ "${DEVICE}" = "RK3326" ]; then
+  # and any battery powered device (OGA, RPi case and ANBERNIC RG xx series)
+  if [ "${PROJECT}" = "RPi" ] || [ "${DEVICE}" = "RK3326" ] || [ "${DEVICE}" = "H700" ]; then
     sed -i ${ra_config} -e 's|^cpu_main_gov = .*|cpu_main_gov = "ondemand"|'
     sed -i ${ra_config} -e 's|^cpu_menu_gov = .*|cpu_menu_gov = "ondemand"|'
     sed -i ${ra_config} -e 's|^cpu_scaling_mode = .*|cpu_scaling_mode = "1"|'
@@ -367,6 +367,15 @@ makeinstall_target() {
 
     #HACK: Temporary hack for touchscreen
     sed -i ${ra_config} -e 's|^video_windowed_fullscreen = .*|video_windowed_fullscreen = "true"|'
+  fi
+
+  # ANBERNIC RG XX series (Allwinner H700)
+  if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+    sed -i ${ra_config} -e 's|^audio_out_rate = .*|audio_out_rate = "44100"|'
+    sed -i ${ra_config} -e 's|^input_menu_toggle_btn = .*|input_menu_toggle_btn = "10"|'
+    sed -i ${ra_config} -e 's|^menu_widget_scale_auto = .*|menu_widget_scale_auto = "false"|'
+    sed -i ${ra_config} -e 's|^menu_widget_scale_factor = .*|menu_widget_scale_factor = "1.750000"|'
+    sed -i ${ra_config} -e 's|^xmb_layout = .*|xmb_layout = "2"|'
   fi
 
   # add variables to environment file
