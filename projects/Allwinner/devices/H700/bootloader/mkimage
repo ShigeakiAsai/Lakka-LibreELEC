@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
+
+if [ -f "${RELEASE_DIR}/3rdparty/bootloader/u-boot-sunxi-with-spl.bin" ]; then
+  echo "mkimage: Writing U-Boot to $(basename ${DISK})"
+  dd if="${RELEASE_DIR}/3rdparty/bootloader/u-boot-sunxi-with-spl.bin" of="${DISK}" bs=1K seek=8 conv=fsync,notrunc >"$SAVE_ERROR" 2>&1 || show_error
+else
+  echo "mkimage: no u-boot-sunxi-with-spl.bin (FAILED)"
+  exit 1
+fi
+
+# Copy any panel-variant dtbs sharing the same base model name
+# (e.g. *-v2-panel.dtb) to /flash, so users can manually switch FDT in
+# extlinux.conf to match their panel revision without a rebuild.
+if [ -n "${DTB}" ]; then
+  for variant_dtb in "${RELEASE_DIR}/3rdparty/bootloader/${DTB%.dtb}"-*.dtb; do
+    if [ -f "${variant_dtb}" ]; then
+      echo "mkimage: copying panel variant $(basename ${variant_dtb})..."
+      mcopy "${variant_dtb}" ::/"${variant_dtb##*/}" >"${SAVE_ERROR}" 2>&1 || show_error
+    fi
+  done
+fi
