@@ -25,6 +25,8 @@ fi
 if [ "${ARCH}" = "aarch64" ]; then
   if [ "${PROJECT}" = "Amlogic" ]; then
     PKG_MAKE_OPTS_TARGET+=" platform=arm64_cortex_a53_gles3"
+  elif [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
+    PKG_MAKE_OPTS_TARGET+=" platform=arm64_cortex_a53_gles3"
   elif [ "${PROJECT}" = "RPi" -a "${DEVICE:0:4}" = "RPi4" ]; then
     PKG_MAKE_OPTS_TARGET+=" platform=rpi4"
   elif [ "${PROJECT}" = "RPi" -a "${DEVICE:0:4}" = "RPi5" ]; then
