@@ -1,0 +1,30 @@
+diff -uNr a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts	2026-07-30 19:23:00.755726600 +0900
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts	2026-07-31 21:41:18.573498700 +0900
+@@ -10,7 +10,7 @@
+ 	model = "Anbernic RG35XX H";
+ 	compatible = "anbernic,rg35xx-h", "allwinner,sun50i-h700";
+ 
+-	adc-joystick {
++	RGxx-adc-joystick {
+ 		compatible = "adc-joystick";
+ 		io-channels = <&adc_mux 0>,
+ 			      <&adc_mux 1>,
+@@ -34,7 +34,7 @@
+ 			reg = <1>;
+ 			abs-flat = <32>;
+ 			abs-fuzz = <32>;
+-			abs-range = <0 4096>;
++			abs-range = <4096 0>;
+ 			linux,code = <ABS_Y>;
+ 		};
+ 
+@@ -50,7 +50,7 @@
+ 			reg = <3>;
+ 			abs-flat = <32>;
+ 			abs-fuzz = <32>;
+-			abs-range = <4096 0>;
++			abs-range = <0 4096>;
+ 			linux,code = <ABS_RY>;
+ 		};
+ 	};

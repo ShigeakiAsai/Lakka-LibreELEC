@@ -1,0 +1,12 @@
+diff -uNr a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts	2026-07-31 18:35:07.430696100 +0900
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts	2026-07-31 21:55:25.461308356 +0900
+@@ -53,7 +53,7 @@
+ 		};
+ 	};
+ 
+-	gpio_keys_gamepad: gpio-keys-gamepad {
++	gpio_keys_gamepad: RGxx-gpio-keys-gamepad {
+ 		compatible = "gpio-keys";
+ 
+ 		button-a {
