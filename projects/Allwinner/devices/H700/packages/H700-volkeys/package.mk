@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024-present Team LibreELEC (https://libreelec.tv)
+
+PKG_NAME="H700-volkeys"
+PKG_VERSION="0.1"
+PKG_ARCH="any"
+PKG_LICENSE="OSS"
+PKG_DEPENDS_TARGET="toolchain eventservice"
+PKG_LONGDESC="H700-volkeys: Service that handlers volume keys in ANBERNIC RG35xx/RG28xx/RG40xx series platforms"
+PKG_TOOLCHAIN="manual"
+
+post_install() {  
+  enable_service H700-volkeys.service
+}
