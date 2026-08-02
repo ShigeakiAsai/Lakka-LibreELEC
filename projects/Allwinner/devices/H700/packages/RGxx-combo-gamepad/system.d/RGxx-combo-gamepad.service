@@ -1,0 +1,15 @@
+[Unit]
+Description=Merge RGxx-adc-joystick and RGxx-gpio-keys-gamepad into RGxx-combo-gamepad
+After=dev-input-by\x2dpath-platform\x2dRGxx\x2dadc\x2djoystick\x2devent\x2djoystick.device
+BindsTo=dev-input-by\x2dpath-platform\x2dRGxx\x2dadc\x2djoystick\x2devent\x2djoystick.device
+Before=retroarch.service
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/evsieve \
+  --input /dev/input/by-path/platform-RGxx-adc-joystick-event-joystick grab persist=reopen \
+  --input /dev/input/by-path/platform-RGxx-gpio-keys-gamepad-event-joystick grab persist=reopen \
+  --output name="RGxx-combo-gamepad"
+ExecStartPost=/bin/sh -c 'udevadm control --property=RGXX_COMBO_ACTIVE=1 && udevadm trigger --action=change --name-match=/dev/input/by-path/platform-RGxx-gpio-keys-gamepad-event-joystick'
+Restart=on-failure
+RestartSec=2

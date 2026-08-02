@@ -1,0 +1,9 @@
+# Only hide gpio-keys-gamepad once RGxx-combo-gamepad.service has confirmed
+# it is up and running (see ExecStartPost in RGxx-combo-gamepad.service).
+# On non-analog models this env var is never set, so gpio-keys-gamepad
+# remains visible to RetroArch as the sole controller, as before.
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="RGxx-gpio-keys-gamepad", ENV{RGXX_COMBO_ACTIVE}=="1", ENV{ID_INPUT_JOYSTICK}="0"
+
+# Trigger RGxx-combo-gamepad.service once the adc-joystick device appears,
+# so evsieve creates the merged virtual gamepad before RetroArch starts.
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="RGxx-adc-joystick", TAG+="systemd", ENV{SYSTEMD_WANTS}+="RGxx-combo-gamepad.service"
