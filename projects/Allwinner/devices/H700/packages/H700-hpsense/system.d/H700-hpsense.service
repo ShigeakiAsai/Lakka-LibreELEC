@@ -1,0 +1,11 @@
+[Unit]
+Description=ANBERNIC RG 28/34/35/40/Cube XX series headphone sense service
+Before=retroarch.target
+
+[Service]
+Environment=HOME=/storage
+ExecStart=/usr/bin/headphone-sense 'H616 Audio Codec Headphone Jack'
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
