@@ -1,0 +1,37 @@
+diff -uNr a/Makefile.common b/Makefile.common
+--- a/Makefile.common	2026-08-02 10:40:21.572844000 +0900
++++ b/Makefile.common	2026-08-03 15:53:16.465090506 +0900
+@@ -2774,6 +2774,10 @@
+          gfx/drivers/oga_gfx.o
+ endif
+ 
++ifeq ($(HAVE_H700), 1)
++  DEFINES += -DHAVE_H700
++endif
++
+ ifeq ($(HAVE_GAME_AI),1)
+    DEFINES += -DHAVE_GAME_AI
+    OBJ += ai/game_ai.o
+diff -uNr a/frontend/drivers/platform_unix.c b/frontend/drivers/platform_unix.c
+--- a/frontend/drivers/platform_unix.c	2026-07-29 12:24:13.000000000 +0900
++++ b/frontend/drivers/platform_unix.c	2026-08-03 12:58:57.329430276 +0900
+@@ -3250,7 +3250,7 @@
+ #else
+    NULL,                               /* get_lakka_version */
+ #endif
+-#if defined(HAVE_LAKKA_SWITCH) || (defined(HAVE_LAKKA) && defined(HAVE_ODROIDGO2))
++#if defined(HAVE_LAKKA_SWITCH) || (defined(HAVE_LAKKA) && defined(HAVE_ODROIDGO2)) || (defined(HAVE_LAKKA) && defined(HAVE_H700))
+    frontend_unix_set_screen_brightness,/* set_screen_brightness */
+ #else
+    NULL,                         /* set_screen_brightness */
+diff -uNr a/qb/config.params.sh b/qb/config.params.sh
+--- a/qb/config.params.sh	2026-07-29 12:24:13.000000000 +0900
++++ b/qb/config.params.sh	2026-08-03 12:55:48.059976460 +0900
+@@ -202,6 +202,7 @@
+ HAVE_STEAM=no              # Enable Steam build
+ HAVE_MIST=no               # Enable Steam build w/ mist
+ HAVE_ODROIDGO2=no          # ODROID-GO Advance rotation support (requires librga)
++HAVE_H700=no               # ANBERNIC RGxx series backlight brightness support
+ HAVE_LIBSHAKE=no           # libShake haptic feedback support
+ HAVE_CHECK=no              # check support for unit tests
+ HAVE_WIFI=no               # wifi driver support
