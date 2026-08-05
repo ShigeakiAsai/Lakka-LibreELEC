@@ -375,8 +375,8 @@ makeinstall_target() {
 
   # ANBERNIC RG XX series (Allwinner H700)
   if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H700" ]; then
-    sed -i ${ra_config} -e 's|^audio_out_rate = .*|audio_out_rate = "44100"|'
     sed -i ${ra_config} -e 's|^input_menu_toggle_btn = .*|input_menu_toggle_btn = "10"|'
+    sed -i ${ra_config} -e 's|^menu_scale_factor = .*|menu_scale_factor = "1.150000"|'
     sed -i ${ra_config} -e 's|^menu_widget_scale_auto = .*|menu_widget_scale_auto = "false"|'
     sed -i ${ra_config} -e 's|^menu_widget_scale_factor = .*|menu_widget_scale_factor = "1.750000"|'
     sed -i ${ra_config} -e 's|^network_cmd_enable = .*|network_cmd_enable = "true"|'
