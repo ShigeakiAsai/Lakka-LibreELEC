@@ -1,7 +1,6 @@
 [Unit]
 Description=Merge RGxx-adc-joystick and RGxx-gpio-keys-gamepad into RGxx-combo-gamepad
 After=dev-input-by\x2dpath-platform\x2dRGxx\x2dadc\x2djoystick\x2devent\x2djoystick.device
-BindsTo=dev-input-by\x2dpath-platform\x2dRGxx\x2dadc\x2djoystick\x2devent\x2djoystick.device
 Before=retroarch.service
 
 [Service]
