@@ -379,6 +379,7 @@ makeinstall_target() {
     sed -i ${ra_config} -e 's|^input_menu_toggle_btn = .*|input_menu_toggle_btn = "10"|'
     sed -i ${ra_config} -e 's|^menu_widget_scale_auto = .*|menu_widget_scale_auto = "false"|'
     sed -i ${ra_config} -e 's|^menu_widget_scale_factor = .*|menu_widget_scale_factor = "1.750000"|'
+    sed -i ${ra_config} -e 's|^network_cmd_enable = .*|network_cmd_enable = "true"|'
     sed -i ${ra_config} -e 's|^xmb_layout = .*|xmb_layout = "2"|'
   fi
 
