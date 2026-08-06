@@ -1,5 +1,5 @@
 PKG_NAME="b2"
-PKG_VERSION="b16e3a4a91fed4d6d2ccb227211119da7b39c8d1"
+PKG_VERSION="0cf266a848ddf5f1c5dbe11a2d58bbcbc58f2388"
 PKG_LICENSE="GPL-3.0"
 PKG_SITE="https://github.com/zoltanvb/b2-libretro"
 PKG_URL="${PKG_SITE}.git"
