@@ -1,5 +1,5 @@
 PKG_NAME="jumpnbump"
-PKG_VERSION="25efe413d2159177e54323fb0b9d34966ca019c9"
+PKG_VERSION="2cc840155ce4bf42b2e9e0ef3854b32d534e607e"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/jumpnbump-libretro"
 PKG_URL="${PKG_SITE}.git"
