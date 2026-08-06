@@ -1,5 +1,5 @@
 PKG_NAME="openlara"
-PKG_VERSION="5ddc6f7172d2984de6a979a29db295ab70826438"
+PKG_VERSION="e4ce52edec5a9a6ad22b69d08c687bf070e68876"
 PKG_LICENSE="BSD"
 PKG_SITE="https://github.com/libretro/openlara"
 PKG_URL="${PKG_SITE}.git"
