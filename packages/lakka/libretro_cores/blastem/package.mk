@@ -1,5 +1,5 @@
 PKG_NAME="blastem"
-PKG_VERSION="277e4a62668597d4f59cadda1cbafb844f981d45"
+PKG_VERSION="6775750cd33cf7ab5604b9297fb49800883e03b9"
 PKG_ARCH="x86_64 i386"
 PKG_LICENSE="GPL3"
 PKG_SITE="https://github.com/libretro/blastem"
