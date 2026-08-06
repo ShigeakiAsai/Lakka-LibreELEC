@@ -1,5 +1,5 @@
 PKG_NAME="clownmdemu"
-PKG_VERSION="64d2df1e434994344963b6347a1f1c171148aad8"
+PKG_VERSION="935d6fc060eb82172dac29e880fe9b877fbdb640"
 PKG_LICENSE="AGPLv3"
 PKG_SITE="https://github.com/Clownacy/clownmdemu-libretro"
 PKG_URL="${PKG_SITE}.git"
