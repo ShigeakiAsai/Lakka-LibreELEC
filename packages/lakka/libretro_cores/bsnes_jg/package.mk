@@ -1,5 +1,5 @@
 PKG_NAME="bsnes_jg"
-PKG_VERSION="8e26744ae99e4d70131eb5b556ef075bc8c207da"
+PKG_VERSION="aedc27e367b65f002afb5098684f39eb6124079c"
 PKG_LICENSE="GPL-3.0"
 PKG_SITE="https://github.com/libretro/bsnes-jg"
 PKG_URL="${PKG_SITE}.git"
