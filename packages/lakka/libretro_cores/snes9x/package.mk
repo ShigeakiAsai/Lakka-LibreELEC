@@ -1,5 +1,5 @@
 PKG_NAME="snes9x"
-PKG_VERSION="185488cd83aaf274752a742c94d45561cbecb7af"
+PKG_VERSION="44bcb330d8e90b704238feb96edca4ed9398e04b"
 PKG_LICENSE="Non-commercial"
 PKG_SITE="https://github.com/libretro/snes9x"
 PKG_URL="${PKG_SITE}.git"
