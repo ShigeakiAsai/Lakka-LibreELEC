@@ -1,5 +1,5 @@
 PKG_NAME="virtualxt"
-PKG_VERSION="1f074e7c3f32d2c523d730d51b9f974c65e530e7"
+PKG_VERSION="ed177f5fb4f54d099bc217281930265ae1de9eca"
 PKG_LICENSE="zlib"
 PKG_SITE="https://codeberg.org/virtualxt/virtualxt"
 PKG_URL="${PKG_SITE}.git"
