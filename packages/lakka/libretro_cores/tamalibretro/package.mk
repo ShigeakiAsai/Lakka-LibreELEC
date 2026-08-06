@@ -1,5 +1,5 @@
 PKG_NAME="tamalibretro"
-PKG_VERSION="bc9a5e6a28758824a90de193f04b32d58b23e3f3"
+PKG_VERSION="ea8dd612eaab375a04f976149dc693cb5d208b27"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/celerizer/tamalibretro"
 PKG_URL="${PKG_SITE}.git"
