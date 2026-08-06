@@ -1,5 +1,5 @@
 PKG_NAME="imame4all"
-PKG_VERSION="cee538f9b28f00039f298cb3c2b588203f07d0be"
+PKG_VERSION="f099ba44c7664906fd7e01cbed89d13a7e32dee1"
 PKG_LICENSE="MAME"
 PKG_SITE="https://github.com/libretro/imame4all-libretro"
 PKG_URL="${PKG_SITE}.git"
