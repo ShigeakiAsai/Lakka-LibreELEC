@@ -1,5 +1,5 @@
 PKG_NAME="geargrafx"
-PKG_VERSION="c4b8b8eab4427ebfe4a5f08af8b349ff3b4a21bc"
+PKG_VERSION="44353a2f4fee79463ec95c622c4b8509de964f44"
 PKG_LICENSE="GPL-3.0"
 PKG_SITE="https://github.com/drhelius/Geargrafx"
 PKG_URL="${PKG_SITE}.git"
