@@ -52,5 +52,8 @@ makeinstall_target() {
       echo "hdmi_max_pixel_freq:0=200000000" >> ${INSTALL}/usr/share/bootloader/distroconfig.txt
       echo "hdmi_max_pixel_freq:1=200000000" >> ${INSTALL}/usr/share/bootloader/distroconfig.txt
       echo "force_turbo=0" >> ${INSTALL}/usr/share/bootloader/config.txt
+      if [ "${DEVICE}" = "RPi3-Composite" ] || [ "${DEVICE}" = "RPi4-Composite" ]; then
+        echo "dtparam=krnbt=on" >> ${INSTALL}/usr/share/bootloader/distroconfig.txt
+      fi
     fi
 }
