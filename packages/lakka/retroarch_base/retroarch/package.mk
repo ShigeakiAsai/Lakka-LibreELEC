@@ -3,7 +3,7 @@ PKG_VERSION="be3ec365825d24b8b5ce1c2bdfbd28a4f954bf7c"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="${PKG_SITE}.git"
-PKG_DEPENDS_TARGET="toolchain freetype zlib ffmpeg libass libxkbcommon glsl_shaders slang_shaders systemd libpng fontconfig SDL3_input"
+PKG_DEPENDS_TARGET="toolchain freetype zlib ffmpeg libass libxkbcommon glsl_shaders slang_shaders systemd libpng fontconfig SDL3"
 PKG_LONGDESC="Reference frontend for the libretro API."
 # PKG_LR_UPDATE_TAG="yes"
 
