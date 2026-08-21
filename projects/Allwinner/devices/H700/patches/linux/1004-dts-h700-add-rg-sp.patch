@@ -1,0 +1,57 @@
+diff -uNr a/arch/arm64/boot/dts/allwinner/Makefile b/arch/arm64/boot/dts/allwinner/Makefile
+--- a/arch/arm64/boot/dts/allwinner/Makefile	2026-08-19 22:02:32.415424400 +0900
++++ b/arch/arm64/boot/dts/allwinner/Makefile	2026-08-21 21:14:51.452715091 +0900
+@@ -69,6 +69,8 @@
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg40xx-v.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg40xx-v-v2-panel.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rgcubexx.dtb
++dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg-sp.dtb
++dtb-$(CONFIG_ARCH_SUNXI) += sun50i-h700-anbernic-rg-sp-lpddr3.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun55i-a527-cubie-a5e.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun55i-h728-x96qpro+.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun55i-t527-avaota-a1.dtb
+diff -uNr a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg-sp-lpddr3.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg-sp-lpddr3.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg-sp-lpddr3.dts	1970-01-01 09:00:00.000000000 +0900
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg-sp-lpddr3.dts	2026-08-21 21:12:10.041970303 +0900
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ * Copyright (C) 2024 Ryan Walklin <ryan@testtoast.com>.
++ * Copyright (C) 2024 Chris Morgan <macroalpha82@gmail.com>.
++ */
++
++#include "sun50i-h700-anbernic-rg35xx-sp.dts"
++
++/ {
++	model = "Anbernic RG-SP";
++	compatible = "anbernic,rg-sp", "allwinner,sun50i-h700";
++};
++
++&panel {
++	compatible = "anbernic,rg34xx-sp-v2-panel", "panel-mipi-dpi-spi";
++};
++
++&reg_dcdc3 {
++	regulator-min-microvolt = <1200000>;
++	regulator-max-microvolt = <1200000>;
++};
+diff -uNr a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg-sp.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg-sp.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg-sp.dts	1970-01-01 09:00:00.000000000 +0900
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg-sp.dts	2026-08-21 16:45:11.636198600 +0900
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ * Copyright (C) 2024 Ryan Walklin <ryan@testtoast.com>.
++ * Copyright (C) 2024 Chris Morgan <macroalpha82@gmail.com>.
++ */
++
++#include "sun50i-h700-anbernic-rg35xx-sp.dts"
++
++/ {
++	model = "Anbernic RG-SP";
++	compatible = "anbernic,rg-sp", "allwinner,sun50i-h700";
++};
++
++&panel {
++	compatible = "anbernic,rg34xx-sp-v2-panel", "panel-mipi-dpi-spi";
++};
