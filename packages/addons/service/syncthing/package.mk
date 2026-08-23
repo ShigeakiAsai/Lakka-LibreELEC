@@ -1,12 +1,12 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="syncthing"
-PKG_VERSION="2.0.16"
-PKG_SHA256="f93836f943967c8fe608e90fd6dc2c419ce00cfa0ca5266caa86c22ae290f169"
-PKG_REV="0"
+PKG_VERSION="2.1.3"
+PKG_SHA256="f34bc1b3219e02ac1eca0b1446f582af8fe13f789da5f8c679ba9cac0396bf81"
+PKG_REV="4"
 PKG_ARCH="any"
-PKG_LICENSE="MPLv2"
+PKG_LICENSE="MPL-2.0"
 PKG_SITE="https://syncthing.net/"
 PKG_URL="https://github.com/syncthing/syncthing/releases/download/v${PKG_VERSION}/syncthing-source-v${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain go:host"

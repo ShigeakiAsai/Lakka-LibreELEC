@@ -3,10 +3,10 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libva"
-PKG_VERSION="2.23.0"
-PKG_SHA256="b10aceb30e93ddf13b2030eb70079574ba437be9b3b76065caf28a72c07e23e7"
+PKG_VERSION="2.24.1"
+PKG_SHA256="0b4a3649ee8d683b9cce2ef094df4fb039d276c0cef7e49337c43d3b297b9f42"
 PKG_ARCH="x86_64"
-PKG_LICENSE="GPL"
+PKG_LICENSE="MIT"
 PKG_SITE="https://01.org/linuxmedia"
 PKG_URL="https://github.com/intel/libva/archive/${PKG_VERSION}.tar.gz"
 PKG_LONGDESC="Libva is an implementation for VA-API (VIdeo Acceleration API)."

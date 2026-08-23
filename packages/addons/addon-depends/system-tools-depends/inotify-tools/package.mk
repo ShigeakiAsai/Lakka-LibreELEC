@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="inotify-tools"
 PKG_VERSION="4.25.9.0"
 PKG_SHA256="d33a4fd24c72c2d08893f129d724adf725b93dae96c359e4f4e9f32573cc853b"
-PKG_LICENSE="GPLv2"
+PKG_LICENSE="GPL-2.0-only"
 PKG_SITE="http://wiki.github.com/inotify-tools/inotify-tools/"
 PKG_URL="https://github.com/inotify-tools/inotify-tools/archive/${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain"

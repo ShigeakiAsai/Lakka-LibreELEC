@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="opus"
 PKG_VERSION="1.6.1"
 PKG_SHA256="6ffcb593207be92584df15b32466ed64bbec99109f007c82205f0194572411a1"
-PKG_LICENSE="BSD"
+PKG_LICENSE="BSD-3-Clause"
 PKG_SITE="http://www.opus-codec.org"
 PKG_URL="https://ftp.osuosl.org/pub/xiph/releases/opus/${PKG_NAME}-${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain"

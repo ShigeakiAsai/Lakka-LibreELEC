@@ -1,14 +1,14 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2021-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="nvidia"
-PKG_VERSION="580.142"
-PKG_SHA256="fb218f6e99ff16f2a0a8188e6fa53d820138dad8b7735626948e5d8907c90565"
+PKG_VERSION="580.178.04"
+PKG_SHA256="1833c8c5c53481dfab46df442c3de26ec5d4c35084e03d94ad93746d29899750"
 PKG_ARCH="x86_64"
-PKG_LICENSE="nonfree"
+PKG_LICENSE="LicenseRef-nonfree"
 PKG_SITE="https://www.nvidia.com/en-us/drivers/unix/"
 PKG_URL="http://us.download.nvidia.com/XFree86/Linux-x86_64/${PKG_VERSION}/NVIDIA-Linux-x86_64-${PKG_VERSION}-no-compat32.run"
-PKG_DEPENDS_TARGET="toolchain util-macros libglvnd nvidia_egl-gbm"
+PKG_DEPENDS_TARGET="toolchain util-macros libglvnd"
 PKG_LONGDESC="The GBM/Wayland graphic driver for NVIDIA GPUs supporting the GeForce 700 Series & above."
 PKG_TOOLCHAIN="manual"
 
@@ -63,6 +63,15 @@ makeinstall_target() {
 
   mkdir -p ${INSTALL}/usr/share/egl/egl_external_platform.d
     cp -p 10_nvidia_wayland.json ${INSTALL}/usr/share/egl/egl_external_platform.d
+
+  # EGL-GBM
+  mkdir -p ${INSTALL}/usr/lib
+    cp -p libnvidia-egl-gbm.so.1.1.3 ${INSTALL}/usr/lib/
+    ln -sf libnvidia-egl-gbm.so.1.1.3 ${INSTALL}/usr/lib/libnvidia-egl-gbm.so.1
+    ln -sf libnvidia-egl-gbm.so.1 ${INSTALL}/usr/lib/libnvidia-egl-gbm.so
+
+  mkdir -p ${INSTALL}/usr/share/egl/egl_external_platform.d
+    cp -p 15_nvidia_gbm.json ${INSTALL}/usr/share/egl/egl_external_platform.d
 
   # OpenGL / EGL
   mkdir -p ${INSTALL}/usr/lib
@@ -119,6 +128,8 @@ makeinstall_target() {
   # NVIDIA Management Library (NVML) / System Management Interface
   mkdir -p ${INSTALL}/usr/bin
     cp -P nvidia-smi ${INSTALL}/usr/bin
+    # fake nvidia-modprobe
+    ln -s /usr/bin/false ${INSTALL}/usr/bin/nvidia-modprobe
 
   mkdir -p ${INSTALL}/usr/lib
     cp -P libnvidia-ml.so.${PKG_VERSION}  ${INSTALL}/usr/lib

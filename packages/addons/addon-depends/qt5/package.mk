@@ -2,9 +2,9 @@
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="qt5"
-PKG_VERSION="5.15.18"
-PKG_SHA256="cea1fbabf02455f3f0e8eaa839f5d6f45cdb56b62c8a83af5c1d00ac05f912ea"
-PKG_LICENSE="GPL"
+PKG_VERSION="5.15.19"
+PKG_SHA256="173c2326dae138bbb0d98921e9d911e55c00163d93a6db29f294b5e19ff306ae"
+PKG_LICENSE="LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only"
 PKG_SITE="https://qt-project.org"
 PKG_URL="https://download.qt.io/archive/qt/${PKG_VERSION%.*}/${PKG_VERSION}/single/qt-everywhere-opensource-src-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="freetype libjpeg-turbo libpng openssl sqlite zlib"
@@ -12,8 +12,7 @@ PKG_LONGDESC="A cross-platform application and UI framework."
 PKG_BUILD_FLAGS="-sysroot"
 
 PKG_CONFIGURE_OPTS_TARGET="-prefix /usr
-                           -sysroot "${SYSROOT_PREFIX}"
-                           -hostprefix "${TOOLCHAIN}"
+                           -hostprefix /usr/host
                            -device linux-libreelec-g++
                            -opensource -confirm-license
                            -release
@@ -139,4 +138,8 @@ EOF
 
   unset CC CXX LD RANLIB AR AS CPPFLAGS CFLAGS LDFLAGS CXXFLAGS
   ./configure ${PKG_CONFIGURE_OPTS_TARGET}
+}
+
+makeinstall_target() {
+  make install INSTALL_ROOT="${INSTALL}"
 }

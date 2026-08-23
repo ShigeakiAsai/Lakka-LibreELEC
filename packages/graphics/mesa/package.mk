@@ -3,12 +3,12 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="mesa"
-PKG_VERSION="26.1.0"
-PKG_SHA256="a5095e6dc2986c78f0cef4c5555dc803e93b6bfe5670e991f9e8bd49395bae19"
-PKG_LICENSE="OSS"
+PKG_VERSION="26.2.1"
+PKG_SHA256="c47e81bddc4760360a41ac3c5acec38acb81f9d750ecef47e7f3adc7021a4442"
+PKG_LICENSE="MIT"
 PKG_SITE="http://www.mesa3d.org/"
 PKG_URL="https://mesa.freedesktop.org/archive/mesa-${PKG_VERSION}.tar.xz"
-PKG_DEPENDS_HOST="toolchain:host expat:host libclc:host libdrm:host Mako:host pyyaml:host spirv-tools:host"
+PKG_DEPENDS_HOST="toolchain:host expat:host libclc:host libdrm:host llvm:host Mako:host pyyaml:host spirv-tools:host"
 PKG_DEPENDS_TARGET="toolchain expat libdrm Mako:host pyyaml:host"
 PKG_LONGDESC="Mesa is a 3-D graphics library with an API."
 
@@ -22,7 +22,7 @@ PKG_MESON_OPTS_HOST="-Dglvnd=disabled \
                      -Dgallium-drivers= \
                      -Dplatforms= \
                      -Dglx=disabled \
-                     -Dvulkan-drivers= \
+                     -Dvulkan-drivers=imagination \
                      -Dshared-llvm=disabled \
                      -Dtools=panfrost \
                      -Dvideo-codecs= \
@@ -31,7 +31,8 @@ PKG_MESON_OPTS_HOST="-Dglvnd=disabled \
                      -Dmesa-clc=enabled \
                      -Dinstall-mesa-clc=true \
                      -Dprecomp-compiler=enabled \
-                     -Dinstall-precomp-compiler=true"
+                     -Dinstall-precomp-compiler=true \
+                     -Dimagination-srv=false"
 
 PKG_MESON_OPTS_TARGET="-Dgallium-drivers=${GALLIUM_DRIVERS// /,} \
                        -Dgallium-extra-hud=false \
@@ -85,7 +86,12 @@ else
   PKG_MESON_OPTS_TARGET+=" -Ddraw-use-llvm=false"
 fi
 
-if listcontains "${GRAPHIC_DRIVERS}" "(iris|panfrost)"; then
+if listcontains "${GRAPHIC_DRIVERS}" "imagination"; then
+  PKG_DEPENDS_TARGET+=" spirv-tools"
+  PKG_MESON_OPTS_TARGET+=" -Dimagination-srv=true"
+fi
+
+if listcontains "${GRAPHIC_DRIVERS}" "(imagination|iris|panfrost)"; then
   if [ "${USE_REUSABLE}" = "yes" ]; then
     PKG_DEPENDS_TARGET+=" mesa-reusable"
   else
@@ -114,7 +120,7 @@ fi
 if [ "${VAAPI_SUPPORT}" = "yes" ] && listcontains "${GRAPHIC_DRIVERS}" "(r600|radeonsi)"; then
   PKG_DEPENDS_TARGET+=" libva"
   PKG_MESON_OPTS_TARGET+=" -Dgallium-va=enabled \
-                           -Dvideo-codecs=vc1dec,h264dec,h264enc,h265dec,h265enc,av1dec,av1enc,vp9dec"
+                           -Dvideo-codecs=mpeg12dec,vc1dec,h264dec,h264enc,h265dec,h265enc,av1dec,av1enc,vp9dec"
 else
   PKG_MESON_OPTS_TARGET+=" -Dgallium-va=disabled"
 fi
@@ -147,7 +153,10 @@ post_makeinstall_target() {
 }
 
 makeinstall_host() {
-  host_files="src/compiler/clc/mesa_clc src/compiler/spirv/vtn_bindgen2 src/panfrost/clc/panfrost_compile"
+  host_files="src/compiler/clc/mesa_clc \
+              src/compiler/spirv/vtn_bindgen2 \
+              src/imagination/pco/uscgen/pco_clc \
+              src/panfrost/clc/panfrost_compile"
 
   if listcontains "${BUILD_REUSABLE}" "(all|mesa:host)"; then
     # Build the reusable mesa:host for both local and to be added to a GitHub release

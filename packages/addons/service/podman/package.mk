@@ -2,7 +2,7 @@
 # Copyright (C) 2023-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="podman"
-PKG_REV="0"
+PKG_REV="8"
 PKG_ARCH="any"
 PKG_LICENSE="Apache-2.0"
 PKG_SITE="https://podman.io"
@@ -14,6 +14,9 @@ PKG_TOOLCHAIN="manual"
 
 PKG_IS_ADDON="yes"
 PKG_ADDON_NAME="Podman"
+PKG_ADDON_ICON_NAME="none"
+PKG_ADDON_ICON_SIZE="300"
+PKG_ADDON_ICON_OFFSET='+5'
 PKG_ADDON_TYPE="xbmc.service"
 
 addon() {

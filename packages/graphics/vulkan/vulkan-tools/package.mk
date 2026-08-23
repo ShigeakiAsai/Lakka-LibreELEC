@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2018-present Frank Hartung (supervisedthinking (@) gmail.com)
 # Copyright (C) 2021-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="vulkan-tools"
-PKG_VERSION="1.4.351"
-PKG_SHA256="7eeff90a76f82b2a94eac0515ce8dbf0b8f7bf9199b1cd04d70ec44af3bf07ea"
+PKG_VERSION="1.4.360"
+PKG_SHA256="2f72ac601772bbf7928b2db93f8d95cbfc21adc0859bb12f379030e65cb9359a"
 PKG_LICENSE="Apache-2.0"
 PKG_SITE="https://github.com/KhronosGroup/Vulkan-Tools"
 PKG_URL="https://github.com/KhronosGroup/Vulkan-tools/archive/v${PKG_VERSION}.tar.gz"

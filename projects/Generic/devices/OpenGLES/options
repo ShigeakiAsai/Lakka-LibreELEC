@@ -1,0 +1,46 @@
+################################################################################
+# setup device defaults
+################################################################################
+
+  # OpenGL implementation to use (no / mesa)
+    OPENGL="no"
+
+  # OpenGL ES implementation to use (no / mesa)
+    OPENGLES="mesa"
+
+  # Vulkan implementation to use (vulkan-loader / no)
+    VULKAN="no"
+
+  # Displayserver to use (weston / x11 / no)
+    DISPLAYSERVER="no"
+
+  # Windowmanager to use (fluxbox / weston / no)
+    WINDOWMANAGER="no"
+
+  # KODI Player implementation to use (default / mesa)
+    KODIPLAYER_DRIVER="mesa"
+
+  # set the addon project
+    ADDON_PROJECT="Generic"
+
+  # Graphic drivers to use
+    GRAPHIC_DRIVERS="crocus i915 iris nvidia-ng r300 r600 radeonsi vmware virtio"
+
+  # Overrides for Lakka
+    if [ "${DISTRO}" = "Lakka" ]; then
+      # Use OPENGL instead of OPENGLES
+        OPENGL="mesa"
+        OPENGLES="no"
+
+      # Enable VULKAN
+        if [ "${ARCH}" = "x86_64" ]; then
+          VULKAN="vulkan-loader"
+        fi
+
+      # Disable vmware and virtio drivers
+        GRAPHIC_DRIVERS="${GRAPHIC_DRIVERS//vmware/}"
+        GRAPHIC_DRIVERS="${GRAPHIC_DRIVERS//virtio/}"
+
+      # add nouveau driver
+        GRAPHIC_DRIVERS+=" nouveau"
+    fi

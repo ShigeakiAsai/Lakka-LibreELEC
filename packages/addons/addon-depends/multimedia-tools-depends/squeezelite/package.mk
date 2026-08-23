@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="squeezelite"
-PKG_VERSION="39fe3c8b1dd4e852fd8410bc480d7d709056859d"
-PKG_SHA256="932c3be04df49c4c9402b0deb2e1406132ba3fd063f6d28106e1e7f2a1b3fc35"
-PKG_LICENSE="GPLv3"
+PKG_VERSION="c7c4248ddd70e47dbfeba0bf4a8a7ec08d8a995c"
+PKG_SHA256="734b8110c35a41b65c54eb033d1d636f65bafc2f7ff070d288b0656147041d01"
+PKG_LICENSE="GPL-3.0-or-later"
 PKG_SITE="https://github.com/ralph-irving/squeezelite"
 PKG_URL="https://github.com/ralph-irving/squeezelite/archive/${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain faad2 ffmpeg flac libmad libvorbis mpg123 soxr libogg"

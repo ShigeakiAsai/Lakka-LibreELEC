@@ -49,7 +49,10 @@ def get_display_config_setting() -> str | None:
             return '1280x720'
         case 999:
             custom = addon.getSettingString('customdisplayconfig')
-            if custom is None or custom.strip() == '':
+            if custom is None:
+                return None
+            custom = custom.strip()
+            if custom == '':
                 return None
             else:
                 return custom
@@ -62,9 +65,7 @@ def get_kodi_keyboard_layout() -> str | None:
     return get_kodi_setting('input.libinputkeyboardlayout')
 
 
-def get_kodi_audio_device() -> str | None:
-    device = get_kodi_setting('audiooutput.audiodevice')
-
+def translate_kodi_audio_device(device: str | None) -> str | None:
     if device is None:
         return None
 
@@ -74,15 +75,48 @@ def get_kodi_audio_device() -> str | None:
         return device
     elif device.startswith('ALSA:'):
         alsadev = device[5:]
-        if alsadev.startswith('@'):
+        if alsadev == '@' or alsadev == '@:':
             return 'ALSA:sysdefault'
+        elif alsadev.startswith('@:'):
+            devpos = alsadev.find(',DEV=')
+            if devpos >= 0:
+                dev = alsadev[2:devpos]
+            else:
+                dev = alsadev[2:]
+            if len(dev) > 0:
+                return f'ALSA:sysdefault:{dev}'
+            else:
+                return 'ALSA:sysdefault'
         else:
             return device
     else:
         return 'ALSA:sysdefault'
 
 
-def run_external_program(executable: str, args: list | None = None, env: dict | None = None, name: str = '') -> bool:
+def get_kodi_audio_device() -> str | None:
+    device = get_kodi_setting('audiooutput.audiodevice')
+    translated_device = translate_kodi_audio_device(device)
+    xbmc.log(f'audio device {device} translated to {translated_device}', xbmc.LOGDEBUG)
+    return translated_device
+
+
+def get_audio_device() -> str | None:
+    if addon.getSettingBool('customaudio'):
+        audiodev = addon.getSettingString('customaudiodevice')
+        if audiodev is None:
+            return None
+        audiodev = audiodev.strip()
+        if audiodev.strip() == '':
+            return None
+        xbmc.log(f'using custom audio device {audiodev}')
+        return audiodev
+    else:
+        return get_kodi_audio_device()
+
+
+def run_external_program(
+    executable: str, args: list | None = None, env: dict | None = None, name: str = '', wayland: bool = True
+) -> bool:
     addon = xbmcaddon.Addon(ADDON_ID)
 
     if get_confirm_start_setting():
@@ -93,7 +127,7 @@ def run_external_program(executable: str, args: list | None = None, env: dict | 
 
     # try to determine keyboard layout
     layout = get_kodi_keyboard_layout()
-    audiodev = get_kodi_audio_device()
+    audiodev = get_audio_device()
     displayconfig = get_display_config_setting()
 
     environment = {}
@@ -104,6 +138,10 @@ def run_external_program(executable: str, args: list | None = None, env: dict | 
         environment['KODI_KEYBOARD_LAYOUT'] = layout
     if audiodev is not None:
         environment['KODI_AUDIO_DEVICE'] = audiodev
+    if wayland:
+        environment['KODI_EXTERNAL_SESSION'] = 'wayland'
+    else:
+        environment['KODI_EXTERNAL_SESSION'] = 'plain'
 
     if env is not None:
         environment.update(env)

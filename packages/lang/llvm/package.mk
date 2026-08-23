@@ -3,9 +3,9 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="llvm"
-PKG_VERSION="22.1.5"
-PKG_SHA256="7972b87b705a003ce70ab55f9f0fb495d156887cba0eb296d284731139118e2c"
-PKG_LICENSE="Apache-2.0"
+PKG_VERSION="22.1.8"
+PKG_SHA256="922f1817a0df7b1489272d18134ee0087a8b068828f87ac63b9861b1a9965888"
+PKG_LICENSE="Apache-2.0 WITH LLVM-exception"
 PKG_SITE="http://llvm.org/"
 PKG_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${PKG_VERSION}/llvm-project-${PKG_VERSION/-/}.src.tar.xz"
 PKG_DEPENDS_HOST="toolchain:host"
@@ -42,13 +42,13 @@ PKG_CMAKE_OPTS_COMMON="-DLLVM_INCLUDE_TOOLS=ON \
                        -DLLVM_ENABLE_Z3_SOLVER=OFF \
                        -DCMAKE_SKIP_RPATH=ON"
 
-if listcontains "${GRAPHIC_DRIVERS}" "(iris|panfrost)"; then
+if listcontains "${GRAPHIC_DRIVERS}" "(imagination|iris|panfrost)"; then
   PKG_DEPENDS_UNPACK="spirv-headers spirv-llvm-translator"
   PKG_CMAKE_OPTS_COMMON+=" -DLLVM_SPIRV_INCLUDE_TESTS=OFF"
 fi
 
 post_unpack() {
-  if listcontains "${GRAPHIC_DRIVERS}" "(iris|panfrost)"; then
+  if listcontains "${GRAPHIC_DRIVERS}" "(imagination|iris|panfrost)"; then
     mkdir -p "${PKG_BUILD}"/llvm/projects/{SPIRV-Headers,SPIRV-LLVM-Translator}
       tar --strip-components=1 \
         -xf "${SOURCES}/spirv-headers/spirv-headers-$(get_pkg_version spirv-headers).tar.gz" \
@@ -104,7 +104,11 @@ post_make_host() {
                       llvm-profdata llvm-readobj llvm-size llvm-strip \
                       llvm-tblgen opt
 
-  if listcontains "${GRAPHIC_DRIVERS}" "(iris|panfrost)"; then
+  if listcontains "${GRAPHIC_DRIVERS}" "imagination"; then
+    ninja ${NINJA_OPTS} clang-tblgen
+  fi
+
+  if listcontains "${GRAPHIC_DRIVERS}" "(imagination|iris|panfrost)"; then
     ninja ${NINJA_OPTS} llvm-spirv
   fi
 }
@@ -116,20 +120,41 @@ post_makeinstall_host() {
     cp -a bin/{llvm-profdata,llvm-readobj,llvm-size,llvm-strip} "${TOOLCHAIN}/bin"
     cp -a bin/{llvm-tblgen,opt} "${TOOLCHAIN}/bin"
 
-  if listcontains "${GRAPHIC_DRIVERS}" "(iris|panfrost)"; then
+  if listcontains "${GRAPHIC_DRIVERS}" "imagination"; then
+    cp -a bin/clang-tblgen "${TOOLCHAIN}/bin"
+  fi
+
+  if listcontains "${GRAPHIC_DRIVERS}" "(imagination|iris|panfrost)"; then
     cp -a bin/llvm-spirv "${TOOLCHAIN}/bin"
   fi
 }
 
 pre_configure_target() {
+  case "${TARGET_ARCH}" in
+    "aarch64")
+      LLVM_BUILD_TARGETS=""
+      LLVM_BUILD_CLANG="-DLLVM_ENABLE_PROJECTS=''"
+      ;;
+    "arm")
+      LLVM_BUILD_TARGETS=""
+      LLVM_BUILD_CLANG="-DLLVM_ENABLE_PROJECTS=''"
+      ;;
+    "x86_64")
+      LLVM_BUILD_TARGETS="AMDGPU"
+      # do not build clang (not needed)
+      # llvm:target is only required to build mesa amd on x86_64 targets
+      LLVM_BUILD_CLANG="-DLLVM_ENABLE_PROJECTS=''"
+      ;;
+  esac
+
   mkdir -p ${PKG_BUILD}/.${TARGET_NAME}
   cd ${PKG_BUILD}/.${TARGET_NAME}
   PKG_CMAKE_OPTS_TARGET="${PKG_CMAKE_OPTS_COMMON} \
                          -DCMAKE_BINARY_DIR=${PKG_BUILD}/.${TARGET_NAME} \
                          -DLLVM_NATIVE_BUILD=${PKG_BUILD}/.${TARGET_NAME}/native \
                          -DCMAKE_CROSSCOMPILING=ON \
-                         -DLLVM_ENABLE_PROJECTS='' \
-                         -DLLVM_TARGETS_TO_BUILD=AMDGPU \
+                         ${LLVM_BUILD_CLANG} \
+                         -DLLVM_TARGETS_TO_BUILD=${LLVM_BUILD_TARGETS} \
                          -DLLVM_TARGET_ARCH="${TARGET_ARCH}" \
                          -DLLVM_TABLEGEN=${TOOLCHAIN}/bin/llvm-tblgen"
 }

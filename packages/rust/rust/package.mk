@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="rust"
-PKG_VERSION="1.95.0"
-PKG_SHA256="ea9b82a83e46967537c3569ce9d6fa16811c043a96e651376c349e70241ca515"
-PKG_LICENSE="MIT"
+PKG_VERSION="1.98.0"
+PKG_SHA256="b226aef375ffbe9fbe2b85fde996b50716d59d55268e240d052396534b75e929"
+PKG_LICENSE="MIT OR Apache-2.0"
 PKG_SITE="https://www.rust-lang.org"
 PKG_URL="https://static.rust-lang.org/dist/rustc-${PKG_VERSION}-src.tar.gz"
 PKG_DEPENDS_HOST="toolchain llvm:host"
@@ -21,7 +21,7 @@ pre_configure_host() {
 configure_host() {
 
   cat >${PKG_BUILD}/config.toml  <<END
-change-id = 148671
+change-id = 158169
 
 [llvm]
 download-ci-llvm = false

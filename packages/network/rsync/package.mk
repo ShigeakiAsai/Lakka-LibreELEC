@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="rsync"
-PKG_VERSION="3.4.2"
-PKG_SHA256="ff10aa2c151cd4b2dbbe6135126dbc854046113d2dfb49572a348233267eb315"
-PKG_LICENSE="GPLv3"
+PKG_VERSION="3.5.0"
+PKG_SHA256="c7ffd1ef653e99540f661e47cb00b7f9cad1ee6b972399b16f93d672656e0d33"
+PKG_LICENSE="GPL-3.0-or-later"
 PKG_SITE="https://rsync.samba.org"
 PKG_URL="https://download.samba.org/pub/rsync/src/${PKG_NAME}-${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_HOST="autotools:host zlib:host"

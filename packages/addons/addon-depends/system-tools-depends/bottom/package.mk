@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2020-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="bottom"
-PKG_VERSION="0.12.3"
-PKG_SHA256="1c70894f0eceb7034075959ff3080cf4706c11d7c012912c24e777abe4e62b70"
+PKG_VERSION="0.14.8"
+PKG_SHA256="be10adada9ec1e5dd741dcb5581c4e0ebd45cb5bdae213dd296b29511363a770"
 PKG_LICENSE="MIT"
 PKG_SITE="https://github.com/ClementTsang/bottom"
 PKG_URL="https://github.com/ClementTsang/bottom/archive/${PKG_VERSION}.tar.gz"

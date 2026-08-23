@@ -3,7 +3,7 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="linux"
-PKG_LICENSE="GPL"
+PKG_LICENSE="GPL-2.0-only"
 PKG_SITE="http://www.kernel.org"
 PKG_DEPENDS_HOST="ccache:host"
 PKG_DEPENDS_TARGET="linux:host kmod:host keyutils openssl:host ${KERNEL_EXTRA_DEPENDS_TARGET}"
@@ -16,15 +16,15 @@ PKG_PATCH_DIRS="${LINUX}"
 
 case "${LINUX}" in
   amlogic)
-    PKG_VERSION="3fd2ca34a3e7d1f52e7deaa27016379935ae0845" # 7.0.5
-    PKG_SHA256="1792c76670b88dde9f46652f70d4e04c599ba732aac66c8b687605a8094d95f6"
+    PKG_VERSION="8d3ae59288f1e7d58d76558a6ee96d533bc5019f" # 7.2.0
+    PKG_SHA256="2aa2222302771165aa398c30bf66aca1a2433dd1a3b36db43e7157689a090a97"
     PKG_URL="https://github.com/torvalds/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     PKG_PATCH_DIRS="default dvb"
     ;;
   raspberrypi)
-    PKG_VERSION="5558a45b5dabb42bf2fb6865a910af7d6d2a21b1" # 6.18.21
-    PKG_SHA256="6655c12dafd63a8f5a93fb7123d5a0e485315e288278b99a6ea580feda4588ac"
+    PKG_VERSION="846462aa452708cd2d3528b6a8141e560919fc1c" # 6.18.44
+    PKG_SHA256="46e94cc270150be7c971b2016bd57ca752d4794c9cd6b452b7c627f750eaeaad"
     PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     PKG_PATCH_DIRS="raspberrypi"
@@ -68,8 +68,8 @@ case "${LINUX}" in
     PKG_GIT_CLONE_BRANCH="sdm845-5.19.16"
     ;;
   *)
-    PKG_VERSION="7.0.1"
-    PKG_SHA256="b2c935a36d24980e11e59bed3ca558ea6d67619ec0065faa335cdc0b64d887bf"
+    PKG_VERSION="7.1.2"
+    PKG_SHA256="37198c93727be247c9fb5309bb86cd5e496c61e5322cd8c4eca9476bb0b5883f"
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
     PKG_PATCH_DIRS="default"
     case ${DEVICE} in

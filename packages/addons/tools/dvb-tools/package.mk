@@ -1,11 +1,11 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="dvb-tools"
 PKG_VERSION="1.0"
 PKG_REV="0"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
+PKG_LICENSE="GPL-2.0-only"
 PKG_SITE="https://libreelec.tv"
 PKG_URL=""
 PKG_DEPENDS_TARGET="toolchain"
@@ -15,6 +15,8 @@ PKG_LONGDESC="This bundle currently includes blindscan-s2, dvb-apps (dvbdate, dv
 
 PKG_IS_ADDON="yes"
 PKG_ADDON_NAME="DVB Tools"
+PKG_ADDON_ICON_NAME="TOOLS"
+PKG_ADDON_ICON_SIZE="280"
 PKG_ADDON_TYPE="xbmc.python.script"
 
 PKG_DEPENDS_TARGET="toolchain \

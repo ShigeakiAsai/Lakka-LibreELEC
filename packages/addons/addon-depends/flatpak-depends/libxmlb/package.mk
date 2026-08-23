@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2026-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libxmlb"
-PKG_VERSION="0.3.25"
-PKG_SHA256="1b4c42ea390d3c5358764645667f92bde3e82e5b777c0415f6c4eec21273dbdf"
-PKG_LICENSE="LGPL-2.1"
+PKG_VERSION="0.3.29"
+PKG_SHA256="b5efb78fc8033672826532e0e81e159dd3b01be7e8c3616e2dfefefc66d28ed6"
+PKG_LICENSE="LGPL-2.1-or-later"
 PKG_SITE="https://github.com/hughsie/libxmlb"
 PKG_URL="https://github.com/hughsie/libxmlb/archive/${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_HOST="toolchain:host glib:host"

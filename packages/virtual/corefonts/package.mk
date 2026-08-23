@@ -4,8 +4,8 @@
 
 PKG_NAME="corefonts"
 PKG_VERSION=""
-PKG_LICENSE="GPL"
-PKG_SITE="http://www.openelec.tv"
+PKG_LICENSE="GPL-2.0-or-later"
+PKG_SITE="https://www.libreelec.tv"
 PKG_URL=""
 PKG_DEPENDS_TARGET="toolchain"
 PKG_SECTION="virtual"

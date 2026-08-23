@@ -3,11 +3,11 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="mpd"
-PKG_VERSION="0.24.10"
-PKG_SHA256="867f10fd83cde20c240617222b38fbf6885f902015d0da424a28fbafc675e1dd"
-PKG_REV="1"
+PKG_VERSION="0.24.14"
+PKG_SHA256="367e85debb4427605cccb5415f2858ebb401d849a80615553f59520f4640811e"
+PKG_REV="11"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
+PKG_LICENSE="GPL-2.0-or-later"
 PKG_SITE="https://www.musicpd.org"
 PKG_URL="http://www.musicpd.org/download/mpd/$(get_pkg_version_maj_min)/mpd-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain alsa-lib avahi boost curl faad2 ffmpeg flac glib lame libcdio libfmt \
@@ -20,6 +20,8 @@ PKG_BUILD_FLAGS="-sysroot"
 
 PKG_IS_ADDON="yes"
 PKG_ADDON_NAME="Music Player Daemon (MPD)"
+PKG_ADDON_ICON_NAME="MPD"
+PKG_ADDON_ICON_SIZE="270"
 PKG_ADDON_TYPE="xbmc.service"
 
 PKG_MESON_OPTS_TARGET="-Dadplug=disabled \
@@ -94,6 +96,13 @@ PKG_MESON_OPTS_TARGET="-Dadplug=disabled \
                        -Dzeroconf=avahi \
                        -Dzlib=enabled \
                        -Dzzip=disabled"
+
+# lame is a -sysroot package, so meson's find_library('mp3lame') and
+# lame/lame.h probe (mpd does not use pkg-config for lame) cannot see it.
+# mpd's lame encoder plugin is C++, so the include goes to cpp_args
+# (TARGET_CXXFLAGS) and the library dir to cpp_link_args (TARGET_LDFLAGS).
+TARGET_CXXFLAGS+=" -I$(get_install_dir lame)/usr/include"
+TARGET_LDFLAGS+=" -L$(get_install_dir lame)/usr/lib"
 
 addon() {
   mkdir -p ${ADDON_BUILD}/${PKG_ADDON_ID}/bin

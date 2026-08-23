@@ -3,12 +3,12 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="kodi"
-PKG_VERSION="27dd4ca621b00548b4389c76ea136279f3894681"
-PKG_SHA256="5464872e114a53c14cbf17d4693d4d63e9ccd1818b08f3ecc04b66f9949cab78"
-PKG_LICENSE="GPL"
+PKG_VERSION="c0d95ea08ccf831c46590028217d81ece8ea7ec4"
+PKG_SHA256="ef3ccfec342cca9fea3654f13d8af8dbc0ff3f4202e71b1fd72d41f4a913fe29"
+PKG_LICENSE="GPL-2.0-or-later"
 PKG_SITE="http://www.kodi.tv"
 PKG_URL="https://github.com/xbmc/xbmc/archive/${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain JsonSchemaBuilder:host TexturePacker:host Python3 zlib systemd lzo pcre2 swig:host libass curl exiv2 fontconfig fribidi tinyxml tinyxml2 libjpeg-turbo freetype libcdio taglib libxml2 libxslt nlohmann-json sqlite ffmpeg crossguid libdvdnav libfmt lirc libfstrcmp flatbuffers:host flatbuffers libudfread spdlog libxkbcommon"
+PKG_DEPENDS_TARGET="toolchain JsonSchemaBuilder:host TexturePacker:host Python3 zlib systemd lzo pcre2 swig:host libass curl exiv2 fontconfig fribidi tinyxml tinyxml2 libjpeg-turbo freetype libcdio taglib libxml2 libxslt nlohmann-json sqlite ffmpeg crossguid libdvdnav libfmt libfstrcmp flatbuffers:host flatbuffers libudfread spdlog libxkbcommon"
 PKG_DEPENDS_UNPACK="commons-lang3 commons-text groovy"
 
 if [ "${PROJECT}" = "L4T" -a "${DEVICE}" = "Switch" ]; then
@@ -144,7 +144,8 @@ configure_package() {
 
   if [ "${KODI_DVDCSS_SUPPORT}" = yes ]; then
     KODI_DVDCSS="-DENABLE_DVDCSS=ON \
-                 -DLIBDVDCSS_URL=${SOURCES}/libdvdcss/libdvdcss-$(get_pkg_version libdvdcss).tar.gz"
+                 -DLIBDVDCSS_URL=${SOURCES}/libdvdcss/libdvdcss-$(get_pkg_version libdvdcss).tar.xz \
+                 -DLIBDVDCSS_HASH=SHA256=$(get_pkg_variable libdvdcss PKG_SHA256)"
   else
     KODI_DVDCSS="-DENABLE_DVDCSS=OFF"
   fi
@@ -238,13 +239,22 @@ configure_package() {
     KODI_ARCH="-DWITH_ARCH=${TARGET_ARCH}"
   fi
 
+  if [ "${REMOTE_SUPPORT}" = "yes" -a "${DISPLAYSERVER}" = "x11" ]; then
+    KODI_LIRCCLIENT="-DENABLE_LIRCCLIENT=ON"
+    PKG_DEPENDS_TARGET+=" lirc"
+  else
+    KODI_LIRCCLIENT="-DENABLE_LIRCCLIENT=OFF"
+  fi
+
   if [ "${PROJECT}" = "Allwinner" -o "${PROJECT}" = "Rockchip" ]; then
     PKG_PATCH_DIRS+=" drmprime-filter"
   fi
 
   KODI_LIBDVD="${KODI_DVDCSS} \
-               -DLIBDVDNAV_URL=${SOURCES}/libdvdnav/libdvdnav-$(get_pkg_version libdvdnav).tar.gz \
-               -DLIBDVDREAD_URL=${SOURCES}/libdvdread/libdvdread-$(get_pkg_version libdvdread).tar.gz"
+               -DLIBDVDNAV_URL=${SOURCES}/libdvdnav/libdvdnav-$(get_pkg_version libdvdnav).tar.xz \
+               -DLIBDVDNAV_HASH=SHA256=$(get_pkg_variable libdvdnav PKG_SHA256) \
+               -DLIBDVDREAD_URL=${SOURCES}/libdvdread/libdvdread-$(get_pkg_version libdvdread).tar.xz \
+               -DLIBDVDREAD_HASH=SHA256=$(get_pkg_variable libdvdread PKG_SHA256)"
 
   PKG_CMAKE_OPTS_TARGET="-DNATIVEPREFIX=${TOOLCHAIN} \
                          -DWITH_TEXTUREPACKER=${TOOLCHAIN}/bin/TexturePacker \
@@ -263,7 +273,7 @@ configure_package() {
                          -DENABLE_DBUS=ON \
                          -DENABLE_XSLT=ON \
                          -DENABLE_CCACHE=OFF \
-                         -DENABLE_LIRCCLIENT=ON \
+                         ${KODI_LIRCCLIENT} \
                          -DENABLE_EVENTCLIENTS=ON \
                          -DENABLE_DEBUGFISSION=OFF \
                          -DENABLE_APP_AUTONAME=OFF \
@@ -377,6 +387,11 @@ post_makeinstall_target() {
   # nvidia: Enable USLEEP to reduce CPU load while rendering
   if listcontains "${GRAPHIC_DRIVERS}" "nvidia"; then
     echo "__GL_YIELD=USLEEP" >> ${INSTALL}/usr/lib/kodi/kodi.conf
+  fi
+
+  # nvidia-ng: prevent high GPU power consumption during video decode
+  if listcontains "${GRAPHIC_DRIVERS}" "nvidia-ng"; then
+    echo "CUDA_DISABLE_PERF_BOOST=1" >> ${INSTALL}/usr/lib/kodi/kodi.conf
   fi
 
   mkdir -p ${INSTALL}/usr/sbin

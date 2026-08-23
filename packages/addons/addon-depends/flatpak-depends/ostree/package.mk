@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2026-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="ostree"
-PKG_VERSION="2026.1"
-PKG_SHA256="8e77c285dd6fa5ec5fb063130390977be727fe11107335ed8778a40385069e95"
-PKG_LICENSE="LGPL-2.0"
+PKG_VERSION="2026.4"
+PKG_SHA256="b26c9016eb03bb4ee52cc00c642d56e00fc79ae7faac6bf4aa317d7451339ef7"
+PKG_LICENSE="LGPL-2.0-or-later"
 PKG_SITE="https://github.com/ostreedev/ostree"
 PKG_URL="https://github.com/ostreedev/ostree/releases/download/v${PKG_VERSION}/libostree-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain curl e2fsprogs fuse3 glib gpgme libassuan libgpg-error libarchive xz zlib"

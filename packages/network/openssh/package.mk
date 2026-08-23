@@ -3,9 +3,9 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="openssh"
-PKG_VERSION="10.3p1"
-PKG_SHA256="56682a36bb92dcf4b4f016fd8ec8e74059b79a8de25c15d670d731e7d18e45f4"
-PKG_LICENSE="OSS"
+PKG_VERSION="10.5p1"
+PKG_SHA256="d44d28a839ea9daf969cc69150fde59910b2b39361dad81a3bd6cbd19218db11"
+PKG_LICENSE="BSD-2-Clause AND ISC"
 PKG_SITE="https://www.openssh.com/"
 PKG_URL="https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/${PKG_NAME}-${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain openssl zlib"

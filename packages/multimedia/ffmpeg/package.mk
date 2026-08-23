@@ -3,9 +3,9 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="ffmpeg"
-PKG_VERSION="8.1"
-PKG_SHA256="b072aed6871998cce9b36e7774033105ca29e33632be5b6347f3206898e0756a"
-PKG_LICENSE="GPL-3.0-only"
+PKG_VERSION="9.0"
+PKG_SHA256="7f607a00dd0d28a729d5a4811205812eef01cf6ef6155025febb6f36a9062d52"
+PKG_LICENSE="GPL-3.0-or-later"
 PKG_SITE="https://ffmpeg.org"
 PKG_URL="http://ffmpeg.org/releases/ffmpeg-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain zlib bzip2 openssl speex libxml2"
@@ -14,15 +14,16 @@ if [ "${DISTRO}" = "Lakka" ]; then
 fi
 PKG_LONGDESC="FFmpeg is a complete, cross-platform solution to record, convert and stream audio and video."
 PKG_PATCH_DIRS="postproc libreelec"
+PKG_NO_REFRESH_PATCHES="tools/ffmpeg/gen-patches.sh"
 
 PKG_FFMPEG_REQUEST_DISABLE="--disable-libudev --disable-v4l2-request"
 PKG_FFMPEG_REQUEST_ENABLE="--enable-libudev --enable-v4l2-request"
 
 case "${PROJECT}" in
   Amlogic)
-    PKG_VERSION="272ffca8790f4a333d06d5ad0a7c503709f1735f"
-    PKG_FFMPEG_BRANCH="dev/8.1/rpi_import_1"
-    PKG_SHA256="bfc17be4447905694e5d1deefe5f57d316e39876aa1419835d43bc24d1c254f1"
+    PKG_VERSION="c68aea78e6753be0099f1e4fabfe60cda75909b8"
+    PKG_FFMPEG_BRANCH="test/9.0/main"
+    PKG_SHA256="8837c510614ab5e2eb3045eb3bb3da41bb0a1e16f206f5c32c6eda2c1333af9d"
     PKG_URL="https://github.com/jc-kynesim/rpi-ffmpeg/archive/${PKG_VERSION}.tar.gz"
     ;;
   Generic)
@@ -32,10 +33,10 @@ case "${PROJECT}" in
   Rockchip)
     case "${DEVICE}" in
       RK3288|RK3326|RK3328|RK3399)
-        PKG_PATCH_DIRS+=" v4l2-request v4l2-drmprime vf-deinterlace-v4l2m2m"
+        PKG_PATCH_DIRS+=" v4l2-request vf-deinterlace-v4l2m2m"
         ;;
       RK356X|RK3576|RK3588)
-        PKG_PATCH_DIRS+=" v4l2-request detlev v4l2-drmprime vf-deinterlace-v4l2m2m"
+        PKG_PATCH_DIRS+=" v4l2-request detlev vf-deinterlace-v4l2m2m"
         ;;
     esac
     ;;
@@ -50,7 +51,7 @@ case "${PROJECT}" in
       EXTRA_CFLAGS="-I${SYSROOT_PREFIX}/usr/src/jetson_multimedia_api/include"
    ;;
   *)
-    PKG_PATCH_DIRS+=" v4l2-request v4l2-drmprime"
+    PKG_PATCH_DIRS+=" v4l2-request"
     case "${PROJECT}" in
       Allwinner | Rockchip)
         PKG_PATCH_DIRS+=" vf-deinterlace-v4l2m2m"
@@ -247,7 +248,7 @@ configure_target() {
 
   ./configure ${PKG_CONFIG_OPTS_STANDARD} \
               --prefix="/usr" \
-              --cpu="${TARGET_CPU}" \
+              --cpu="${TARGET_CPU}${TARGET_CPU_FLAGS}" \
               --arch="${TARGET_ARCH}" \
               --cross-prefix="${TARGET_PREFIX}" \
               --sysroot="${SYSROOT_PREFIX}" \

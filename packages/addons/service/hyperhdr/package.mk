@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2025-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="hyperhdr"
 PKG_VERSION="21.0.0.0"
 PKG_SHA256="fde381b8ae701c93b57b23cfa95c56dcbbecee7e5e7b2cce5d8b5f97ed86a676"
-PKG_REV="0"
+PKG_REV="3"
 PKG_LICENSE="MIT"
 PKG_SITE="https://github.com/awawa-dev/HyperHDR"
 PKG_URL="https://github.com/awawa-dev/HyperHDR/archive/v${PKG_VERSION}.tar.gz"
@@ -19,6 +19,7 @@ PKG_BUILD_FLAGS="-sysroot"
 
 PKG_IS_ADDON="yes"
 PKG_ADDON_NAME="HyperHDR"
+PKG_ADDON_ICON_NAME="HyperHDR"
 PKG_ADDON_TYPE="xbmc.service"
 
 if [ "${PROJECT}" = "ARM" -o "${PROJECT}" = "RPi" ]; then
@@ -48,6 +49,11 @@ PKG_CMAKE_OPTS_TARGET="-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON \
                        -Wno-dev"
 
 pre_configure_target() {
+  cat > "${PKG_BUILD}/toolchain-qt5.cmake" <<EOF
+include("${CMAKE_CONF}")
+list(APPEND CMAKE_FIND_ROOT_PATH "$(get_install_dir qt5)/usr")
+EOF
+  PKG_CMAKE_OPTS_TARGET+=" -DCMAKE_TOOLCHAIN_FILE=${PKG_BUILD}/toolchain-qt5.cmake"
   pkg_flatbuffers_version=$(get_pkg_version flatbuffers)
   tar --strip-components=1 -xf "${SOURCES}/flatbuffers/flatbuffers-${pkg_flatbuffers_version}.tar.gz" -C "${PKG_BUILD}/external/flatbuffers"
   cp -a $(get_build_dir rpi_ws281x)/* ${PKG_BUILD}/external/rpi_ws281x

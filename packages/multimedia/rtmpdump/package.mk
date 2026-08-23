@@ -5,7 +5,7 @@
 PKG_NAME="rtmpdump"
 PKG_VERSION="6f6bb1353fc84f4cc37138baa99f586750028a01" # v2.6
 PKG_SHA256="5d68d69710be21e86e766753d2bd25cb2ad1c853b0bc80ebe6b49a6cc507bfc0"
-PKG_LICENSE="GPL"
+PKG_LICENSE="GPL-2.0-or-later AND LGPL-2.1-or-later"
 PKG_SITE="http://rtmpdump.mplayerhq.hu/"
 PKG_URL="https://github.com/mirror/rtmpdump/archive/${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain zlib openssl"
@@ -23,7 +23,6 @@ make_target() {
        SHARED=no \
        CRYPTO="OPENSSL" \
        OPT="" \
-       XCFLAGS="${CFLAGS}" \
        XCFLAGS="${CFLAGS} -Wno-unused-but-set-variable -Wno-unused-const-variable" \
        XLDFLAGS="${LDFLAGS}" \
        XLIBS="-lm"
@@ -65,8 +64,4 @@ makeinstall_target() {
 
 post_makeinstall_target() {
   rm -rf ${INSTALL}/usr/sbin
-
-  #  # to be removed: hack for "compatibility"
-  #  mkdir -p ${INSTALL}/usr/lib
-  #    ln -sf librtmp.so.1 ${INSTALL}/usr/lib/librtmp.so.0
 }

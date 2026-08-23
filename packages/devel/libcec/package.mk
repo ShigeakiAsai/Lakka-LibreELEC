@@ -3,12 +3,12 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libcec"
-PKG_VERSION="c7c4c82dc171c49decfbfe5d2959706d3e2ea47c"
-PKG_SHA256="1ea208bd6218d70102fead867c6c7ef92d5d9f6f78e5010bc0ce41312d24ccfd"
-PKG_LICENSE="GPL"
+PKG_VERSION="8.1.6"
+PKG_SHA256="e1e762fee8589def3cbceb1f3e53ba06ed5b557a2705b86a225f8f30fb19c79a"
+PKG_LICENSE="GPL-2.0-or-later"
 PKG_SITE="http://libcec.pulse-eight.com/"
-PKG_URL="https://github.com/Pulse-Eight/libcec/archive/${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain systemd p8-platform swig:host"
+PKG_URL="https://github.com/Pulse-Eight/libcec/archive/libcec-${PKG_VERSION}.tar.gz"
+PKG_DEPENDS_TARGET="toolchain systemd swig:host"
 PKG_LONGDESC="libCEC is an open-source dual licensed library designed for communicating with the Pulse-Eight USB - CEC Adaptor."
 
 PKG_CMAKE_OPTS_TARGET="-DBUILD_SHARED_LIBS=1 \

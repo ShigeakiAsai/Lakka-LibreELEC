@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2026-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="cage"
-PKG_VERSION="0.2.1"
-PKG_SHA256="acab0c83175164a788d7b9f89338cbdebdc4f7197aff6fdc267c32f7181234a9"
+PKG_VERSION="0.3.1"
+PKG_SHA256="6dc1619665acd367e0174c93b234002549a66f55f1de9197d67f0305415babc8"
 PKG_LICENSE="MIT"
 PKG_SITE="https://www.hjdskes.nl/projects/cage"
 PKG_URL="https://github.com/cage-kiosk/cage/archive/v${PKG_VERSION}.tar.gz"

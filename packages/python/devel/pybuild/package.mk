@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2024-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="pybuild"
-PKG_VERSION="1.5.0"
-PKG_SHA256="302c22c3ba2a0fd5f3911918651341ebb3896176cbdec15bd421f80b1afc7647"
-PKG_LICENSE="BSD"
+PKG_VERSION="1.5.1"
+PKG_SHA256="94e17f1db803ab22f46049376c44c8437c52090f0dfdf1adc43df56542d644fb"
+PKG_LICENSE="MIT"
 PKG_SITE="https://pypi.org/project/build/"
 PKG_URL="https://files.pythonhosted.org/packages/source/b/build/build-${PKG_VERSION}.tar.gz"
 PKG_SOURCE_DIR="build-${PKG_VERSION}"

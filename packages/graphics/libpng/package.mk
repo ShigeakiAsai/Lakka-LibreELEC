@@ -9,9 +9,9 @@ if [ "${DISTRO}" = "Lakka" ]; then
   PKG_VERSION="1.7.0beta89"
   PKG_SHA256="1fad2475a24174f5b4ad237b8b899a2c0583237f108c2288a6e2ac5c3537147a"
 fi
-PKG_LICENSE="LibPNG2"
+PKG_LICENSE="libpng-2.0"
 PKG_SITE="http://www.libpng.org/"
-PKG_URL="${SOURCEFORGE_SRC}/libpng/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+PKG_URL="https://downloads.sourceforge.net/project/libpng/libpng16/${PKG_VERSION}/${PKG_NAME}-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_HOST="zlib:host"
 PKG_DEPENDS_TARGET="toolchain zlib"
 PKG_LONGDESC="An extensible file format for the lossless, portable, well-compressed storage of raster images."

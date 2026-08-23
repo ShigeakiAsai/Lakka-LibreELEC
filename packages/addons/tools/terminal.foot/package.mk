@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
+# SPDX-License-Identifier: GPL-2.0-only
 # Copyright (C) 2026-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="terminal.foot"
 PKG_VERSION="0.0.1"
-PKG_REV="0"
+PKG_REV="1"
 PKG_LICENSE="MIT"
 PKG_SITE="https://libreelec.tv"
 PKG_URL=""
@@ -15,6 +15,7 @@ PKG_TOOLCHAIN="manual"
 
 PKG_IS_ADDON="yes"
 PKG_ADDON_NAME="Terminal (Foot)"
+PKG_ADDON_ICON_NAME="FOOT"
 PKG_ADDON_TYPE="xbmc.python.script"
 PKG_ADDON_PROJECTS="any !Generic-legacy"
 PKG_ADDON_REQUIRES="tools.externalhelper:0.0.0"
