@@ -1,5 +1,5 @@
 PKG_NAME="rustation_ng"
-PKG_VERSION="59f50942f1c39d978602f8e8382a01b46d537a9f"
+PKG_VERSION="ba7932c7c124bbde943bc801ea092f976f6c3f95"
 PKG_ARCH="any !i386"
 PKG_LICENSE="GPL-2.0"
 PKG_SITE="https://gitlab.com/flio/rustation-ng"
