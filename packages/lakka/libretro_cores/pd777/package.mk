@@ -1,5 +1,5 @@
 PKG_NAME="pd777"
-PKG_VERSION="56097d6ac5ee5202f3bf73c4d5eac4d443fe0fb7"
+PKG_VERSION="4c8d1759cfbaad84f8ff0eae62b3e017daa6fbb1"
 PKG_LICENSE="MIT"
 PKG_SITE="https://github.com/mittonk/PD777"
 PKG_URL="${PKG_SITE}.git"
