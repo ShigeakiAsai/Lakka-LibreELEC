@@ -1,5 +1,5 @@
 PKG_NAME="beetle_supafaust"
-PKG_VERSION="e25f66765938d33f9ad5850e8d6cd597e55b7299"
+PKG_VERSION="642d1d1b6684aa7e306a02a89885f3f5456a5157"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/supafaust"
 PKG_URL="${PKG_SITE}.git"
