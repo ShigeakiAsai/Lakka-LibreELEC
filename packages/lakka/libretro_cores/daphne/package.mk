@@ -1,5 +1,5 @@
 PKG_NAME="daphne"
-PKG_VERSION="b5481bab34a51369b6749cd95f5f889e43aaa23f"
+PKG_VERSION="6f1695dd1f376060666eec0a416ff56bb6c9cccc"
 PKG_LICENSE="GPLv2+"
 PKG_SITE="https://github.com/libretro/daphne"
 PKG_URL="${PKG_SITE}.git"
