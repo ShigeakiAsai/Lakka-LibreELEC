@@ -1,5 +1,5 @@
 PKG_NAME="panda3ds"
-PKG_VERSION="f5e5be4b6d8c7aa531875e5039b13fdbf3f372a8"
+PKG_VERSION="5aaa1d26565c834a6f1999026260e559f54aacf1"
 PKG_LICENSE="GPLv3"
 PKG_ARCH="x86_64 aarch64"
 PKG_SITE="https://github.com/wheremyfoodat/Panda3DS"
@@ -18,7 +18,8 @@ PKG_CMAKE_OPTS_TARGET="-DBUILD_LIBRETRO_CORE=ON \
                        -DENABLE_RENDERDOC_API=OFF \
                        -DENABLE_METAL=OFF \
                        -DENABLE_LTO=ON \
-                       -DENABLE_USER_BUILD=ON"
+                       -DENABLE_USER_BUILD=ON \
+                       -DBUILD_TESTING=OFF"
 
 if [ "${ARCH}" = "aarch64" ]; then
   PKG_CMAKE_OPTS_TARGET+=" -DCRYPTOPP_OPT_DISABLE_ASM=ON"
