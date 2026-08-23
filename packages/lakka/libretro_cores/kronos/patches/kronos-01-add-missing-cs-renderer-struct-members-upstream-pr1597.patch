@@ -1,0 +1,235 @@
+From 3f89c57396db94bdb89ba8448e11a9807a30943f Mon Sep 17 00:00:00 2001
+From: luckyseoul <nick@perrybrandsllc.com>
+Date: Tue, 4 Aug 2026 07:56:30 +0000
+Subject: [PATCH] fix: add missing CS renderer struct members for Linux builds
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+OpenGL compute-shader path (vidcs.c) already reads/writes fields that
+were never declared on shared types, so source builds fail on Debian 13
+and similar toolchains (see FCare/Kronos#1596):
+
+- Vdp1.userclipMode: CMDPMOD Cmod (bit 9) from ST-013 §6.3, latched on
+  user-clipping commands (inside/outside drawing mode)
+- vdp2draw_struct.bitmap_base / bitmap_wrap_size: bitmap NBG VRAM window
+  for wrapped cell fetch
+- Ygl.sprite_rgb_priority_per_line / msb_shadow_enabled_per_line: per-line
+  sprite priority (SPCLMD/PRISA) and MSB shadow enable (ST-058)
+
+Init userclipMode to 0 with other clip state. Add a small compile/run
+test (yabause/src/tests/cs_struct_members_test.c) that exercises the
+real header members used by vidcs.c.
+
+Docs: local archive saturn-docs/files/ST-013-R3-061694.pdf,
+saturn-docs/files/ST-058-R2-060194.pdf
+---
+ .../video/opengl/common/include/vidshared.h   |  5 +
+ .../core/video/opengl/common/include/ygl.h    |  8 ++
+ yabause/src/sys/vdp1/include/vdp1.h           |  5 +-
+ yabause/src/sys/vdp1/src/vdp1.c               |  1 +
+ yabause/src/tests/Makefile.cs_struct_members  | 31 +++++++
+ yabause/src/tests/cs_struct_members_test.c    | 93 +++++++++++++++++++
+ 6 files changed, 142 insertions(+), 1 deletion(-)
+ create mode 100644 yabause/src/tests/Makefile.cs_struct_members
+ create mode 100644 yabause/src/tests/cs_struct_members_test.c
+
+diff --git a/yabause/src/core/video/opengl/common/include/vidshared.h b/yabause/src/core/video/opengl/common/include/vidshared.h
+index 82a2a69c31..ba5762854b 100644
+--- a/yabause/src/core/video/opengl/common/include/vidshared.h
++++ b/yabause/src/core/video/opengl/common/include/vidshared.h
+@@ -134,6 +134,11 @@ typedef struct
+    u32 addr, charaddr, paladdr;
+    int colornumber;
+    int isbitmap;
++   /* Bitmap-mode VRAM window for compute-shader cell fetch (vidcs.c):
++    * base = character bank start (charaddr); wrap_size = bitmap byte length
++    * derived from colornumber × cellw × cellh (0 = tile mode, no wrap). */
++   u32 bitmap_base;
++   u32 bitmap_wrap_size;
+    u16 supplementdata;
+    int auxmode;
+    int enable;
+diff --git a/yabause/src/core/video/opengl/common/include/ygl.h b/yabause/src/core/video/opengl/common/include/ygl.h
+index eef1291dfd..1a29f0681d 100644
+--- a/yabause/src/core/video/opengl/common/include/ygl.h
++++ b/yabause/src/core/video/opengl/common/include/ygl.h
+@@ -659,6 +659,14 @@ typedef struct {
+ 
+    InterlaceMode interlace;
+    float last_back_color[4];
++
++   /* Per-line sprite compositor state written by VIDCSReadColorOffset (vidcs.c).
++    * sprite_rgb_priority_per_line: VDP2 §9.2 RGB sprites use PRISA register 0
++    *   when SPCLMD=1; -1 means palette path (do not force RGB priority).
++    * msb_shadow_enabled_per_line: VDP2 §14.1 MSB shadow when SPWINEN=0 and
++    *   sprite type is 2..7. Sized like other per-line arrays (270). */
++   int sprite_rgb_priority_per_line[270];
++   u8 msb_shadow_enabled_per_line[270];
+ } Ygl;
+ 
+ extern Ygl * _Ygl;
+diff --git a/yabause/src/sys/vdp1/include/vdp1.h b/yabause/src/sys/vdp1/include/vdp1.h
+index 10e93206f3..ca1304c71a 100644
+--- a/yabause/src/sys/vdp1/include/vdp1.h
++++ b/yabause/src/sys/vdp1/include/vdp1.h
+@@ -63,7 +63,10 @@ typedef struct {
+    u16 userclipY1;
+    u16 userclipX2;
+    u16 userclipY2;
+-
++   /* ST-013 §6.3 CMDPMOD Cmod (bit 9): 0 = inside drawing, 1 = outside drawing.
++    * Latched from the last user-clipping command's CMDPMOD so the CS path can
++    * forward clip mode to shaders (vidcs.c VIDCSVdp1UserClipping*). */
++   u16 userclipMode;
+ 
+ } Vdp1;
+ 
+diff --git a/yabause/src/sys/vdp1/src/vdp1.c b/yabause/src/sys/vdp1/src/vdp1.c
+index 35a6ad6ad3..171b151ae0 100644
+--- a/yabause/src/sys/vdp1/src/vdp1.c
++++ b/yabause/src/sys/vdp1/src/vdp1.c
+@@ -447,6 +447,7 @@ int Vdp1Init(void) {
+    Vdp1Regs->userclipY1=0;
+    Vdp1Regs->userclipX2=1024;
+    Vdp1Regs->userclipY2=512;
++   Vdp1Regs->userclipMode=0;
+ 
+    Vdp1Regs->localX=0;
+    Vdp1Regs->localY=0;
+diff --git a/yabause/src/tests/Makefile.cs_struct_members b/yabause/src/tests/Makefile.cs_struct_members
+new file mode 100644
+index 0000000000..0e0930d359
+--- /dev/null
++++ b/yabause/src/tests/Makefile.cs_struct_members
+@@ -0,0 +1,31 @@
++# Build: make -f Makefile.cs_struct_members
++# From: yabause/src/tests/
++SRC_ROOT := ..
++INCS := \
++  -I$(SRC_ROOT)/sys/vdp1/include \
++  -I$(SRC_ROOT)/sys/vdp2/include \
++  -I$(SRC_ROOT)/sys/memory/include \
++  -I$(SRC_ROOT)/sys/sh2/include \
++  -I$(SRC_ROOT)/sys/scu/include \
++  -I$(SRC_ROOT)/sys/scsp/include \
++  -I$(SRC_ROOT)/sys/smpc/include \
++  -I$(SRC_ROOT)/sys/bios/include \
++  -I$(SRC_ROOT)/ctrl/include \
++  -I$(SRC_ROOT)/ctrl/threads \
++  -I$(SRC_ROOT)/utils/include \
++  -I$(SRC_ROOT)/core/video/opengl/common/include \
++  -I$(SRC_ROOT)/core/video/opengl/compute_shader/include \
++  -I$(SRC_ROOT)/core/osd/include \
++  -I$(SRC_ROOT)
++
++CFLAGS := -std=c11 -Wall -DHAVE_LIBGL -D_USEGLEW_ -D_OGL3_ $(INCS)
++
++.PHONY: test clean
++test: cs_struct_members_test
++	./cs_struct_members_test
++
++cs_struct_members_test: cs_struct_members_test.c
++	$(CC) $(CFLAGS) -o $@ $<
++
++clean:
++	rm -f cs_struct_members_test
+diff --git a/yabause/src/tests/cs_struct_members_test.c b/yabause/src/tests/cs_struct_members_test.c
+new file mode 100644
+index 0000000000..15da8c7a7c
+--- /dev/null
++++ b/yabause/src/tests/cs_struct_members_test.c
+@@ -0,0 +1,93 @@
++/* Compile+run test: fields required by OpenGL compute-shader path (vidcs.c).
++ * Fails to compile if Vdp1 / vdp2draw_struct / Ygl are missing members used
++ * by VIDCSVdp1UserClipping*, Vdp2DrawNBG*, VIDCSReadColorOffset (Kronos#1596).
++ */
++#include <stddef.h>
++#include <stdio.h>
++#include <string.h>
++#include <stdint.h>
++
++#include "core.h"
++#include "vdp1.h"
++#include "vidshared.h"
++
++#define HAVE_LIBGL 1
++#define _USEGLEW_ 1
++#define _OGL3_ 1
++#include <GL/glew.h>
++#include "ygl.h"
++
++/* Mirror the assignments in vidcs.c — exercises real struct members. */
++static u16 latch_userclip_mode(u16 cmdpmod)
++{
++    /* ST-013 §6.3: Cmod = CMDPMOD bit 9 */
++    return (u16)((cmdpmod >> 9) & 0x1);
++}
++
++static void apply_vdp1_userclip(Vdp1 *regs, u16 cmdpmod)
++{
++    regs->userclipMode = latch_userclip_mode(cmdpmod);
++}
++
++static void apply_bitmap_window(vdp2draw_struct *info, u32 charaddr, u32 wrap)
++{
++    info->bitmap_base = 0;
++    info->bitmap_wrap_size = 0;
++    info->charaddr = charaddr;
++    info->bitmap_wrap_size = wrap;
++    info->bitmap_base = info->charaddr;
++}
++
++static void apply_ygl_line(Ygl *ygl, int line, int spclmd, int prio, u8 msb)
++{
++    ygl->sprite_rgb_priority_per_line[line] = spclmd ? prio : -1;
++    ygl->msb_shadow_enabled_per_line[line] = msb;
++}
++
++int main(void)
++{
++    Vdp1 regs;
++    vdp2draw_struct info;
++    Ygl ygl;
++    memset(&regs, 0, sizeof(regs));
++    memset(&info, 0, sizeof(info));
++    memset(&ygl, 0, sizeof(ygl));
++
++    apply_vdp1_userclip(&regs, 0x0200u); /* Cmod=1 */
++    if (regs.userclipMode != 1) {
++        fprintf(stderr, "FAIL: userclipMode expected 1 got %u\n", (unsigned)regs.userclipMode);
++        return 1;
++    }
++    apply_vdp1_userclip(&regs, 0x0000u);
++    if (regs.userclipMode != 0) {
++        fprintf(stderr, "FAIL: userclipMode expected 0 got %u\n", (unsigned)regs.userclipMode);
++        return 1;
++    }
++
++    apply_bitmap_window(&info, 0x10000u, 0x80000u);
++    if (info.bitmap_base != 0x10000u || info.bitmap_wrap_size != 0x80000u) {
++        fprintf(stderr, "FAIL: bitmap window base=%u wrap=%u\n",
++                (unsigned)info.bitmap_base, (unsigned)info.bitmap_wrap_size);
++        return 1;
++    }
++
++    apply_ygl_line(&ygl, 10, 1, 5, 1);
++    if (ygl.sprite_rgb_priority_per_line[10] != 5 || ygl.msb_shadow_enabled_per_line[10] != 1) {
++        fprintf(stderr, "FAIL: ygl per-line state\n");
++        return 1;
++    }
++    apply_ygl_line(&ygl, 10, 0, 5, 0);
++    if (ygl.sprite_rgb_priority_per_line[10] != -1) {
++        fprintf(stderr, "FAIL: palette path should set priority -1\n");
++        return 1;
++    }
++
++    /* Touch offsetof so members cannot be optimized away at compile time only */
++    printf("PASS offsetof userclipMode=%zu bitmap_base=%zu wrap=%zu spr=%zu msb=%zu\n",
++           offsetof(Vdp1, userclipMode),
++           offsetof(vdp2draw_struct, bitmap_base),
++           offsetof(vdp2draw_struct, bitmap_wrap_size),
++           offsetof(Ygl, sprite_rgb_priority_per_line),
++           offsetof(Ygl, msb_shadow_enabled_per_line));
++    return 0;
++}
