@@ -1,5 +1,5 @@
 PKG_NAME="gearboy"
-PKG_VERSION="4e969b7bfb05ba314bf6f4cad3c7e4b531b1dc11"
+PKG_VERSION="0dc7e887c3d51915d64736b1f713c37b965beebd"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/drhelius/Gearboy"
 PKG_URL="${PKG_SITE}.git"
