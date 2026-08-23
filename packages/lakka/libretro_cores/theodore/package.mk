@@ -1,5 +1,5 @@
 PKG_NAME="theodore"
-PKG_VERSION="242e932d838284a61b81aa7641c60d813934025e"
+PKG_VERSION="4d469ce0f71ee046ceb78cdbf8e9f18364aaa918"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/Zlika/theodore"
 PKG_URL="${PKG_SITE}.git"
