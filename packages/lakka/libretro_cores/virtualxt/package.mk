@@ -1,5 +1,5 @@
 PKG_NAME="virtualxt"
-PKG_VERSION="bdff2ce731c7d30d30e228d4dea9093f3d8eb481"
+PKG_VERSION="ed177f5fb4f54d099bc217281930265ae1de9eca"
 PKG_LICENSE="zlib"
 # temporarily disable on arm because build failure is occurred.
 # https://github.com/virtualxt/virtualxt/issues/97
