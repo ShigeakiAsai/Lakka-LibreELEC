@@ -1,5 +1,5 @@
 PKG_NAME="beetle_pcfx"
-PKG_VERSION="dd04cef9355286488a1d78ff18c4c848a1575540"
+PKG_VERSION="0580dee757adfdb9bf8b9c24693dde5f3d0a78a1"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/beetle-pcfx-libretro"
 PKG_URL="${PKG_SITE}.git"
