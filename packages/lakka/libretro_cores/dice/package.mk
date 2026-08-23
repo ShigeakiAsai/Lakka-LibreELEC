@@ -1,5 +1,5 @@
 PKG_NAME="dice"
-PKG_VERSION="f41ed433ed90716521b05437c49684c370faa9df"
+PKG_VERSION="b11714fc4eb5b671ba15f2ec7b98c7ae909f7a4c"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/mittonk/dice-libretro"
 PKG_URL="${PKG_SITE}.git"
