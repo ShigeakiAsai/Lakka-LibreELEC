@@ -1,5 +1,5 @@
 PKG_NAME="numero"
-PKG_VERSION="867c40ad9cdfe5295e0be81e0a17b16964a4a33e"
+PKG_VERSION="c0b07a39782feafebcde0c8ccfa91fc92732c999"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/nbarkhina/numero"
 PKG_URL="${PKG_SITE}.git"
