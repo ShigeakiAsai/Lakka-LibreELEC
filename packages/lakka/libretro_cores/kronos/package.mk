@@ -1,5 +1,5 @@
 PKG_NAME="kronos"
-PKG_VERSION="d0384bc33aad06bfa9cf5cd308c4bd7ae6cfc814"
+PKG_VERSION="d451a55253e2e75bcef704ec8ade2085d298212c"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/FCare/Kronos"
 PKG_URL="${PKG_SITE}.git"
