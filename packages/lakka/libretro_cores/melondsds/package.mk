@@ -1,5 +1,5 @@
 PKG_NAME="melondsds"
-PKG_VERSION="bac0256dc6a8736c5a228f57c562257e45fd49f3"
+PKG_VERSION="bc4e4b67d2d470d7c682810a1e892cafd6f9082b"
 PKG_LICENSE="GPLv3"
 PKG_ARCH="aarch64 x86_64"
 PKG_SITE="https://github.com/JesseTG/melonds-ds"
