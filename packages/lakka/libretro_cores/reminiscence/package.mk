@@ -1,5 +1,5 @@
 PKG_NAME="reminiscence"
-PKG_VERSION="ba639f4eeaba94609a4ea2c9c2217992ce4e22e1"
+PKG_VERSION="e6c0b0039258004f8bc377ddb88c0e931db131ce"
 PKG_SITE="https://github.com/libretro/REminiscence"
 PKG_URL="${PKG_SITE}.git"
 PKG_DEPENDS_TARGET="toolchain"

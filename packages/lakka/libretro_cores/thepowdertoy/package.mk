@@ -1,5 +1,5 @@
 PKG_NAME="thepowdertoy"
-PKG_VERSION="dcb5e41f1f9800192ea07ea43459413c5a065d9f"
+PKG_VERSION="bb2d9f6623d2ccf25a0021045af9591c8a0bbaff"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/ThePowderToy"
 PKG_URL="${PKG_SITE}.git"

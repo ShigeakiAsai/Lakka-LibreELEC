@@ -1,5 +1,5 @@
 PKG_NAME="lrps2"
-PKG_VERSION="0f2c9a7c615357e6d82a4520e502f94ff27ca77b"
+PKG_VERSION="8d14ef94c95b194fbfe0d7d82054a32ab21368fe"
 PKG_LICENSE="GPLv3"
 PKG_ARCH="x86_64"
 PKG_SITE="https://github.com/libretro/ps2"

@@ -1,5 +1,5 @@
 PKG_NAME="panda3ds"
-PKG_VERSION="944b9892f991c3aacb15436c91511543f8e665bf"
+PKG_VERSION="6701002c1e54a69c4bd107bc8c2e015be3364ec3"
 PKG_LICENSE="GPLv3"
 PKG_ARCH="x86_64 aarch64"
 PKG_SITE="https://github.com/wheremyfoodat/Panda3DS"

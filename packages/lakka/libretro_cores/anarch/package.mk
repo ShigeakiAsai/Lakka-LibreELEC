@@ -1,5 +1,5 @@
 PKG_NAME="anarch"
-PKG_VERSION="512e562efe683489b7438cd13476aa84a506c8a7"
+PKG_VERSION="c0c0b78e5c30644019f7d4fcdddfed4f22db24d7"
 PKG_LICENSE="CC0-1.0"
 PKG_SITE="https://codeberg.org/iyzsong/anarch-libretro"
 PKG_URL="${PKG_SITE}.git"

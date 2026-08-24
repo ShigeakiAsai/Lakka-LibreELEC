@@ -1,5 +1,5 @@
 PKG_NAME="parallel_n64"
-PKG_VERSION="51aefbd38751563138b5fee3810ff653a78c4f24"
+PKG_VERSION="37605bb45964c7a2695e6301e80f5c6a4feb5558"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/parallel-n64"
 PKG_URL="${PKG_SITE}.git"
@@ -24,6 +24,13 @@ fi
 if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
   PKG_MAKE_OPTS_TARGET+=" FORCE_GLES=1"
+fi
+
+# workaround for RPiZero2-GPiCase compile error
+# TODO: package.mk and the core's Makefile need a proper review to
+# correctly enable GLES support.
+if [ "${DEVICE}" = "RPiZero2-GPiCase" ]; then
+  PKG_MAKE_OPTS_TARGET="${PKG_MAKE_OPTS_TARGET/HAVE_OPENGL=0/HAVE_OPENGL=1}"
 fi
 
 if [ "${VULKAN_SUPPORT}" = "yes" ]; then

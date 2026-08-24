@@ -1,5 +1,5 @@
 PKG_NAME="fceumm"
-PKG_VERSION="a3467f6af9d44a1c6de51202b35524f31cc27a8e"
+PKG_VERSION="b5e3566515c27dc66c9c20572171673126532e06"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/libretro-fceumm"
 PKG_URL="${PKG_SITE}.git"
