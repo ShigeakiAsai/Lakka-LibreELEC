@@ -12,6 +12,10 @@ PKG_DEPENDS_TARGET="toolchain"
 PKG_LONGDESC="A high quality MPEG Audio Layer III (MP3) encoder."
 PKG_BUILD_FLAGS="-parallel +pic -sysroot"
 
+# Upstream LibreELEC adds "-sysroot"
+# But Lakka ffmpeg needs lame's headers/libs on sysroot, so remove "-sysroot"
+[ "${DISTRO}" = "Lakka" ] && PKG_BUILD_FLAGS="${PKG_BUILD_FLAGS/-sysroot/}" || true
+
 # package specific configure options
 PKG_CONFIGURE_OPTS_TARGET="--enable-static \
                            --disable-shared \
