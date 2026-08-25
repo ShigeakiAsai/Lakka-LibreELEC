@@ -147,6 +147,12 @@ pre_configure_target() {
       ;;
   esac
 
+  # Lakka needs mesa's AMD gallium/vulkan drivers on i386 too
+  if [ "${DISTRO}" = "Lakka" ] && [ "${TARGET_ARCH}" = "i386" ]; then
+    LLVM_BUILD_TARGETS="AMDGPU"
+    LLVM_BUILD_CLANG="-DLLVM_ENABLE_PROJECTS=''"
+  fi
+
   mkdir -p ${PKG_BUILD}/.${TARGET_NAME}
   cd ${PKG_BUILD}/.${TARGET_NAME}
   PKG_CMAKE_OPTS_TARGET="${PKG_CMAKE_OPTS_COMMON} \
