@@ -1,0 +1,16 @@
+diff -uNr a/include/grub/i386/pc/int.h b/include/grub/i386/pc/int.h
+--- a/include/grub/i386/pc/int.h	2019-04-23 17:54:47.000000000 +0900
++++ b/include/grub/i386/pc/int.h	2026-08-24 23:24:29.729456773 +0900
+@@ -22,9 +22,12 @@
+ #include <grub/symbol.h>
+ #include <grub/i386/pc/int_types.h>
+ 
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wattributes"
+ void EXPORT_FUNC (grub_bios_interrupt) (grub_uint8_t intno,
+ 					struct grub_bios_int_registers *regs)
+      __attribute__ ((regparm(3)));
++#pragma GCC diagnostic pop
+ 
+ #ifdef GRUB_MACHINE_PCBIOS
+ extern struct grub_i386_idt *EXPORT_VAR(grub_realidt);
