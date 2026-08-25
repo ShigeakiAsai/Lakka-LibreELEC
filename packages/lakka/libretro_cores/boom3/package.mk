@@ -13,20 +13,16 @@ fi
 
 if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
+  PKG_MAKE_OPTS_TARGET+=" FORCE_GLES=1"
+fi
+
+if [ "${PROJECT}" = "L4T" -a "${L4T_DEVICE_TYPE}" = "t210" ]; then
+  PKG_MAKE_OPTS_TARGET+=" platform=tegra210"
 fi
 
 pre_make_target() {
   cd ${PKG_BUILD}/neo
 }
-
-make_target() {
-  if [ "${PROJECT}" = "L4T" -a "${L4T_DEVICE_TYPE}" = "t210" ]; then
-    make platform=tegra210
-  else
-    make
-  fi
-}
-
 
 makeinstall_target() {
   mkdir -p ${INSTALL}/usr/lib/libretro

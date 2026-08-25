@@ -1,0 +1,40 @@
+diff -uNr a/neo/Makefile b/neo/Makefile
+--- a/neo/Makefile	2026-08-22 12:38:14.779952800 +0900
++++ b/neo/Makefile	2026-08-22 22:29:35.559724449 +0900
+@@ -3,6 +3,7 @@
+ CORE           := -DCORE=ON
+ DEBUG          := 0
+ RELWITHDEBINFO := 0
++FORCE_GLES     := 0
+ 
+ ifneq ($(SANITIZER),)
+    CFLAGS   := -fsanitize=$(SANITIZER) $(CFLAGS)
+@@ -58,14 +59,27 @@
+    fpic := -fPIC
+    SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
+    LIBS := -ldl -lpthread
+-
++   ifeq ($(FORCE_GLES),1)
++	GLES = 1
++	GL_LIB := -lGLESv2
++	CFLAGS += -DHAVE_OPENGLES -DHAVE_OPENGLES2
++	CXXFLAGS += -DHAVE_OPENGLES -DHAVE_OPENGLES2
++   else
+ 	GL_LIB := -lGL
++   endif
+ else ifeq ($(platform), linux-portable)
+    TARGET := $(TARGET_NAME)_libretro.$(EXT)
+    fpic := -fPIC -nostdlib
+    SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T
+ 	LIBM :=
++   ifeq ($(FORCE_GLES),1)
++	GLES = 1
++	GL_LIB := -lGLESv2
++	CFLAGS += -DHAVE_OPENGLES -DHAVE_OPENGLES2
++	CXXFLAGS += -DHAVE_OPENGLES -DHAVE_OPENGLES2
++   else
+ 	GL_LIB := -lGL
++   endif
+ else ifeq ($(platform), osx-arm64)
+    TARGET := $(TARGET_NAME)_libretro.dylib
+    fpic := -fPIC
