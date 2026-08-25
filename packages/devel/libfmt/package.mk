@@ -24,6 +24,9 @@ PKG_CMAKE_OPTS_TARGET="${PKG_CMAKE_OPTS_COMMON}"
 
 if [ "${DISTRO}" = "Lakka" ]; then
   PKG_CMAKE_OPTS_TARGET+=" -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE"
+  if [ "${ARCH}" = "i386" ]; then
+    PKG_PATCH_DIRS="i386"
+  fi
 fi
 
 configure_host() {
