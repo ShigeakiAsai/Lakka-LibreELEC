@@ -1,8 +1,7 @@
-diff --git a/gfx/widgets/gfx_widget_achievement_popup.c b/gfx/widgets/gfx_widget_achievement_popup.c
-index ba583a8..c9ef547 100644
---- a/gfx/widgets/gfx_widget_achievement_popup.c
-+++ b/gfx/widgets/gfx_widget_achievement_popup.c
-@@ -320,13 +320,13 @@ static void gfx_widget_achievement_popup_frame(void* data, void* userdata)
+diff -uNr a/gfx/widgets/gfx_widget_achievement_popup.c b/gfx/widgets/gfx_widget_achievement_popup.c
+--- a/gfx/widgets/gfx_widget_achievement_popup.c	2026-08-25 22:25:20.276467674 +0000
++++ b/gfx/widgets/gfx_widget_achievement_popup.c	2026-08-25 22:25:38.292581397 +0000
+@@ -337,13 +337,13 @@
  
        /* Title */
        gfx_widgets_draw_text(
@@ -19,7 +18,7 @@ index ba583a8..c9ef547 100644
           video_width,
           video_height,
           TEXT_COLOR_FAINT,
-@@ -337,13 +337,13 @@ static void gfx_widget_achievement_popup_frame(void* data, void* userdata)
+@@ -354,13 +354,13 @@
  
        /* TODO: is a ticker necessary ? */
        gfx_widgets_draw_text(
@@ -36,7 +35,7 @@ index ba583a8..c9ef547 100644
           video_width,
           video_height,
           TEXT_COLOR_INFO,
-@@ -353,7 +353,7 @@ static void gfx_widget_achievement_popup_frame(void* data, void* userdata)
+@@ -370,7 +370,7 @@
        if (is_folding)
        {
           gfx_widgets_flush_text(video_width, video_height,
@@ -45,7 +44,7 @@ index ba583a8..c9ef547 100644
  
           if (dispctx && dispctx->scissor_end)
              dispctx->scissor_end(video_info->userdata,
-@@ -551,13 +551,13 @@ static void gfx_widget_achievement_popup_start(
+@@ -568,13 +568,13 @@
     const dispgfx_widget_t* p_dispwidget = (const dispgfx_widget_t*)
        state->dispwidget_ptr;
  
@@ -55,10 +54,10 @@ index ba583a8..c9ef547 100644
        font_driver_get_message_width(
 -         p_dispwidget->gfx_widget_fonts.regular.font,
 +         p_dispwidget->gfx_widget_fonts.msg_queue.font,
-          state->queue[state->queue_read_index].title, 0, 1.0f),
+          state->queue[state->queue_read_index].title, strlen(state->queue[state->queue_read_index].title), 1.0f),
        font_driver_get_message_width(
 -         p_dispwidget->gfx_widget_fonts.regular.font,
 +         p_dispwidget->gfx_widget_fonts.msg_queue.font,
-          state->queue[state->queue_read_index].subtitle, 0, 1.0f)
+          state->queue[state->queue_read_index].subtitle, strlen(state->queue[state->queue_read_index].subtitle), 1.0f)
     );
     state->width += p_dispwidget->simple_widget_padding * 2;
