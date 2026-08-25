@@ -16,6 +16,10 @@ if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
 fi
 
+if [ "${PROJECT}" = "Rockchip" ] && [ "${DEVICE}" = "RK3326" ] ; then
+  PKG_MAKE_OPTS_TARGET+=" platform=rockchip-RK3326 GLES31=1"
+fi
+
 makeinstall_target() {
   mkdir -p ${INSTALL}/usr/lib/libretro
     cp -v vitaquake2_libretro.so ${INSTALL}/usr/lib/libretro/
