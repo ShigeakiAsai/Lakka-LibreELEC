@@ -243,7 +243,8 @@ elif [ "${PROJECT}" = "NXP" ]; then
   fi
 
 elif [ "${PROJECT}" = "Rockchip" ]; then
-  EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
+  EXCLUDE_LIBRETRO_CORES+=" lr_moonlight \
+                            vitaquake3"
 
 elif [ "${PROJECT}" = "RPi" ]; then
   EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
