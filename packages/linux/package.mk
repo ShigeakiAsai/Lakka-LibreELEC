@@ -445,6 +445,8 @@ make_target() {
             ;;
         esac
 
+        [ "${TARGET_ARCH}" = "i386" ] && PERF_NO_RUST="1" || PERF_NO_RUST=""
+
         if [ "${LINUX}" = "ayn-odin" ]; then
           # Removed "BUILD_BPF_SKEL=0" from make parameters.
           WERROR=0 \
@@ -485,6 +487,7 @@ make_target() {
           NO_LIBBABELTRACE=1 \
           NO_CAPSTONE=1 \
           NO_LIBPFM4=1 \
+          NO_RUST="${PERF_NO_RUST}" \
           BUILD_BPF_SKEL=0 \
           CROSS_COMPILE="${TARGET_PREFIX}" \
           JOBS="${CONCURRENCY_MAKE_LEVEL}" \
