@@ -1,0 +1,19 @@
+--- a/libavcodec/v4l2_fmt.c
++++ b/libavcodec/v4l2_fmt.c
+@@ -25,6 +25,16 @@
+ #include <search.h>
+ #include "v4l2_fmt.h"
+ 
++/* Some LibreELEC/Lakka targets intentionally pin old kernel headers (e.g. for
++ * composite/analog TV-out support), which may lack even fairly old pixel
++ * format definitions. Provide fallbacks so this file still compiles. */
++#ifndef V4L2_PIX_FMT_P010
++#define V4L2_PIX_FMT_P010 v4l2_fourcc('P', '0', '1', '0')
++#endif
++#ifndef V4L2_PIX_FMT_AV1
++#define V4L2_PIX_FMT_AV1 v4l2_fourcc('A', 'V', '0', '1')
++#endif
++
+ #define V4L2_FMT(x) V4L2_PIX_FMT_##x
+ #define AV_CODEC(x) AV_CODEC_ID_##x
+ #define AV_FMT(x)   AV_PIX_FMT_##x
