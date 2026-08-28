@@ -39,10 +39,10 @@ PKG_CONFIGURE_OPTS_TARGET="BASH_SHELL=/bin/sh \
                            --disable-timezone-tools"
 
 if [ "${PROJECT}" = "Ayn" ]; then
-  PKG_CONFIGURE_OPTS_TARGET="${PKG_CONFIGURE_OPTS_TARGET//--enable-kernel=6.12.0/--enable-kernel=5.19.0/}"
+  PKG_CONFIGURE_OPTS_TARGET="${PKG_CONFIGURE_OPTS_TARGET//--enable-kernel=6.18.0/--enable-kernel=5.19.0/}"
 elif [ "${PROJECT}" = "RPi" ]; then
   if [ "${DEVICE}" = "RPi3-Composite" -o "${DEVICE}" = "RPi4-Composite" ]; then
-    PKG_CONFIGURE_OPTS_TARGET="${PKG_CONFIGURE_OPTS_TARGET//--enable-kernel=6.12.0/--enable-kernel=5.10.0/}"
+    PKG_CONFIGURE_OPTS_TARGET="${PKG_CONFIGURE_OPTS_TARGET//--enable-kernel=6.18.0/--enable-kernel=5.10.0/}"
   fi
 fi
 
