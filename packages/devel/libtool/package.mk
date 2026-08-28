@@ -20,6 +20,34 @@ post_unpack() {
   chmod u+w ${PKG_BUILD}/build-aux/ltmain.sh
 }
 
+post_patch() {
+  # removes previous version files for build error
+  if [ -d "${TOOLCHAIN}/share/libtool" ]; then
+    rm -rfv "${TOOLCHAIN}/share/libtool"
+  fi
+
+  # remove ${TOOLCHAIN}/share/aclocal/lt*.m4 and 
+  # ${TOOLCHAIN}/share/aclocal/libtool.m4 if exist
+  for f in "${TOOLCHAIN}/share/aclocal/lt"*.m4; do
+    [ -e "$f" ] && rm -fv "$f" || true
+  done
+  [ -f "${TOOLCHAIN}/share/aclocal/libtool.m4" ] && \
+    rm -fv "${TOOLCHAIN}/share/aclocal/libtool.m4" || true
+
+  # remove ${SYSROOT_PREFIX}/usr/share/aclocal/lt*.m4 and 
+  # ${SYSROOT_PREFIX}/usr/share/aclocal/libtool.m4 if exist
+  for f in "${SYSROOT_PREFIX}/usr/share/aclocal/lt"*.m4; do
+    [ -e "$f" ] && rm -fv "$f" || true
+  done
+  [ -f "${SYSROOT_PREFIX}/usr/share/aclocal/libtool.m4" ] && \
+    rm -fv "${SYSROOT_PREFIX}/usr/share/aclocal/libtool.m4" || true
+
+  # remove ${TOOLCHAIN}/bin/libtool* if exist
+  for f in "${TOOLCHAIN}/bin/libtool"*; do
+    [ -e "$f" ] && rm -fv "$f" || true
+  done
+}
+
 pre_make_host() {
   # do not rebuild man, or txt pages
   touch ${PKG_BUILD}/doc/*.1 \
