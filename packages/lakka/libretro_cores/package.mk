@@ -210,7 +210,11 @@ LIBRETRO_CORES="${EARLY_START_LR_CORES} ${LIBRETRO_CORES}"
 # override above with custom list via env CUSTOM_LIBRETRO_CORES="core1 core2"
 # passed to make
 if [ -n "${CUSTOM_LIBRETRO_CORES}" ]; then
-  LIBRETRO_CORES="${CUSTOM_LIBRETRO_CORES}"
+  if [ "${CUSTOM_LIBRETRO_CORES}" = "none" ]; then
+    LIBRETRO_CORES=""
+  else
+    LIBRETRO_CORES="${CUSTOM_LIBRETRO_CORES}"
+  fi
 fi
 
 # disable cores that do not build for OPENGLES
