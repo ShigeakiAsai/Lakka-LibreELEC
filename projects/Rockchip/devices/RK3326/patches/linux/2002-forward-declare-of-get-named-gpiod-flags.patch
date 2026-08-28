@@ -1,0 +1,12 @@
+--- a/drivers/gpio/gpiolib-of.c
++++ b/drivers/gpio/gpiolib-of.c
+@@ -380,6 +380,9 @@
+ 		*flags |= OF_GPIO_ACTIVE_LOW;
+ }
+ 
++static struct gpio_desc *of_get_named_gpiod_flags(const struct device_node *np,
++		const char *list_name, int index, enum of_gpio_flags *flags);
++
+ int of_get_named_gpio_flags(const struct device_node *np, const char *list_name,
+ 			    int index, enum of_gpio_flags *flags)
+ {
