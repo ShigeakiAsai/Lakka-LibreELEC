@@ -1,0 +1,11 @@
+--- a/include/RgaApi.h
++++ b/include/RgaApi.h
+@@ -65,7 +65,7 @@
+ int  c_RkRgaColorFill(rga_info_t *dst);
+ int  c_RkRgaFlush();
+ 
+-#ifndef ANDROID /* linux */
++#ifndef ANDROID /* not Android */
+ int c_RkRgaGetAllocBuffer(bo_t *bo_info, int width, int height, int bpp);
+ int c_RkRgaGetAllocBufferCache(bo_t *bo_info, int width, int height, int bpp);
+ int c_RkRgaGetMmap(bo_t *bo_info);
