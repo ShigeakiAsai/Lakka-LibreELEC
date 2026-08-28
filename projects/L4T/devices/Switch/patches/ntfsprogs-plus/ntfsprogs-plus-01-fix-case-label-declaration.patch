@@ -1,0 +1,8 @@
+--- a/src/ntfsck.c
++++ b/src/ntfsck.c
+@@ -4105,5 +4105,6 @@
+ 		ntfsck_check_inode_non_resident(ni, 1);
+ 		break;
+ 	case FILE_Bitmap:
++		;
+ 		s64 max_lcnbmp_size;
