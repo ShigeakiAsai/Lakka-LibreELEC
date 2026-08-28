@@ -1,0 +1,19 @@
+--- a/src/libc/mount.c
++++ b/src/libc/mount.c
+@@ -4,4 +4,16 @@
+ 
+ #include "libc-shim.h"
+ 
++/* Kernel headers older than 5.12/6.15 (as used by e.g. some LibreELEC/Lakka
++ * targets with intentionally pinned kernel headers) do not define these
++ * syscall numbers. The numbers are stable across architectures using the
++ * generic/common syscall table (x86_64, aarch64, arm, ...), so provide a
++ * fallback here so the shims below still compile. */
++#ifndef __NR_mount_setattr
++#define __NR_mount_setattr 442
++#endif
++#ifndef __NR_open_tree_attr
++#define __NR_open_tree_attr 467
++#endif
++
+ DEFINE_SYSCALL_SHIM(fsopen, int,
