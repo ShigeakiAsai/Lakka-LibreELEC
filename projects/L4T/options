@@ -121,14 +121,3 @@
       echo "Error: 32bit ARM arch is not supported by L4T"
       exit 1
     fi
-
-  # use gcc-9/g++-9 for host
-  LOCAL_CC="$(command -v gcc-9)"
-  if [ -z "${LOCAL_CC}" ]; then
-    die "Error: ${PROJECT} requires gcc-9 - please make sure it is installed on your system!" "127"
-  fi
-
-  LOCAL_CXX="$(command -v g++-9)"
-  if [ -z "${LOCAL_CXX}" ]; then
-    die "Error: ${PROJECT} requires g++-9 - please make sure it is installed on your system!" "127"
-  fi
