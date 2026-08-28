@@ -445,7 +445,7 @@ make_target() {
             ;;
         esac
 
-        [ "${TARGET_ARCH}" = "i386" ] && PERF_NO_RUST="1" || PERF_NO_RUST=""
+        [ "${TARGET_ARCH}" != "x86_64" ] && PERF_NO_RUST="1" || PERF_NO_RUST=""
 
         if [ "${LINUX}" = "ayn-odin" ]; then
           # Removed "BUILD_BPF_SKEL=0" from make parameters.
