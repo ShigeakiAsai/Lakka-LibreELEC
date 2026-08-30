@@ -1,0 +1,54 @@
+diff -uNr a/compiler/rustc_target/src/spec/mod.rs b/compiler/rustc_target/src/spec/mod.rs
+--- a/compiler/rustc_target/src/spec/mod.rs	2026-08-29 16:35:30.471993400 +0900
++++ b/compiler/rustc_target/src/spec/mod.rs	2026-08-30 20:20:03.794608995 +0900
+@@ -1443,6 +1443,7 @@
+     ("armv6zk-libreelec-linux-gnueabihf", armv6zk_libreelec_linux_gnueabihf),
+     ("armv7a-libreelec-linux-gnueabihf", armv7a_libreelec_linux_gnueabihf),
+     ("armv7ve-libreelec-linux-gnueabihf", armv7ve_libreelec_linux_gnueabihf),
++    ("armv8a-libreelec-linux-gnueabihf", armv8a_libreelec_linux_gnueabihf),
+     ("x86_64-unknown-linux-gnu", x86_64_unknown_linux_gnu),
+     ("x86_64-unknown-linux-gnux32", x86_64_unknown_linux_gnux32),
+     ("i686-unknown-linux-gnu", i686_unknown_linux_gnu),
+diff -uNr a/compiler/rustc_target/src/spec/targets/armv8a_libreelec_linux_gnueabihf.rs b/compiler/rustc_target/src/spec/targets/armv8a_libreelec_linux_gnueabihf.rs
+--- a/compiler/rustc_target/src/spec/targets/armv8a_libreelec_linux_gnueabihf.rs	1970-01-01 09:00:00.000000000 +0900
++++ b/compiler/rustc_target/src/spec/targets/armv8a_libreelec_linux_gnueabihf.rs	2026-08-30 04:42:15.134641200 +0900
+@@ -0,0 +1,39 @@
++use crate::spec::{Arch, CfgAbi, FloatAbi, Target, TargetMetadata, TargetOptions, base};
++
++pub(crate) fn target() -> Target {
++    Target {
++        llvm_target: "arm-unknown-linux-gnueabihf".into(),
++        metadata: TargetMetadata {
++            description: Some("Armv6 Linux hardfloat for LibreELEC (kernel 3.2, glibc 2.17)".into()),
++            tier: Some(3),
++            host_tools: Some(false),
++            std: Some(true),
++        },
++        pointer_width: 32,
++        data_layout: "e-m:e-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64".into(),
++        arch: Arch::Arm,
++        options: TargetOptions {
++            // ── Upstream arm-unknown-linux-gnueabihf defaults ─────────────
++            cfg_abi: CfgAbi::EabiHf,
++            llvm_floatabi: Some(FloatAbi::Hard),
++            // features: "+strict-align,+v6,+vfp2".into(),
++            max_atomic_width: Some(64),
++            mcount: "\u{1}__gnu_mcount_nc".into(),
++            llvm_mcount_intrinsic: Some("llvm.arm.gnu.eabi.mcount".into()),
++            // The default on linux is to have `default_uwtable=true`, but on
++            // this target we get an "`__aeabi_unwind_cpp_pr0` not defined"
++            // linker error, so set it to `true` here.
++            // FIXME(#146996): Remove this override once #146996 has been fixed.
++            default_uwtable: false,
++
++            // ── LibreELEC overrides ───────────────────────────────────────
++
++            // LibreELEC targets older ARM SoCs (e.g. Raspberry Pi, Amlogic)
++            // that need the -d32 flag to disable 32 double-precision VFP
++            // registers, keeping only 16
++            features: "+strict-align,+v6,+vfp2,-d32".into(),
++
++            ..base::linux_gnu::opts()
++        },
++    }
++}
