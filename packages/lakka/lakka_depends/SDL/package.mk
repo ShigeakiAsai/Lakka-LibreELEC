@@ -77,7 +77,15 @@ PKG_CONFIGURE_OPTS_TARGET="--enable-shared \
                            --disable-video-x11-vm --without-x"
 
 PKG_CONFIGURE_OPTS_HOST="${PKG_CONFIGURE_OPTS_TARGET}"
-
+# SDL:host only exists to produce sdl-config for SDL's own target
+# build (see PKG_DEPENDS_TARGET above), not to provide real host
+# audio. Reusing the target opts as-is pulls in the target sysroot's
+# ALSA include path (--with-alsa-inc-prefix=${SYSROOT_PREFIX}/usr/include),
+# which leaks target (aarch64) headers into the host (x86_64)
+# compiler via math.h's transitive include of bits/math-vector.h,
+# whose ARM SVE vector typedefs a host x86_64 build can't compile.
+# Disable ALSA for the host build instead.
+PKG_CONFIGURE_OPTS_HOST="${PKG_CONFIGURE_OPTS_HOST/--enable-alsa/--disable-alsa}"
 
 if [ "${OPENGL_SUPPORT}" = "yes" ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGL} glu"
