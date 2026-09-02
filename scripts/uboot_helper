@@ -250,6 +250,12 @@ devices = \
         'config': 'wetek-play2_defconfig'
       },
     },
+    'S922X': {
+      'odroid-go-ultra': {
+        'dtb': 'meson-g12b-odroid-go-ultra.dtb',
+        'config': 'odroid-go-ultra_defconfig'
+      },
+    },
   },
   'NXP': {
     'iMX6': {
