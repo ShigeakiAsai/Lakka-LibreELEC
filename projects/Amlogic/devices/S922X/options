@@ -1,0 +1,37 @@
+################################################################################
+# setup device defaults
+################################################################################
+
+  # The TARGET_CPU variable controls which processor should be targeted for
+  # generated code.
+    case $TARGET_ARCH in
+      aarch64)
+        TARGET_CPU="cortex-a73.cortex-a53"
+        TARGET_CPU_FLAGS="+crc+fp+simd"
+        ;;
+      arm)
+        TARGET_KERNEL_ARCH="arm64"
+        TARGET_FLOAT="hard"
+        TARGET_CPU="cortex-a73.cortex-a53"
+        TARGET_CPU_FLAGS="+crc"
+        TARGET_FPU="neon-fp-armv8"
+        ;;
+    esac
+
+  # Kernel target
+    KERNEL_TARGET="Image"
+
+  # kernel serial console
+    EXTRA_CMDLINE="quiet console=ttyAML0,115200n8 console=ttyGS0 console=tty0 systemd.debug_shell=ttyAML0"
+
+  # OpenGL-ES implementation to use
+    OPENGLES="mesa"
+
+  # Graphic drivers to use
+    GRAPHIC_DRIVERS="panfrost"
+
+  # KODI Player implementation to use
+    KODIPLAYER_DRIVER="$OPENGLES"
+
+  # Set the addon project
+    ADDON_PROJECT="ARMv8"
