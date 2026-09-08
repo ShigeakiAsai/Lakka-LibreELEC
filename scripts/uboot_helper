@@ -253,7 +253,7 @@ devices = \
     'S922X': {
       'odroid-go-ultra': {
         'dtb': 'meson-g12b-odroid-go-ultra.dtb',
-        'config': 'odroid-go-ultra_defconfig'
+        'config': 'odroidgou_defconfig'
       },
     },
   },
