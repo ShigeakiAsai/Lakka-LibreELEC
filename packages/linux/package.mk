@@ -22,6 +22,11 @@ case "${LINUX}" in
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     PKG_PATCH_DIRS="default"
     ;;
+  amlogic-s922x)
+    PKG_VERSION="6.18.45"
+    PKG_SHA256="30fa4a56579ca614ac125a12614f7f6466f87ab1278aef7b951dd74156deab33"
+    PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+    ;;
   raspberrypi)
     PKG_VERSION="b979ed0bcf372d0e063aeb488875bac6d6fd3c2e" # 6.12.77
     PKG_SHA256="ac91eb7ca952122c448602b937c9838d030edbf96ae3d7406c7863ecfb5a28af"
