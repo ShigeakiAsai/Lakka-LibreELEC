@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2026-present Team LibreELEC (https://libreelec.tv)
+
+echo "${BOOTLOADER}: installing u-boot.bin"
+
+# Clean up after previous build
+rm -rfv "${INSTALL}"/usr/share/bootloader/boot.ini
+rm -rfv "${INSTALL}"/usr/share/bootloader/u-boot*
+
+mkdir -p "${INSTALL}/usr/share/bootloader"
+
+if [ -f "${PKG_BUILD}/sd_fuse/u-boot.bin" ]; then
+  cp -av "${PKG_BUILD}/sd_fuse/u-boot.bin" "${INSTALL}/usr/share/bootloader"
+fi
