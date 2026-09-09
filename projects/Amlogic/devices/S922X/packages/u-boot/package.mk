@@ -24,7 +24,6 @@ PKG_NEED_UNPACK="$PROJECT_DIR/$PROJECT/bootloader"
 [ -n "$DEVICE" ] && PKG_NEED_UNPACK+=" $PROJECT_DIR/$PROJECT/devices/$DEVICE/bootloader"
 
 make_target() {
-  echo "DEBUG: pwd is $PWD"
   if [ -z "$UBOOT_SYSTEM" ]; then
     echo "UBOOT_SYSTEM must be set to build an image"
     echo "see './scripts/uboot_helper' for more information"
@@ -35,6 +34,12 @@ make_target() {
     DEBUG=${PKG_DEBUG} CROSS_COMPILE=aarch64-elf- LDFLAGS="" ARCH=arm make mrproper
     DEBUG=${PKG_DEBUG} CROSS_COMPILE=aarch64-elf- LDFLAGS="" ARCH=arm make $($ROOT/$SCRIPTS/uboot_helper $PROJECT $DEVICE $UBOOT_SYSTEM config)
     DEBUG=${PKG_DEBUG} CROSS_COMPILE=aarch64-elf- LDFLAGS="" ARCH=arm CFLAGS="" _python_sysroot="$TOOLCHAIN" _python_prefix=/ _python_exec_prefix=/ make $UBOOT_TARGET HOSTCC="$HOST_CC" HOSTCFLAGS="-I${TOOLCHAIN}/include" HOSTLDFLAGS="-L$TOOLCHAIN/lib" HOSTSTRIP="true" CONFIG_MKIMAGE_DTC_PATH="scripts/dtc/dtc"
+  fi
+}
+
+post_make_target() {
+  if [ -f "${PKG_BUILD}/build/u-boot.bin" ]; then
+    cp -av "${PKG_BUILD}/build/u-boot.bin" "${PKG_BUILD}/u-boot.bin"
   fi
 }
 
@@ -54,5 +59,9 @@ makeinstall_target() {
     cp -av ${FOUND_PATH} $INSTALL/usr/share/bootloader
     sed -e "s/@PROJECT@/${DEVICE:-$PROJECT}/g" \
         -i $INSTALL/usr/share/bootloader/canupdate.sh
+  fi
+
+  if [ -d "${PKG_BUILD}/tools/odroid_resource/res" ]; then
+    cp -av "${PKG_BUILD}/tools/odroid_resource/res" "${INSTALL}/usr/share/bootloader/"
   fi
 }
