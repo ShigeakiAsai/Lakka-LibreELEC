@@ -225,6 +225,15 @@ elif [ "${PROJECT}" = "Amlogic" ]; then
   EXCLUDE_LIBRETRO_CORES+=" lr_moonlight \
                             panda3ds"
 
+  if [ "${DEVICE}" = "S922X" ]; then
+    EXCLUDE_LIBRETRO_CORES+=" boom3 \
+                              melonds \
+                              vircon32 \
+                              vitaquake2 \
+                              vitaquake3"
+
+  fi
+
 elif [ "${PROJECT}" = "Ayn" ]; then
   EXCLUDE_LIBRETRO_CORES+=" lr_moonlight"
 

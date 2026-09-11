@@ -1,0 +1,53 @@
+diff -uNr a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-10 23:39:14.949772200 +0900
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-11 00:46:07.300574573 +0900
+@@ -21,9 +21,9 @@
+ 		rtc0 = &vrtc;
+ 	};
+ 
+-	adc-joystick-left {
++	ogu-adc-joystick {
+ 		compatible = "adc-joystick";
+-		io-channels = <&saradc 2>, <&saradc 3>;
++		io-channels = <&saradc 2>, <&saradc 3>, <&saradc 0>, <&saradc 1>;
+ 		poll-interval = <10>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+@@ -42,24 +42,15 @@
+ 			abs-fuzz = <32>;
+ 			abs-flat = <64>;
+ 		};
+-	};
+-
+-	adc-joystick-right {
+-		compatible = "adc-joystick";
+-		io-channels = <&saradc 0>, <&saradc 1>;
+-		poll-interval = <10>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		axis@0 {
+-			reg = <0>;
++		axis@2 {
++			reg = <2>;
+ 			linux,code = <ABS_RY>;
+ 			abs-range = <3150 950>;
+ 			abs-fuzz = <32>;
+ 			abs-flat = <64>;
+ 		};
+-		axis@1 {
+-			reg = <1>;
++		axis@3 {
++			reg = <3>;
+ 			linux,code = <ABS_RX>;
+ 			abs-range = <800 3000>;
+ 			abs-fuzz = <32>;
+@@ -78,7 +69,7 @@
+ 		#clock-cells = <0>;
+ 	};
+ 
+-	gpio-keys {
++	ogu-gpio-keys-gamepad {
+ 		compatible = "gpio-keys-polled";
+ 		poll-interval = <10>;
+ 		pinctrl-0 = <&keypad_gpio_pins>;
