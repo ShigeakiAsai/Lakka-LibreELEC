@@ -1,0 +1,21 @@
+diff -uNr a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-11 13:44:27.150809500 +0900
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-11 20:26:25.132573493 +0900
+@@ -31,7 +31,7 @@
+ 		axis@0 {
+ 			reg = <0>;
+ 			linux,code = <ABS_Y>;
+-			abs-range = <3150 950>;
++			abs-range = <950 3150>;
+ 			abs-fuzz = <32>;
+ 			abs-flat = <64>;
+ 		};
+@@ -45,7 +45,7 @@
+ 		axis@2 {
+ 			reg = <2>;
+ 			linux,code = <ABS_RY>;
+-			abs-range = <3150 950>;
++			abs-range = <950 3150>;
+ 			abs-fuzz = <32>;
+ 			abs-flat = <64>;
+ 		};
