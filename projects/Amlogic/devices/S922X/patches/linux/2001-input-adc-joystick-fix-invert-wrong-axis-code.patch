@@ -1,0 +1,21 @@
+diff -uNr a/drivers/input/joystick/adc-joystick.c b/drivers/input/joystick/adc-joystick.c
+--- a/drivers/input/joystick/adc-joystick.c	2026-06-02 00:54:55.000000000 +0900
++++ b/drivers/input/joystick/adc-joystick.c	2026-08-03 00:20:54.772606325 +0900
+@@ -45,7 +45,7 @@
+ 		if (ret < 0)
+ 			return;
+ 		if (joy->axes[i].inverted)
+-			val = adc_joystick_invert(input, i, val);
++			val = adc_joystick_invert(input, joy->axes[i].code, val);
+ 		input_report_abs(input, joy->axes[i].code, val);
+ 	}
+ 	input_sync(input);
+@@ -95,7 +95,7 @@
+ 		else
+ 			val &= GENMASK(msb, 0);
+ 		if (joy->axes[i].inverted)
+-			val = adc_joystick_invert(joy->input, i, val);
++			val = adc_joystick_invert(joy->input, joy->axes[i].code, val);
+ 		input_report_abs(joy->input, joy->axes[i].code, val);
+ 	}
+ 
