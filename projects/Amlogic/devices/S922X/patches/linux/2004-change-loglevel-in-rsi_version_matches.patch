@@ -1,0 +1,12 @@
+diff -uNr a/arch/arm64/kernel/rsi.c b/arch/arm64/kernel/rsi.c
+--- a/arch/arm64/kernel/rsi.c	2026-08-20 01:18:21.000000000 +0900
++++ b/arch/arm64/kernel/rsi.c	2026-09-12 23:08:25.204429415 +0900
+@@ -45,7 +45,7 @@
+ 		return false;
+ 
+ 	if (ret != RSI_SUCCESS) {
+-		pr_err("RME: RMM doesn't support RSI version %lu.%lu. Supported range: %lu.%lu-%lu.%lu\n",
++		pr_debug("RME: RMM doesn't support RSI version %lu.%lu. Supported range: %lu.%lu-%lu.%lu\n",
+ 		       RSI_ABI_VERSION_MAJOR, RSI_ABI_VERSION_MINOR,
+ 		       RSI_ABI_VERSION_GET_MAJOR(ver_lower),
+ 		       RSI_ABI_VERSION_GET_MINOR(ver_lower),
