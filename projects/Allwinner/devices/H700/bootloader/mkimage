@@ -20,3 +20,13 @@ if [ -n "${DTB}" ]; then
     fi
   done
 fi
+
+# add sun50i-h700-vdd-dram-lpddr3.dtbo overlay for lpddr3 devices
+case "${UBOOT_SYSTEM}" in
+  *-lpddr3)
+    echo "mkimage: adding lpddr3 vdd-dram overlay to extlinux.conf"
+    sed -i '/^  FDT \//a\  FDTOVERLAYS /overlays/sun50i-h700-vdd-dram-lpddr3.dtbo' \
+      "${LE_TMP}/extlinux/extlinux.conf"
+    mcopy -s "${LE_TMP}/extlinux" :: >"${SAVE_ERROR}" 2>&1 || show_error
+    ;;
+esac

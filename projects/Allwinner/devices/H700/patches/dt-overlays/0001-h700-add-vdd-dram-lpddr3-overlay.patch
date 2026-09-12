@@ -1,0 +1,31 @@
+diff -uNr a/Makefile b/Makefile
+--- a/Makefile	2021-02-16 04:35:12.000000000 +0900
++++ b/Makefile	2026-09-12 12:42:33.076079856 +0900
+@@ -10,6 +10,7 @@
+   overlays/allwinner/sun50i-h5-tve.dtbo \
+   overlays/allwinner/sun50i-h6-ir.dtbo \
+   overlays/allwinner/sun50i-h6-spdif.dtbo \
++  overlays/allwinner/sun50i-h700-vdd-dram-lpddr3.dtbo \
+   overlays/allwinner/sun8i-h2-plus-bpi-m2-zero-ethernet.dtbo \
+   overlays/allwinner/sun8i-h2-plus-ir.dtbo \
+   overlays/allwinner/sun8i-h2-plus-spdif.dtbo \
+diff -uNr a/overlays/allwinner/sun50i-h700-vdd-dram-lpddr3.dts b/overlays/allwinner/sun50i-h700-vdd-dram-lpddr3.dts
+--- a/overlays/allwinner/sun50i-h700-vdd-dram-lpddr3.dts	1970-01-01 09:00:00.000000000 +0900
++++ b/overlays/allwinner/sun50i-h700-vdd-dram-lpddr3.dts	2026-09-12 12:34:15.258068200 +0900
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ * Copyright (C) 2024 Philippe Simons <simons.philippe@gmail.com>.
++ *
++ * Locks the AXP717 dcdc3 (vdd-dram) rail to a fixed 1.2V for Anbernic
++ * H700 boards fitted with LPDDR3 memory instead of the default LPDDR4.
++ * Stacks with any panel overlay already selected via FDTOVERLAYS.
++ */
++
++/dts-v1/;
++/plugin/;
++
++&reg_dcdc3 {
++	regulator-min-microvolt = <1200000>;
++	regulator-max-microvolt = <1200000>;
++};

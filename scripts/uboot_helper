@@ -205,8 +205,52 @@ devices = \
         'dtb' : 'sun50i-h700-anbernic-rg-sp.dtb',
         'config' : 'anbernic_rg35xx_h700_defconfig'
       },
+      'anbernic-rg28xx-lpddr3' : {
+        'dtb' : 'sun50i-h700-anbernic-rg28xx.dtb',
+        'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
+      },
+      'anbernic-rg34xx-lpddr3' : {
+        'dtb' : 'sun50i-h700-anbernic-rg34xx.dtb',
+        'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
+      },
+      'anbernic-rg34xx-sp-lpddr3' : {
+        'dtb' : 'sun50i-h700-anbernic-rg34xx-sp.dtb',
+        'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
+      },
+      'anbernic-rg35xx-2024-lpddr3' : {
+        'dtb' : 'sun50i-h700-anbernic-rg35xx-2024.dtb',
+        'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
+      },
+      'anbernic-rg35xx-h-lpddr3' : {
+        'dtb' : 'sun50i-h700-anbernic-rg35xx-h.dtb',
+        'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
+      },
+      'anbernic-rg35xx-plus-lpddr3' : {
+        'dtb' : 'sun50i-h700-anbernic-rg35xx-plus.dtb',
+        'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
+      },
+      'anbernic-rg35xx-pro-lpddr3' : {
+        'dtb' : 'sun50i-h700-anbernic-rg35xx-pro.dtb',
+        'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
+      },
+      'anbernic-rg35xx-sp-lpddr3' : {
+        'dtb' : 'sun50i-h700-anbernic-rg35xx-sp.dtb',
+        'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
+      },
+      'anbernic-rg40xx-h-lpddr3' : {
+        'dtb' : 'sun50i-h700-anbernic-rg40xx-h.dtb',
+        'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
+      },
+      'anbernic-rg40xx-v-lpddr3' : {
+        'dtb' : 'sun50i-h700-anbernic-rg40xx-v.dtb',
+        'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
+      },
+      'anbernic-rgcubexx-lpddr3' : {
+        'dtb' : 'sun50i-h700-anbernic-rgcubexx.dtb',
+        'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
+      },
       'anbernic-rg-sp-lpddr3' : {
-        'dtb' : 'sun50i-h700-anbernic-rg-sp-lpddr3.dtb',
+        'dtb' : 'sun50i-h700-anbernic-rg-sp.dtb',
         'config' : 'anbernic_rg35xx_h700_lpddr3_defconfig'
       },
     },
