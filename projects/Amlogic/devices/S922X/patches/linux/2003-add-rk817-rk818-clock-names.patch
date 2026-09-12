@@ -1,0 +1,19 @@
+diff -uNr a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-12 20:17:29.998898000 +0900
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-12 22:49:01.304372346 +0900
+@@ -399,6 +399,7 @@
+ 		interrupt-parent = <&gpio_intc>;
+ 		interrupts = <IRQID_GPIOAO_7 IRQ_TYPE_LEVEL_LOW>; /* GPIOAO_7 */
+ 		#clock-cells = <1>;
++		clock-output-names = "rk818-clkout1", "rk818-clkout2";
+ 
+ 		vcc1-supply = <&vdd_sys>;
+ 		vcc2-supply = <&vdd_sys>;
+@@ -583,6 +584,7 @@
+ 		clock-names = "mclk";
+ 
+ 		#clock-cells = <1>;
++		clock-output-names = "rk817-clkout1", "rk817-clkout2";
+ 
+ 		regulators {
+ 			vddcpu_b: DCDC_REG2 {
