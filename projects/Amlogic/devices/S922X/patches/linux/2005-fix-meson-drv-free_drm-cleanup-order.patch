@@ -1,0 +1,17 @@
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -374,12 +374,12 @@
+ free_drm:
+-	drm_dev_put(drm);
+-
+ 	meson_encoder_dsi_remove(priv);
+ 	meson_encoder_hdmi_remove(priv);
+ 	meson_encoder_cvbs_remove(priv);
+ 
+ 	if (has_components)
+ 		component_unbind_all(dev, drm);
+ 
++	drm_dev_put(drm);
++
+ 	return ret;
+ }
