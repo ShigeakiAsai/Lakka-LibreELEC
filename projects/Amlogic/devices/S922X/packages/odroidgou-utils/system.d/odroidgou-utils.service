@@ -1,0 +1,12 @@
+[Unit]
+Description=Odroid Go Ultra headphone sense
+Before=retroarch.target
+
+[Service]
+Environment=HOME=/storage
+ExecStartPre=/usr/bin/amixer sset 'TDMOUT_B Lane 0' 100%%
+ExecStart=/usr/bin/headphone-sense 'ogu-gpio-keys-headphone'
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
