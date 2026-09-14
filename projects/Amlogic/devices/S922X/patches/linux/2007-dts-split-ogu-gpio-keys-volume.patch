@@ -1,0 +1,70 @@
+diff -uNr a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-14 08:09:39.090144100 +0900
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-14 10:39:20.988430407 +0900
+@@ -95,16 +95,6 @@
+ 		pinctrl-0 = <&keypad_gpio_pins>;
+ 		pinctrl-names = "default";
+ 
+-		volume-up-button {
+-			label = "VOLUME-UP";
+-			linux,code = <KEY_VOLUMEUP>;
+-			gpios = <&gpio GPIOX_8 GPIO_ACTIVE_LOW>;
+-		};
+-		volume-down-button {
+-			label = "VOLUME-DOWN";
+-			linux,code = <KEY_VOLUMEDOWN>;
+-			gpios = <&gpio GPIOX_9 GPIO_ACTIVE_LOW>;
+-		};
+ 		dpad-up-button {
+ 			label = "DPAD-UP";
+ 			linux,code = <BTN_DPAD_UP>;
+@@ -197,6 +187,24 @@
+ 		};
+ 	};
+ 
++	ogu-gpio-keys-volume {
++		compatible = "gpio-keys-polled";
++		poll-interval = <10>;
++		pinctrl-0 = <&volume_gpio_pins>;
++		pinctrl-names = "default";
++
++		volume-up-button {
++			label = "VOLUME-UP";
++			linux,code = <KEY_VOLUMEUP>;
++			gpios = <&gpio GPIOX_8 GPIO_ACTIVE_LOW>;
++		};
++		volume-down-button {
++			label = "VOLUME-DOWN";
++			linux,code = <KEY_VOLUMEDOWN>;
++			gpios = <&gpio GPIOX_9 GPIO_ACTIVE_LOW>;
++		};
++	};
++
+ 	memory@0 {
+ 		device_type = "memory";
+ 		reg = <0x0 0x0 0x0 0x40000000>;
+@@ -674,13 +682,22 @@
+ 	keypad_gpio_pins: keypad-gpio-state {
+ 		mux {
+ 			groups = "GPIOX_0", "GPIOX_1", "GPIOX_2", "GPIOX_3",
+-			         "GPIOX_4", "GPIOX_5", "GPIOX_6", "GPIOX_7",
+-				 "GPIOX_8", "GPIOX_9", "GPIOX_10", "GPIOX_11",
++				 "GPIOX_4", "GPIOX_5", "GPIOX_6", "GPIOX_7",
++				 "GPIOX_10", "GPIOX_11", 
+ 				 "GPIOX_12", "GPIOX_13", "GPIOX_14",  "GPIOX_15",
+ 				 "GPIOX_16", "GPIOX_17", "GPIOX_18",  "GPIOX_19";
+ 			function = "gpio_periphs";
+ 			bias-pull-up;
+ 			output-disable;
++		};
++	};
++
++	volume_gpio_pins: volume-gpio-state {
++		mux {
++			groups = "GPIOX_8", "GPIOX_9";
++			function = "gpio_periphs";
++			bias-pull-up;
++			output-disable;
+ 		};
+ 	};
+ };

@@ -34,7 +34,7 @@
     WINDOWMANAGER="sway"
 
   # additional packages to install
-    ADDITIONAL_PACKAGES+=" ogu-combo-gamepad"
+    ADDITIONAL_PACKAGES+=" ogu-combo-gamepad odroidgou-volkeys"
 
   # kernel serial console
     EXTRA_CMDLINE="console=ttyGS0 console=tty0 systemd.debug_shell=ttyAML0 console=ttyAML0,115200n8"
