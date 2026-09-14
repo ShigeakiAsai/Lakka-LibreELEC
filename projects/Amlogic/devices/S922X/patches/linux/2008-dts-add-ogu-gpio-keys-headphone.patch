@@ -1,0 +1,22 @@
+diff -uNr a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-14 10:39:20.988430407 +0900
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-14 12:07:09.212615033 +0900
+@@ -205,6 +205,18 @@
+ 		};
+ 	};
+ 
++	ogu-gpio-keys-headphone {
++		compatible = "gpio-keys-polled";
++		poll-interval = <10>;
++
++		headphone-detect-switch {
++			label = "HEADPHONE";
++			linux,input-type = <EV_SW>;
++			linux,code = <SW_HEADPHONE_INSERT>;
++			gpios = <&gpio_ao GPIOAO_9 GPIO_ACTIVE_HIGH>;
++		};
++	};
++
+ 	memory@0 {
+ 		device_type = "memory";
+ 		reg = <0x0 0x0 0x0 0x40000000>;
