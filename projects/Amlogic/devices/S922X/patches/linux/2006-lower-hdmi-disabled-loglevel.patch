@@ -1,0 +1,10 @@
+--- a/drivers/gpu/drm/meson/meson_encoder_hdmi.c
++++ b/drivers/gpu/drm/meson/meson_encoder_hdmi.c
+@@ -386,7 +386,7 @@
+ 	/* HDMI Transceiver Bridge */
+ 	remote = of_graph_get_remote_node(priv->dev->of_node, 1, 0);
+ 	if (!remote) {
+-		dev_err(priv->dev, "HDMI transceiver device is disabled");
++		dev_dbg(priv->dev, "HDMI transceiver device is disabled");
+ 		return 0;
+ 	}
