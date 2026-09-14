@@ -1,0 +1,25 @@
+diff -uNr a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-14 12:07:09.212615100 +0900
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-09-14 23:39:52.572571302 +0900
+@@ -764,15 +764,17 @@
+ 
+ 
+ &tdmif_b {
+-	pinctrl-0 = <&tdm_b_dout0_pins>, <&tdm_b_fs_pins>, <&tdm_b_sclk_pins>, <&tdm_b_din1_pins>;
++	pinctrl-0 = <&tdm_b_dout0_pins>, <&tdm_b_fs_pins>, <&tdm_b_sclk_pins>, <&tdm_b_din1_pins>, <&mclk0_a_pins>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+ 
+-	assigned-clocks = <&clkc_audio AUD_CLKID_TDM_SCLK_PAD1>,
++	assigned-clocks = <&clkc_audio AUD_CLKID_TDM_MCLK_PAD0>,
++			  <&clkc_audio AUD_CLKID_TDM_SCLK_PAD1>,
+ 			  <&clkc_audio AUD_CLKID_TDM_LRCLK_PAD1>;
+-	assigned-clock-parents = <&clkc_audio AUD_CLKID_MST_B_SCLK>,
++	assigned-clock-parents = <&clkc_audio AUD_CLKID_MST_B_MCLK>,
++				 <&clkc_audio AUD_CLKID_MST_B_SCLK>,
+ 				 <&clkc_audio AUD_CLKID_MST_B_LRCLK>;
+-	assigned-clock-rates = <0>, <0>;
++	assigned-clock-rates = <0>, <0>, <0>;
+ };
+ 
+ &tdmin_b {
