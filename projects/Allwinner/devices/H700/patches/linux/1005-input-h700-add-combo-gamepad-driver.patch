@@ -1,0 +1,404 @@
+diff -uNr a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
+--- a/drivers/input/joystick/Kconfig	2026-06-02 00:54:55.000000000 +0900
++++ b/drivers/input/joystick/Kconfig	2026-09-15 13:26:43.236440943 +0900
+@@ -114,6 +114,23 @@
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called guillemot.
+ 
++config JOYSTICK_H700_COMBO_GAMEPAD
++	tristate "Allwinner H700 combo gamepad (adc-joystick + gpio-keys merge)"
++	depends on INPUT
++	help
++	  Say Y here if you want in-kernel support for merging the
++	  "RGxx-adc-joystick" and "RGxx-gpio-keys-gamepad" input devices
++	  found on Allwinner H700 based Anbernic handhelds into a single
++	  "RGxx-combo-gamepad" device, replacing the previous userspace
++	  evsieve-based merge.
++
++	  Boards without an "RGxx-adc-joystick" node (no analog sticks)
++	  are unaffected; "RGxx-gpio-keys-gamepad" is left untouched and
++	  visible to userspace as before.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called h700_combo_gamepad.
++
+ config JOYSTICK_INTERACT
+ 	tristate "InterAct digital joysticks and gamepads"
+ 	select GAMEPORT
+diff -uNr a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
+--- a/drivers/input/joystick/Makefile	2026-06-02 00:54:55.000000000 +0900
++++ b/drivers/input/joystick/Makefile	2026-09-15 12:56:54.804301159 +0900
+@@ -19,6 +19,7 @@
+ obj-$(CONFIG_JOYSTICK_GRIP)		+= grip.o
+ obj-$(CONFIG_JOYSTICK_GRIP_MP)		+= grip_mp.o
+ obj-$(CONFIG_JOYSTICK_GUILLEMOT)	+= guillemot.o
++obj-$(CONFIG_JOYSTICK_H700_COMBO_GAMEPAD)	+= h700_combo_gamepad.o
+ obj-$(CONFIG_JOYSTICK_IFORCE)		+= iforce/
+ obj-$(CONFIG_JOYSTICK_INTERACT)		+= interact.o
+ obj-$(CONFIG_JOYSTICK_JOYDUMP)		+= joydump.o
+diff -uNr a/drivers/input/joystick/h700_combo_gamepad.c b/drivers/input/joystick/h700_combo_gamepad.c
+--- a/drivers/input/joystick/h700_combo_gamepad.c	1970-01-01 09:00:00.000000000 +0900
++++ b/drivers/input/joystick/h700_combo_gamepad.c	2026-09-16 09:40:52.581540269 +0900
+@@ -0,0 +1,362 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * H700 combo gamepad input handler
++ *
++ * Merges the mainline "RGxx-adc-joystick" (ABS-only) and
++ * "RGxx-gpio-keys-gamepad" (KEY-only) input devices into a single
++ * virtual "RGxx-combo-gamepad" device entirely in-kernel, using the
++ * standard input_handler/input_grab_device mechanism (the same
++ * kernel facility evdev/joydev themselves are built on).
++ *
++ * This replaces the previous userspace evsieve-based merge. Boards
++ * without an "RGxx-adc-joystick" node (no analog sticks) are
++ * completely unaffected: "RGxx-gpio-keys-gamepad" is simply never
++ * grabbed and stays visible to userspace exactly as before.
++ *
++ * Design notes:
++ *  - Single global instance: H700 boards only ever have one onboard
++ *    gamepad, so a static struct is used instead of per-match private
++ *    data. Not intended to handle multiple simultaneous instances.
++ *  - Grab is deferred until BOTH source devices have connected, since
++ *    probe order between adc-joystick and gpio-keys is not guaranteed
++ *    (adc-joystick may hit -EPROBE_DEFER on its iio channel/mux
++ *    dependencies). This avoids any startup-order race.
++ *  - The combo device's ABS parameters (min/max/fuzz/flat) are copied
++ *    directly from the live "RGxx-adc-joystick" device's absinfo
++ *    rather than hardcoded, so per-board axis range/inversion
++ *    differences declared in the DT are preserved automatically.
++ *  - The KEY capability set matches the previous userspace
++ *    "--standard-gamepad" declaration (fixed set, fixed order) so
++ *    that RetroArch's udev joypad driver (which assigns button index
++ *    by ascending EV_KEY code) keeps producing the same indices, and
++ *    existing retroarch.cfg / autoconfig files keep working unchanged.
++ *
++ * Copyright (C) 2026 Shigeaki Asai
++ */
++
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/input.h>
++#include <linux/bitops.h>
++#include <linux/workqueue.h>
++
++#define DRIVER_NAME	"h700_combo_gamepad"
++
++#define DEV_NAME_ADC		"RGxx-adc-joystick"
++#define DEV_NAME_GPIO		"RGxx-gpio-keys-gamepad"
++#define DEV_NAME_GPIO_HYBRID	"RGxx-gpio-keys-gamepad-hybrid"
++
++/*
++ * Fixed key set/order, identical to the retired userspace
++ * "--standard-gamepad" declaration. Indices below are for reference
++ * only (RetroArch derives them itself from ascending EV_KEY code, not
++ * from this array's order):
++ *
++ *  0 BTN_SOUTH   1 BTN_EAST    2 BTN_NORTH   3 BTN_WEST
++ *  4 BTN_TL      5 BTN_TR      6 BTN_TL2     7 BTN_TR2
++ *  8 BTN_SELECT  9 BTN_START  10 BTN_MODE
++ * 11 BTN_THUMBL 12 BTN_THUMBR
++ * 13 BTN_DPAD_UP 14 BTN_DPAD_DOWN 15 BTN_DPAD_LEFT 16 BTN_DPAD_RIGHT
++ */
++static const unsigned int h700_combo_keys[] = {
++	BTN_SOUTH, BTN_EAST, BTN_NORTH, BTN_WEST,
++	BTN_TL, BTN_TR, BTN_TL2, BTN_TR2,
++	BTN_SELECT, BTN_START, BTN_MODE,
++	BTN_THUMBL, BTN_THUMBR,
++	BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT,
++};
++
++struct h700_combo {
++	struct mutex lock;
++	struct input_handle adc_handle;
++	struct input_handle gpio_handle;
++	struct input_dev *combo_dev;
++	bool adc_present;
++	bool gpio_present;
++	bool grabbed;
++	/*
++	 * input_register_device()/input_unregister_device() both take
++	 * the kernel's global input_mutex, which is already held by the
++	 * caller while our connect()/disconnect() callbacks run (see
++	 * input_register_device()'s call to input_attach_handler()).
++	 * Calling either of them directly from connect()/disconnect()
++	 * would therefore self-deadlock on input_mutex. All device
++	 * (de)activation is deferred to this work item instead, which
++	 * runs in ordinary process context after connect()/disconnect()
++	 * has already returned and released input_mutex.
++	 */
++	struct work_struct work;
++};
++
++/* Single global instance: see design notes above. */
++static struct h700_combo h700c;
++
++static void h700_combo_event(struct input_handle *handle, unsigned int type,
++			      unsigned int code, int value)
++{
++	struct h700_combo *c = handle->private;
++
++	if (!c->grabbed || !c->combo_dev)
++		return;
++
++	if (type == EV_SYN) {
++		if (code == SYN_REPORT)
++			input_sync(c->combo_dev);
++		return;
++	}
++
++	input_event(c->combo_dev, type, code, value);
++}
++
++static bool h700_combo_try_activate(struct h700_combo *c)
++{
++	struct input_dev *dev, *adc_dev;
++	int err, i, axis;
++
++	if (!c->adc_present || !c->gpio_present || c->grabbed)
++		return c->grabbed;
++
++	dev = input_allocate_device();
++	if (!dev)
++		return false;
++
++	dev->name = "RGxx-combo-gamepad";
++	dev->id.bustype = BUS_HOST;
++	dev->id.vendor  = 0x0001;
++	dev->id.product = 0x0001;
++	dev->id.version = 0x0001;
++
++	__set_bit(EV_KEY, dev->evbit);
++	for (i = 0; i < ARRAY_SIZE(h700_combo_keys); i++)
++		__set_bit(h700_combo_keys[i], dev->keybit);
++
++	/*
++	 * Copy ABS axis parameters verbatim from the live adc-joystick
++	 * device instead of hardcoding them, so per-board abs-range /
++	 * inversion set in the DT is preserved exactly.
++	 */
++	adc_dev = c->adc_handle.dev;
++	__set_bit(EV_ABS, dev->evbit);
++	for_each_set_bit(axis, adc_dev->absbit, ABS_CNT) {
++		struct input_absinfo *ai = &adc_dev->absinfo[axis];
++
++		input_set_abs_params(dev, axis, ai->minimum, ai->maximum,
++				      ai->fuzz, ai->flat);
++		/*
++		 * Also seed the combo device with the stick's current
++		 * live value, not just its declared range. Without
++		 * this, the combo device's axis value starts at 0
++		 * (input_set_abs_params()'s default) until the first
++		 * real stick movement arrives. Userspace joypad
++		 * enumeration (e.g. RetroArch's udev driver) does not
++		 * appear to treat a pad as fully active until it has
++		 * observed a genuine ABS update, so key input alone was
++		 * silently ignored on boards where the stick happened
++		 * to be left untouched, even though grab and relay were
++		 * already working correctly underneath.
++		 */
++		dev->absinfo[axis].value = ai->value;
++	}
++
++	err = input_register_device(dev);
++	if (err) {
++		input_free_device(dev);
++		return false;
++	}
++
++	c->combo_dev = dev;
++
++	err = input_grab_device(&c->adc_handle);
++	if (err)
++		goto err_unregister;
++
++	err = input_grab_device(&c->gpio_handle);
++	if (err)
++		goto err_ungrab_adc;
++
++	c->grabbed = true;
++
++	/*
++	 * In addition to seeding dev->absinfo[].value above, also emit
++	 * one real ABS update + SYN_REPORT now that the device is
++	 * grabbed and fully wired up. This covers the possibility that
++	 * userspace needs to actually observe a live event rather than
++	 * just inspect static axis metadata.
++	 */
++	for_each_set_bit(axis, dev->absbit, ABS_CNT)
++		input_event(dev, EV_ABS, axis, dev->absinfo[axis].value);
++	input_sync(dev);
++
++	pr_info(DRIVER_NAME ": RGxx-combo-gamepad active\n");
++	return true;
++
++err_ungrab_adc:
++	input_release_device(&c->adc_handle);
++err_unregister:
++	input_unregister_device(c->combo_dev);
++	c->combo_dev = NULL;
++	return false;
++}
++
++static void h700_combo_deactivate(struct h700_combo *c)
++{
++	if (c->grabbed) {
++		/*
++		 * Only release a handle whose underlying device is still
++		 * present. If a device has already disconnected, its
++		 * grab reference goes away with it; touching handle->dev
++		 * here would risk a use-after-free.
++		 */
++		if (c->gpio_present)
++			input_release_device(&c->gpio_handle);
++		if (c->adc_present)
++			input_release_device(&c->adc_handle);
++		c->grabbed = false;
++	}
++
++	if (c->combo_dev) {
++		input_unregister_device(c->combo_dev);
++		c->combo_dev = NULL;
++		pr_info(DRIVER_NAME ": RGxx-combo-gamepad deactivated\n");
++	}
++}
++
++/*
++ * Runs in ordinary process context (never while input_mutex is held),
++ * so it is safe to call input_register_device()/input_unregister_device()
++ * here. Re-checks current presence flags each time it runs, so it
++ * correctly handles activation, deactivation, and connect/disconnect
++ * events arriving in any order or interleaving.
++ */
++static void h700_combo_work_fn(struct work_struct *work)
++{
++	struct h700_combo *c = container_of(work, struct h700_combo, work);
++
++	mutex_lock(&c->lock);
++	if (c->adc_present && c->gpio_present)
++		h700_combo_try_activate(c);
++	else
++		h700_combo_deactivate(c);
++	mutex_unlock(&c->lock);
++}
++
++static int h700_combo_connect(struct input_handler *handler,
++			       struct input_dev *dev,
++			       const struct input_device_id *id)
++{
++	bool is_adc = !strcmp(dev->name, DEV_NAME_ADC);
++	struct input_handle *handle = is_adc ? &h700c.adc_handle
++					      : &h700c.gpio_handle;
++	int err;
++
++	handle->dev = dev;
++	handle->handler = handler;
++	handle->name = DRIVER_NAME;
++	handle->private = &h700c;
++
++	err = input_register_handle(handle);
++	if (err)
++		return err;
++
++	err = input_open_device(handle);
++	if (err) {
++		input_unregister_handle(handle);
++		return err;
++	}
++
++	mutex_lock(&h700c.lock);
++	if (is_adc)
++		h700c.adc_present = true;
++	else
++		h700c.gpio_present = true;
++	mutex_unlock(&h700c.lock);
++	schedule_work(&h700c.work);
++
++	pr_info(DRIVER_NAME ": connected %s\n", dev->name);
++	return 0;
++}
++
++static void h700_combo_disconnect(struct input_handle *handle)
++{
++	bool is_adc = (handle == &h700c.adc_handle);
++
++	/*
++	 * Close/unregister our own handle for the disconnecting device
++	 * synchronously, as is standard practice for input handlers.
++	 * The combo device's own unregistration (which needs
++	 * input_mutex, see the comment on struct h700_combo::work)
++	 * and releasing the grab on the *surviving* device are deferred
++	 * to the work item instead.
++	 */
++	input_close_device(handle);
++	input_unregister_handle(handle);
++
++	mutex_lock(&h700c.lock);
++	if (is_adc)
++		h700c.adc_present = false;
++	else
++		h700c.gpio_present = false;
++	mutex_unlock(&h700c.lock);
++
++	schedule_work(&h700c.work);
++}
++
++static bool h700_combo_match(struct input_handler *handler,
++			      struct input_dev *dev)
++{
++	return !strcmp(dev->name, DEV_NAME_ADC) ||
++	       !strcmp(dev->name, DEV_NAME_GPIO) ||
++	       !strcmp(dev->name, DEV_NAME_GPIO_HYBRID);
++}
++
++/*
++ * This kernel's input_match_device() loop only continues while
++ * id->flags is non-zero (an all-zero entry is treated purely as the
++ * table terminator, never entered). So the catch-all entry below
++ * must have a non-zero .flags value to be considered at all.
++ *
++ * INPUT_DEVICE_ID_MATCH_EVBIT is used here purely to satisfy that
++ * requirement, not to restrict matching: input_match_device_id()
++ * always runs its bitmap_subset() checks (evbit/keybit/etc.)
++ * regardless of which MATCH_* flags are set, and since .evbit here
++ * is left as the empty bitmap, that check trivially passes for any
++ * device. This kernel's struct input_device_id also has no
++ * name-matching support (no INPUT_DEVICE_ID_MATCH_DEVNAME / .name
++ * field), so the real filtering by device name happens entirely in
++ * h700_combo_match() above. The second, all-zero entry is the
++ * required array terminator.
++ */
++static const struct input_device_id h700_combo_ids[] = {
++	{ .flags = INPUT_DEVICE_ID_MATCH_EVBIT },
++	{ },
++};
++MODULE_DEVICE_TABLE(input, h700_combo_ids);
++
++static struct input_handler h700_combo_handler = {
++	.event      = h700_combo_event,
++	.match      = h700_combo_match,
++	.connect    = h700_combo_connect,
++	.disconnect = h700_combo_disconnect,
++	.name       = DRIVER_NAME,
++	.id_table   = h700_combo_ids,
++};
++
++static int __init h700_combo_init(void)
++{
++	mutex_init(&h700c.lock);
++	INIT_WORK(&h700c.work, h700_combo_work_fn);
++	return input_register_handler(&h700_combo_handler);
++}
++
++static void __exit h700_combo_exit(void)
++{
++	input_unregister_handler(&h700_combo_handler);
++	cancel_work_sync(&h700c.work);
++}
++
++module_init(h700_combo_init);
++module_exit(h700_combo_exit);
++
++MODULE_DESCRIPTION("H700 adc-joystick + gpio-keys-gamepad combo input handler");
++MODULE_AUTHOR("Shigeaki Asai");
++MODULE_LICENSE("GPL");

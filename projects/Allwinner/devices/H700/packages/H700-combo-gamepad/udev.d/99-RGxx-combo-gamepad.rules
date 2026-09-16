@@ -1,0 +1,10 @@
+# Boards with an analog-stick capable "RGxx-gpio-keys-gamepad-hybrid" node
+# (see the matching DTS "label" override) have their raw gpio-keys-gamepad
+# device grabbed and merged into "RGxx-combo-gamepad" by the in-kernel
+# h700_combo_gamepad input handler. Hide the raw device from RetroArch's
+# udev joypad enumeration (which filters on ID_INPUT_JOYSTICK=1) so users
+# only ever see the merged device, without needing to coordinate with the
+# handler's grab timing: this rule is static and always applies whenever
+# this device name is present, since only analog-stick capable boards ever
+# use this name (see the DTS "label" override).
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="RGxx-gpio-keys-gamepad-hybrid", ENV{ID_INPUT_JOYSTICK}="0"

@@ -1,0 +1,72 @@
+diff -uNr a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg34xx-sp.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg34xx-sp.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg34xx-sp.dts	2026-09-15 15:07:10.308273720 +0000
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg34xx-sp.dts	2026-09-15 15:07:10.310335659 +0000
+@@ -84,6 +84,8 @@
+ };
+ 
+ &gpio_keys_gamepad {
++	label = "RGxx-gpio-keys-gamepad-hybrid";
++
+ 	button-thumbl {
+ 		label = "GPIO Thumb Left";
+ 		gpios = <&pio 4 8 GPIO_ACTIVE_LOW>; /* PE8 */
+diff -uNr a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts	2026-09-15 15:07:10.308455081 +0000
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts	2026-09-15 15:07:10.310453444 +0000
+@@ -122,6 +122,8 @@
+ };
+ 
+ &gpio_keys_gamepad {
++	label = "RGxx-gpio-keys-gamepad-hybrid";
++
+ 	button-thumbl {
+ 		label = "GPIO Thumb Left";
+ 		gpios = <&pio 4 8 GPIO_ACTIVE_LOW>; /* PE8 */
+diff -uNr a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-pro.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-pro.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-pro.dts	2026-09-15 15:07:10.308508959 +0000
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-pro.dts	2026-09-15 15:07:10.310474376 +0000
+@@ -84,6 +84,8 @@
+ };
+ 
+ &gpio_keys_gamepad {
++	label = "RGxx-gpio-keys-gamepad-hybrid";
++
+ 	button-thumbl {
+ 		label = "GPIO Thumb Left";
+ 		gpios = <&pio 4 8 GPIO_ACTIVE_LOW>; /* PE8 */
+diff -uNr a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-h.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-h.dts	2026-09-15 15:07:10.308530235 +0000
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-h.dts	2026-09-15 15:07:10.310496550 +0000
+@@ -83,6 +83,8 @@
+ };
+ 
+ &gpio_keys_gamepad {
++	label = "RGxx-gpio-keys-gamepad-hybrid";
++
+ 	button-thumbl {
+ 		label = "GPIO Thumb Left";
+ 		gpios = <&pio 4 8 GPIO_ACTIVE_LOW>; /* PE8 */
+diff -uNr a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-v.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-v.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-v.dts	2026-09-15 15:07:10.308551500 +0000
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg40xx-v.dts	2026-09-15 15:07:10.310509956 +0000
+@@ -83,6 +83,8 @@
+ };
+ 
+ &gpio_keys_gamepad {
++	label = "RGxx-gpio-keys-gamepad-hybrid";
++
+ 	button-thumbl {
+ 		label = "GPIO Thumb Left";
+ 		gpios = <&pio 4 8 GPIO_ACTIVE_LOW>; /* PE8 */
+diff -uNr a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rgcubexx.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rgcubexx.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rgcubexx.dts	2026-09-15 15:07:10.308565547 +0000
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rgcubexx.dts	2026-09-15 15:07:10.310560271 +0000
+@@ -84,6 +84,8 @@
+ };
+ 
+ &gpio_keys_gamepad {
++	label = "RGxx-gpio-keys-gamepad-hybrid";
++
+ 	button-thumbl {
+ 		label = "GPIO Thumb Left";
+ 		gpios = <&pio 4 8 GPIO_ACTIVE_LOW>; /* PE8 */
