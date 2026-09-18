@@ -15,3 +15,7 @@ makeinstall_target() {
   mkdir -p "${INSTALL}/usr/sbin"
     cp -av ./usb_modeswitch "${INSTALL}/usr/sbin"
 }
+
+post_install() {
+  enable_service 91-usb-modeswitch-lakka-coldplug.service
+}

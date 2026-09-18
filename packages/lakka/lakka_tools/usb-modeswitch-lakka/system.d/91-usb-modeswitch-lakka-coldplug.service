@@ -1,0 +1,17 @@
+[Unit]
+Description=Retrigger udev add events for USB Wi-Fi devices stuck in storage mode (coldplug safety net)
+DefaultDependencies=no
+After=systemd-udevd.service
+Wants=systemd-udevd.service
+Before=network-pre.target
+ConditionPathExists=/usr/bin/udevadm
+
+[Service]
+Type=oneshot
+ExecStartPre=-/usr/bin/udevadm settle --timeout=10
+ExecStart=/usr/bin/udevadm trigger --subsystem-match=usb --action=add --attr-match=idVendor=0bda --attr-match=idProduct=1a2b
+ExecStart=/usr/bin/udevadm trigger --subsystem-match=usb --action=add --attr-match=idVendor=0e8d --attr-match=idProduct=2870
+RemainAfterExit=no
+
+[Install]
+WantedBy=sysinit.target
