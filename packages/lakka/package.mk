@@ -1,7 +1,7 @@
 PKG_NAME="lakka"
 PKG_LICENSE="GPL"
 PKG_SITE="https://www.lakka.tv"
-PKG_DEPENDS_TARGET="systemd lakka_update retroarch joyutils sixpair empty retrorama_theme_xmb"
+PKG_DEPENDS_TARGET="systemd lakka_update retroarch joyutils sixpair empty retrorama_theme_xmb lakka_mount_agent"
 PKG_SECTION="virtual"
 PKG_LONGDESC="Root package used to build libretro suite"
 
