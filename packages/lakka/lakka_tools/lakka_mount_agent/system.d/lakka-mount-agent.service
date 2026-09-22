@@ -1,0 +1,13 @@
+[Unit]
+Description=Lakka Mount Agent - retries configured .mount units when IPv4 becomes available
+After=connman.service
+ConditionPathExists=/storage/.config/system.d/storage-roms-nas.mount
+
+[Service]
+ExecStart=/usr/bin/lakka-mount-agent --unit storage-roms-nas.mount
+Restart=always
+RestartSec=5
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target
