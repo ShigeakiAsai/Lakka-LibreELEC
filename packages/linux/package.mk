@@ -66,6 +66,12 @@ case "${LINUX}" in
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
     PKG_PATCH_DIRS="default"
     ;;
+  allwinner-h616)
+    PKG_VERSION="7.2.6"
+    PKG_SHA256="039aef84f2b0994aeda3f4fcfc3d02ec9d7a9bbb9020ea264c43f446c860f606"
+    PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+    PKG_PATCH_DIRS=""
+    ;;
   *)
     PKG_VERSION="6.18.19"
     PKG_SHA256="eaaf78271cd07c68ad9c4c9a70c72718b33abbd716239d82bac96b1751eb090c"
@@ -483,6 +489,7 @@ make_target() {
         NO_LIBBABELTRACE=1 \
         NO_CAPSTONE=1 \
         NO_LIBPFM4=1 \
+        NO_RUST=1 \
         BUILD_BPF_SKEL=0 \
         CROSS_COMPILE="${TARGET_PREFIX}" \
         JOBS="${CONCURRENCY_MAKE_LEVEL}" \
