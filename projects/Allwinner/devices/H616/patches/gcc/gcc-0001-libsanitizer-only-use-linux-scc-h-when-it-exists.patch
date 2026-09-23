@@ -1,0 +1,34 @@
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Subject: [PATCH] libsanitizer: only use <linux/scc.h> when it exists
+
+Linux 7.1 dropped include/uapi/linux/scc.h together with the SCC
+hamradio driver, so building libsanitizer against 7.1+ kernel headers
+fails with "linux/scc.h: No such file or directory".
+
+The two struct sizes it provides are not referenced by any interceptor
+in this version, so guard both the include and the size definitions
+with __has_include(). Builds against older headers are unchanged.
+---
+--- a/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cpp
++++ b/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cpp
+@@ -150,7 +150,9 @@
+ #include <linux/lp.h>
+ #include <linux/mroute.h>
+ #include <linux/mroute6.h>
++#if __has_include(<linux/scc.h>)
+ #include <linux/scc.h>
++#endif
+ #include <linux/serial.h>
+ #include <sys/msg.h>
+ #include <sys/ipc.h>
+@@ -508,8 +510,10 @@
+   unsigned struct_kbsentry_sz = sizeof(struct kbsentry);
+   unsigned struct_mtconfiginfo_sz = sizeof(struct mtconfiginfo);
+   unsigned struct_nr_parms_struct_sz = sizeof(struct nr_parms_struct);
++#if __has_include(<linux/scc.h>)
+   unsigned struct_scc_modem_sz = sizeof(struct scc_modem);
+   unsigned struct_scc_stat_sz = sizeof(struct scc_stat);
++#endif
+   unsigned struct_serial_multiport_struct_sz
+       = sizeof(struct serial_multiport_struct);
+   unsigned struct_serial_struct_sz = sizeof(struct serial_struct);
