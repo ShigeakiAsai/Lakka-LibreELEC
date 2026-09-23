@@ -1,0 +1,75 @@
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Subject: [PATCH] arm64: dts: allwinner: h618: orangepi-zero2w: Enable HDMI
+
+The Orange Pi Zero 2W has a mini-HDMI (type C) connector, but unlike the
+Zero2 and Zero3 it does not include sun50i-h616-orangepi-zero.dtsi, so
+the H616 HDMI enablement there never reached it.
+
+Add the connector, and enable the display engine, the HDMI controller
+(HVCC from ALDO1, 1.8V, as on the Zero3 which uses the same AXP313A
+setup), the audio hub and the HDMI sound card.
+---
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero2w.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero2w.dts
+@@ -24,6 +24,17 @@
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	connector {
++		compatible = "hdmi-connector";
++		type = "c";
++
++		port {
++			hdmi_con_in: endpoint {
++				remote-endpoint = <&hdmi_out_con>;
++			};
++		};
++	};
++
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+@@ -54,6 +65,10 @@
+ 	};
+ };
+ 
++&ahub {
++	status = "okay";
++};
++
+ &codec {
+ 	allwinner,audio-routing = "Line Out", "LINEOUT";
+ 	status = "okay";
+@@ -63,6 +78,10 @@
+ 	cpu-supply = <&reg_dcdc2>;
+ };
+ 
++&de {
++	status = "okay";
++};
++
+ &ehci1 {
+ 	status = "okay";
+ };
+@@ -74,6 +93,21 @@
+ 	status = "okay";
+ };
+ 
++&hdmi {
++	hvcc-supply = <&reg_aldo1>;
++	status = "okay";
++};
++
++&hdmi_out {
++	hdmi_out_con: endpoint {
++		remote-endpoint = <&hdmi_con_in>;
++	};
++};
++
++&hdmi_sound {
++	status = "okay";
++};
++
+ &mmc0 {
+ 	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>;	/* PF6 */
+ 	bus-width = <4>;
