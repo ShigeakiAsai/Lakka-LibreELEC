@@ -43,7 +43,7 @@ fi
 if [ "${OPENGLES_SUPPORT}" = yes ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
   PKG_CONFIGURE_OPTS_TARGET+=" --enable-opengles"
-  if [ "${DEVICE:0:4}" =  "RPi4" ] || [ "${DEVICE:0:4}" = "RPi5" ] || [ "${DEVICE}" = "RK3288" ] || [ "${DEVICE}" = "RK3326" ] || [ "${DEVICE}" = "RK3399" ] || [ "${PROJECT}" = "Generic" ] || [ "${DEVICE}" = "Odin" ]; then
+  if [ "${DEVICE:0:4}" =  "RPi4" ] || [ "${DEVICE:0:4}" = "RPi5" ] || [ "${DEVICE}" = "RK3288" ] || [ "${DEVICE}" = "RK3326" ] || [ "${DEVICE}" = "RK3399" ] || [ "${PROJECT}" = "Generic" ] || [ "${DEVICE}" = "Odin" ] || [ "${DEVICE}" = "H616" ]; then
     PKG_CONFIGURE_OPTS_TARGET+=" --enable-opengles3 \
                                  --enable-opengles3_1"
     if [ "${PROJECT}" = "Generic" ]; then
@@ -368,6 +368,11 @@ makeinstall_target() {
 
     #HACK: Temporary hack for touchscreen
     sed -i ${ra_config} -e 's|^video_windowed_fullscreen = .*|video_windowed_fullscreen = "true"|'
+  fi
+
+  # Allwinner H616: route audio to the HDMI card, not the analog codec
+  if [ "${PROJECT}" = "Allwinner" -a "${DEVICE}" = "H616" ]; then
+    sed -i ${ra_config} -e 's|^audio_device = .*|audio_device = "default:CARD=sunxihdmi"|'
   fi
 
   # add variables to environment file
