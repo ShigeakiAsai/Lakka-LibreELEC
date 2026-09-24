@@ -1,0 +1,66 @@
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Subject: [PATCH] arm64: dts: allwinner: h618: orangepi-zero3: Add GPU OPP table
+
+The H616 GPU node has no OPP table, so panfrost devfreq is not used and
+the Mali-G31 stays at its boot clock (432 MHz).
+
+Add the GPU OPP frequencies used by the H700 (same H616 die) Anbernic
+boards, 420-648 MHz. The GPU supply is DCDC1 "vdd-gpu-sys" (810-990 mV),
+which also feeds the rest of the SoC. Scaling its voltage with the GPU
+(900/960 mV as on the H700 boards) made HDMI noise visible whenever the
+GPU load changed, e.g. on menu transitions, so keep every OPP at 960 mV,
+the voltage of the top OPP, and only scale the clock.
+
+Experimental: under test on Orange Pi Zero3 (H618, 4 GiB).
+---
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
+@@ -11,6 +11,40 @@
+ / {
+ 	model = "OrangePi Zero3";
+ 	compatible = "xunlong,orangepi-zero3", "allwinner,sun50i-h618";
++
++	gpu_opp_table: opp-table-gpu {
++		compatible = "operating-points-v2";
++
++		opp-420000000 {
++			opp-hz = /bits/ 64 <420000000>;
++			opp-microvolt = <960000>;
++		};
++
++		opp-456000000 {
++			opp-hz = /bits/ 64 <456000000>;
++			opp-microvolt = <960000>;
++		};
++
++		opp-504000000 {
++			opp-hz = /bits/ 64 <504000000>;
++			opp-microvolt = <960000>;
++		};
++
++		opp-552000000 {
++			opp-hz = /bits/ 64 <552000000>;
++			opp-microvolt = <960000>;
++		};
++
++		opp-600000000 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <960000>;
++		};
++
++		opp-648000000 {
++			opp-hz = /bits/ 64 <648000000>;
++			opp-microvolt = <960000>;
++		};
++	};
+ };
+ 
+ &ahub {
+@@ -33,6 +67,7 @@
+ 
+ &gpu {
+ 	mali-supply = <&reg_dcdc1>;
++	operating-points-v2 = <&gpu_opp_table>;
+ };
+ 
+ &hdmi {
