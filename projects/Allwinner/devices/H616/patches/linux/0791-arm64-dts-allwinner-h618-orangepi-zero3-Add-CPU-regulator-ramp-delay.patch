@@ -1,0 +1,32 @@
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Subject: [PATCH] arm64: dts: allwinner: h618: orangepi-zero3: Add CPU regulator
+ ramp delay
+
+With cpufreq enabled, the Orange Pi Zero3 hangs within a minute of boot:
+a CPU core stops responding even to NMIs and the PMIC I2C bus locks up.
+Booting with cpufreq.off=1 is stable.
+
+Pinning the CPU at its top OPP (performance governor, 1.416 GHz) is
+stable as well, so the OPP voltages themselves are sufficient and the
+hang comes from frequency switches.
+
+The AXP313A regulator ops have no set_ramp_delay and the driver declares
+no ramp delay for DCDC2, so the regulator core assumes a new CPU voltage
+is reached instantly and raises the clock right away. Declare a ramp
+delay so the core waits for the voltage to settle before the frequency
+goes up. 2500 uV/us is the value the H6 boards use for their CPU rail.
+
+Tested on Orange Pi Zero3 (H618, 4 GiB): with the ondemand governor it
+previously hung within a minute of boot; with this change it runs games
+for several minutes without issues.
+---
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
+@@ -97,6 +97,7 @@
+ 				regulator-min-microvolt = <810000>;
+ 				regulator-max-microvolt = <1100000>;
+ 				regulator-name = "vdd-cpu";
++				regulator-ramp-delay = <2500>;
+ 			};
+ 
+ 			reg_dcdc3: dcdc3 {
