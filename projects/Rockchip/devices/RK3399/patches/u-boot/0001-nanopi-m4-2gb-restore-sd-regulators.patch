@@ -1,0 +1,19 @@
+--- a/arch/arm/dts/rk3399-nanopi-m4-2gb-u-boot.dtsi
++++ b/arch/arm/dts/rk3399-nanopi-m4-2gb-u-boot.dtsi
+@@ -6,3 +6,16 @@
+ 
+ #include "rk3399-nanopi4-u-boot.dtsi"
+ #include "rk3399-sdram-ddr3-1866.dtsi"
++
++/*
++ * Lakka: restore the properties removed by rk3399-nanopi4-u-boot.dtsi,
++ * otherwise SPL fails to initialize the microSD card (error -95).
++ */
++&vcc3v0_sd {
++	regulator-always-on;
++};
++
++&vcc_sdio {
++	regulator-always-on;
++	regulator-boot-on;
++};
