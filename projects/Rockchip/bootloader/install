@@ -26,6 +26,14 @@ if [ "${ROCKCHIP_LEGACY_BOOT}" = "1" ]; then
   fi
 
   PKG_DDR_BIN="${PKG_RKBIN}"/$(sed -n "/FlashData/s/FlashData=//p" "${PKG_BOOT_INI}")
+  # Some ROCK 4C+ (RK3399-T) boards require the RAM at 666MHz
+  if [ "${UBOOT_SYSTEM}" = "rock-4c-plus-ddr666" ]; then
+    PKG_DDR_BIN="${PKG_RKBIN}/bin/rk33/rk3399_ddr_666MHz_v1.27.bin"
+  fi
+  if [ ! -f "${PKG_DDR_BIN}" ]; then
+    echo "install: ${PKG_DDR_BIN} does not exist"
+    exit 1
+  fi
   PKG_MINILOADER="${PKG_RKBIN}"/$(sed -n "/FlashBoot/s/FlashBoot=//p" "${PKG_BOOT_INI}")
   PKG_LOAD_ADDR=$(sed -n "/CONFIG_TEXT_BASE/s/#define CONFIG_TEXT_BASE //p" u-boot.cfg)
   if [ "${DEVICE}" = "RK3326" ]; then
