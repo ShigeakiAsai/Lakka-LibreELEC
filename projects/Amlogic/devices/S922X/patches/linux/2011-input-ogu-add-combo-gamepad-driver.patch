@@ -1,0 +1,360 @@
+diff -uNr a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
+--- a/drivers/input/joystick/Kconfig
++++ b/drivers/input/joystick/Kconfig
+@@ -114,6 +114,19 @@
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called guillemot.
+ 
++config JOYSTICK_OGU_COMBO_GAMEPAD
++	tristate "ODROID-GO Ultra combo gamepad (adc-joystick + gpio-keys merge)"
++	depends on INPUT
++	help
++	  Say Y here if you want in-kernel support for merging the
++	  "ogu-adc-joystick" and "ogu-gpio-keys-gamepad" input devices
++	  found on the Hardkernel ODROID-GO Ultra into a single
++	  "ogu-combo-gamepad" device, replacing the previous userspace
++	  evsieve-based merge.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ogu_combo_gamepad.
++
+ config JOYSTICK_INTERACT
+ 	tristate "InterAct digital joysticks and gamepads"
+ 	select GAMEPORT
+diff -uNr a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
+--- a/drivers/input/joystick/Makefile
++++ b/drivers/input/joystick/Makefile
+@@ -19,6 +19,7 @@
+ obj-$(CONFIG_JOYSTICK_GRIP)		+= grip.o
+ obj-$(CONFIG_JOYSTICK_GRIP_MP)		+= grip_mp.o
+ obj-$(CONFIG_JOYSTICK_GUILLEMOT)	+= guillemot.o
++obj-$(CONFIG_JOYSTICK_OGU_COMBO_GAMEPAD)	+= ogu_combo_gamepad.o
+ obj-$(CONFIG_JOYSTICK_IFORCE)		+= iforce/
+ obj-$(CONFIG_JOYSTICK_INTERACT)		+= interact.o
+ obj-$(CONFIG_JOYSTICK_JOYDUMP)		+= joydump.o
+diff -uNr a/drivers/input/joystick/ogu_combo_gamepad.c b/drivers/input/joystick/ogu_combo_gamepad.c
+--- a/drivers/input/joystick/ogu_combo_gamepad.c
++++ b/drivers/input/joystick/ogu_combo_gamepad.c
+@@ -0,0 +1,322 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * ODROID-GO Ultra combo gamepad input handler
++ *
++ * Merges the mainline "ogu-adc-joystick" (ABS-only) and
++ * "ogu-gpio-keys-gamepad" (KEY-only) input devices into a single
++ * virtual "ogu-combo-gamepad" device entirely in-kernel, using the
++ * standard input_handler/input_grab_device mechanism (the same
++ * kernel facility evdev/joydev themselves are built on).
++ *
++ * This replaces the previous userspace evsieve-based merge and its
++ * systemd-timing-dependent start/grab/hide logic.
++ *
++ * Copied from the H700 h700_combo_gamepad handler and adapted:
++ *  - Single global instance: the ODROID-GO Ultra only ever has one
++ *    onboard gamepad, so a static struct is used instead of
++ *    per-match private data.
++ *  - The device always has analog sticks, so there is no "-hybrid"
++ *    naming split as on H700.
++ *  - Grab is deferred until BOTH source devices have connected, since
++ *    probe order between adc-joystick and gpio-keys-polled is not
++ *    guaranteed (adc-joystick may hit -EPROBE_DEFER on its iio
++ *    channel dependencies).
++ *  - The combo device's ABS parameters (min/max/fuzz/flat) are copied
++ *    from the live "ogu-adc-joystick" device's absinfo, so the DT
++ *    abs-range / inversion settings are preserved automatically.
++ *  - Unlike H700, the KEY capability set is copied from the live
++ *    "ogu-gpio-keys-gamepad" device instead of a fixed list. The
++ *    evsieve-based merge also passed the source capabilities through
++ *    unchanged, and RetroArch's udev joypad driver assigns button
++ *    indices by ascending EV_KEY code, so this keeps the existing
++ *    ogu-combo-gamepad.cfg indices (incl. F1-F6 = BTN_TRIGGER_HAPPY1-6)
++ *    working unchanged.
++ *
++ * Copyright (C) 2026 Shigeaki Asai
++ */
++
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/input.h>
++#include <linux/bitops.h>
++#include <linux/workqueue.h>
++
++#define DRIVER_NAME	"ogu_combo_gamepad"
++
++#define DEV_NAME_ADC	"ogu-adc-joystick"
++#define DEV_NAME_GPIO	"ogu-gpio-keys-gamepad"
++#define DEV_NAME_COMBO	"ogu-combo-gamepad"
++
++struct ogu_combo {
++	struct mutex lock;
++	struct input_handle adc_handle;
++	struct input_handle gpio_handle;
++	struct input_dev *combo_dev;
++	bool adc_present;
++	bool gpio_present;
++	bool grabbed;
++	/*
++	 * input_register_device()/input_unregister_device() both take
++	 * the kernel's global input_mutex, which is already held by the
++	 * caller while our connect()/disconnect() callbacks run (see
++	 * input_register_device()'s call to input_attach_handler()).
++	 * Calling either of them directly from connect()/disconnect()
++	 * would therefore self-deadlock on input_mutex. All device
++	 * (de)activation is deferred to this work item instead, which
++	 * runs in ordinary process context after connect()/disconnect()
++	 * has already returned and released input_mutex.
++	 */
++	struct work_struct work;
++};
++
++/* Single global instance: see design notes above. */
++static struct ogu_combo oguc;
++
++static void ogu_combo_event(struct input_handle *handle, unsigned int type,
++			    unsigned int code, int value)
++{
++	struct ogu_combo *c = handle->private;
++
++	if (!c->grabbed || !c->combo_dev)
++		return;
++
++	if (type == EV_SYN) {
++		if (code == SYN_REPORT)
++			input_sync(c->combo_dev);
++		return;
++	}
++
++	input_event(c->combo_dev, type, code, value);
++}
++
++static bool ogu_combo_try_activate(struct ogu_combo *c)
++{
++	struct input_dev *dev, *adc_dev, *gpio_dev;
++	int err, axis, code;
++
++	if (!c->adc_present || !c->gpio_present || c->grabbed)
++		return c->grabbed;
++
++	dev = input_allocate_device();
++	if (!dev)
++		return false;
++
++	dev->name = DEV_NAME_COMBO;
++	dev->id.bustype = BUS_HOST;
++	dev->id.vendor  = 0x0001;
++	dev->id.product = 0x0001;
++	dev->id.version = 0x0001;
++
++	/*
++	 * Copy the KEY capability set from the live gpio-keys device,
++	 * so the button index order seen by RetroArch stays identical
++	 * to the previous evsieve-based merge.
++	 */
++	gpio_dev = c->gpio_handle.dev;
++	__set_bit(EV_KEY, dev->evbit);
++	for_each_set_bit(code, gpio_dev->keybit, KEY_CNT)
++		__set_bit(code, dev->keybit);
++
++	/*
++	 * Copy ABS axis parameters verbatim from the live adc-joystick
++	 * device instead of hardcoding them, so the DT abs-range /
++	 * inversion is preserved exactly.
++	 */
++	adc_dev = c->adc_handle.dev;
++	__set_bit(EV_ABS, dev->evbit);
++	for_each_set_bit(axis, adc_dev->absbit, ABS_CNT) {
++		struct input_absinfo *ai = &adc_dev->absinfo[axis];
++
++		input_set_abs_params(dev, axis, ai->minimum, ai->maximum,
++				     ai->fuzz, ai->flat);
++		/*
++		 * Seed the combo device with the stick's current value,
++		 * not just its declared range (see the H700 handler:
++		 * RetroArch's udev driver otherwise may ignore key input
++		 * until a first genuine ABS update has been observed).
++		 */
++		dev->absinfo[axis].value = ai->value;
++	}
++
++	err = input_register_device(dev);
++	if (err) {
++		input_free_device(dev);
++		return false;
++	}
++
++	c->combo_dev = dev;
++
++	err = input_grab_device(&c->adc_handle);
++	if (err)
++		goto err_unregister;
++
++	err = input_grab_device(&c->gpio_handle);
++	if (err)
++		goto err_ungrab_adc;
++
++	c->grabbed = true;
++
++	/* Emit one real ABS update + SYN_REPORT now that we are wired up. */
++	for_each_set_bit(axis, dev->absbit, ABS_CNT)
++		input_event(dev, EV_ABS, axis, dev->absinfo[axis].value);
++	input_sync(dev);
++
++	pr_info(DRIVER_NAME ": " DEV_NAME_COMBO " active\n");
++	return true;
++
++err_ungrab_adc:
++	input_release_device(&c->adc_handle);
++err_unregister:
++	input_unregister_device(c->combo_dev);
++	c->combo_dev = NULL;
++	return false;
++}
++
++static void ogu_combo_deactivate(struct ogu_combo *c)
++{
++	if (c->grabbed) {
++		/*
++		 * Only release a handle whose underlying device is still
++		 * present. If a device has already disconnected, its
++		 * grab reference goes away with it; touching handle->dev
++		 * here would risk a use-after-free.
++		 */
++		if (c->gpio_present)
++			input_release_device(&c->gpio_handle);
++		if (c->adc_present)
++			input_release_device(&c->adc_handle);
++		c->grabbed = false;
++	}
++
++	if (c->combo_dev) {
++		input_unregister_device(c->combo_dev);
++		c->combo_dev = NULL;
++		pr_info(DRIVER_NAME ": " DEV_NAME_COMBO " deactivated\n");
++	}
++}
++
++/*
++ * Runs in ordinary process context (never while input_mutex is held),
++ * so it is safe to call input_register_device()/input_unregister_device()
++ * here. Re-checks current presence flags each time it runs, so it
++ * correctly handles connect/disconnect events in any order.
++ */
++static void ogu_combo_work_fn(struct work_struct *work)
++{
++	struct ogu_combo *c = container_of(work, struct ogu_combo, work);
++
++	mutex_lock(&c->lock);
++	if (c->adc_present && c->gpio_present)
++		ogu_combo_try_activate(c);
++	else
++		ogu_combo_deactivate(c);
++	mutex_unlock(&c->lock);
++}
++
++static int ogu_combo_connect(struct input_handler *handler,
++			     struct input_dev *dev,
++			     const struct input_device_id *id)
++{
++	bool is_adc = !strcmp(dev->name, DEV_NAME_ADC);
++	struct input_handle *handle = is_adc ? &oguc.adc_handle
++					     : &oguc.gpio_handle;
++	int err;
++
++	handle->dev = dev;
++	handle->handler = handler;
++	handle->name = DRIVER_NAME;
++	handle->private = &oguc;
++
++	err = input_register_handle(handle);
++	if (err)
++		return err;
++
++	err = input_open_device(handle);
++	if (err) {
++		input_unregister_handle(handle);
++		return err;
++	}
++
++	mutex_lock(&oguc.lock);
++	if (is_adc)
++		oguc.adc_present = true;
++	else
++		oguc.gpio_present = true;
++	mutex_unlock(&oguc.lock);
++	schedule_work(&oguc.work);
++
++	pr_info(DRIVER_NAME ": connected %s\n", dev->name);
++	return 0;
++}
++
++static void ogu_combo_disconnect(struct input_handle *handle)
++{
++	bool is_adc = (handle == &oguc.adc_handle);
++
++	/*
++	 * Close/unregister our own handle synchronously, as is standard
++	 * for input handlers. Unregistering the combo device (needs
++	 * input_mutex) and releasing the grab on the surviving device
++	 * are deferred to the work item.
++	 */
++	input_close_device(handle);
++	input_unregister_handle(handle);
++
++	mutex_lock(&oguc.lock);
++	if (is_adc)
++		oguc.adc_present = false;
++	else
++		oguc.gpio_present = false;
++	mutex_unlock(&oguc.lock);
++
++	schedule_work(&oguc.work);
++}
++
++static bool ogu_combo_match(struct input_handler *handler,
++			    struct input_dev *dev)
++{
++	return !strcmp(dev->name, DEV_NAME_ADC) ||
++	       !strcmp(dev->name, DEV_NAME_GPIO);
++}
++
++/*
++ * input_match_device() only enters entries with non-zero .flags (an
++ * all-zero entry is the terminator), so the catch-all entry needs a
++ * non-zero flag. With an empty .evbit the bitmap check trivially
++ * passes for any device; real filtering by name is done in
++ * ogu_combo_match() above.
++ */
++static const struct input_device_id ogu_combo_ids[] = {
++	{ .flags = INPUT_DEVICE_ID_MATCH_EVBIT },
++	{ },
++};
++MODULE_DEVICE_TABLE(input, ogu_combo_ids);
++
++static struct input_handler ogu_combo_handler = {
++	.event      = ogu_combo_event,
++	.match      = ogu_combo_match,
++	.connect    = ogu_combo_connect,
++	.disconnect = ogu_combo_disconnect,
++	.name       = DRIVER_NAME,
++	.id_table   = ogu_combo_ids,
++};
++
++static int __init ogu_combo_init(void)
++{
++	mutex_init(&oguc.lock);
++	INIT_WORK(&oguc.work, ogu_combo_work_fn);
++	return input_register_handler(&ogu_combo_handler);
++}
++
++static void __exit ogu_combo_exit(void)
++{
++	input_unregister_handler(&ogu_combo_handler);
++	cancel_work_sync(&oguc.work);
++}
++
++module_init(ogu_combo_init);
++module_exit(ogu_combo_exit);
++
++MODULE_DESCRIPTION("ODROID-GO Ultra adc-joystick + gpio-keys-gamepad combo input handler");
++MODULE_AUTHOR("Shigeaki Asai");
++MODULE_LICENSE("GPL");
