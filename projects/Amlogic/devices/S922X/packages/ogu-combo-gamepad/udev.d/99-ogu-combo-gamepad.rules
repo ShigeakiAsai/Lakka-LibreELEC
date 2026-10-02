@@ -1,9 +1,8 @@
-# Only hide gpio-keys-gamepad once ogu-combo-gamepad.service has confirmed
-# it is up and running (see ExecStartPost in ogu-combo-gamepad.service).
-# On non-analog models this env var is never set, so gpio-keys-gamepad
-# remains visible to RetroArch as the sole controller, as before.
-SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="ogu-gpio-keys-gamepad", ENV{OGU_COMBO_ACTIVE}=="1", ENV{ID_INPUT_JOYSTICK}="0"
-
-# Trigger ogu-combo-gamepad.service once the adc-joystick device appears,
-# so evsieve creates the merged virtual gamepad before RetroArch starts.
-SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="ogu-adc-joystick", TAG+="systemd", ENV{SYSTEMD_WANTS}+="ogu-combo-gamepad.service"
+# The raw "ogu-gpio-keys-gamepad" device is grabbed and merged with
+# "ogu-adc-joystick" into "ogu-combo-gamepad" by the in-kernel
+# ogu_combo_gamepad input handler. Hide the raw devices from RetroArch's
+# udev joypad enumeration (which filters on ID_INPUT_JOYSTICK=1) so only
+# the merged device is visible. The ODROID-GO Ultra always has analog
+# sticks, so this rule is static and does not depend on grab timing.
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="ogu-gpio-keys-gamepad", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="ogu-adc-joystick", ENV{ID_INPUT_JOYSTICK}="0"
