@@ -1,0 +1,199 @@
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Subject: [PATCH] odroidgou: leave the charging screen with a long power key press
+
+The off-mode charging screen in board_check_power() can only be left
+with START+SELECT (KEY_MENU_LEFT/RIGHT) or by unplugging the charger,
+which powers the device off. Pressing the power key does nothing, so
+users see the charging screen and Linux never boots.
+
+Follow the behaviour of the Rockchip vendor charge animation
+(drivers/power/charge_animation.c):
+
+- A long press (1s) of the power key leaves the charging screen and
+  continues to a normal boot, unless the battery is too low. Short
+  presses are ignored. The key is read from the RK817 PWRON_FALL/RISE
+  interrupt status, the same source Linux uses for rk805-pwrkey.
+- Only enter the charging screen when a charger is actually connected,
+  so a misreported power-on source does not flash the charging screen
+  and power off.
+
+Also, board_late_init() calls board_check_power() twice, and ON_SOURCE
+still reads PWRON_USB on the second call, so after leaving the
+charging screen it was entered again right away (likely why
+START+SELECT had to be held for a long time). Remember that the
+charging screen has been left and don't enter it a second time.
+
+Signed-off-by: Shigeaki Asai <y-asai.0816@docomonet.jp>
+---
+diff --git a/board/hardkernel/odroidgou/odroid_pmic.c b/board/hardkernel/odroidgou/odroid_pmic.c
+index 58e51c7..1c98795 100755
+--- a/board/hardkernel/odroidgou/odroid_pmic.c
++++ b/board/hardkernel/odroidgou/odroid_pmic.c
+@@ -138,6 +138,92 @@ static int rk817_i2c_write(int32_t command, uint8_t val)
+ 	return ret;
+ }
+ 
++static int rk817_i2c_read(int32_t command, uint8_t *val)
++{
++	int ret = 0;
++	uint8_t reg = command & 0xff;
++	struct i2c_msg msgs[2];
++
++	i2c_check_bus(RK817_I2C_BUS);
++
++	msgs[0].addr = RK817_CHIP_ADDR;
++	msgs[0].flags = 0;
++	msgs[0].len = 1;
++	msgs[0].buf = &reg;
++
++	msgs[1].addr = RK817_CHIP_ADDR;
++	msgs[1].flags = I2C_M_RD;
++	msgs[1].len = 1;
++	msgs[1].buf = val;
++
++	ret = aml_i2c_xfer(msgs, 2);
++	if (ret < 0)
++		printf("i2c read failed [addr 0x%02x]\n", RK817_CHIP_ADDR);
++
++	return ret;
++}
++
++#define PWRKEY_LONG_PRESS_MS	1000
++#define PWRKEY_POLL_MS		20
++
++/*
++ * The power key is handled by the RK817 (Linux binds rk805-pwrkey to
++ * it). Clear any stale PWRON_FALL/RISE status and unmask them so key
++ * presses are latched in INT_STS_REG0 while the charging screen is
++ * shown. Linux reprograms the interrupt mask registers when the rk8xx
++ * driver probes, so leaving them unmasked here has no lasting effect.
++ */
++static void rk817_pwrkey_arm(void)
++{
++	uint8_t msk = 0;
++
++	rk817_i2c_write(RK817_INT_STS_REG0, RK817_PWRON_IRQS);
++	if (rk817_i2c_read(RK817_INT_STS_MSK_REG0, &msk) >= 0)
++		rk817_i2c_write(RK817_INT_STS_MSK_REG0,
++				msk & ~RK817_PWRON_IRQS);
++}
++
++static uint8_t rk817_pwrkey_status(void)
++{
++	uint8_t sts = 0;
++
++	if (rk817_i2c_read(RK817_INT_STS_REG0, &sts) < 0)
++		return 0;
++
++	return sts;
++}
++
++/*
++ * Like the Rockchip vendor charge animation, only a long press of the
++ * power key leaves the charging screen. Returns 1 once the key has been
++ * held for PWRKEY_LONG_PRESS_MS; a short press (press + release) is
++ * consumed and ignored.
++ */
++static int rk817_pwrkey_long_pressed(void)
++{
++	uint8_t sts = rk817_pwrkey_status();
++	int t;
++
++	if (!(sts & RK817_PWRON_FALL))
++		return 0;
++
++	for (t = 0; t < PWRKEY_LONG_PRESS_MS; t += PWRKEY_POLL_MS) {
++		if (sts & RK817_PWRON_RISE)
++			break;
++		mdelay(PWRKEY_POLL_MS);
++		sts = rk817_pwrkey_status();
++	}
++
++	/* write-1-to-clear */
++	rk817_i2c_write(RK817_INT_STS_REG0, RK817_PWRON_IRQS);
++
++	/* released before the long-press time: short press, ignore */
++	if (sts & RK817_PWRON_RISE)
++		return 0;
++
++	return 1;
++}
++
+ void rk817_shutdown(void)
+ {
+ 	/* RK817 LDO disable */
+@@ -190,6 +276,13 @@ int odroid_charge_enable(struct pmic *p_fg)
+ 
+ int board_check_power(void)
+ {
++	/*
++	 * board_late_init() calls board_check_power() more than once. Once
++	 * the charging screen has been left (START+SELECT or power key),
++	 * don't enter it again on the next call: ON_SOURCE still reads
++	 * PWRON_USB and the charger is still connected.
++	 */
++	static int charge_screen_done;
+ 	int pwron_src, bootmode;
+ 	unsigned int cap = 0, offset=0;
+ 
+@@ -198,11 +291,21 @@ int board_check_power(void)
+ 	bootmode = get_bootmode();
+ 	printf("PWRON source : %d\n",pwron_src);
+ 
+-	if ((pwron_src != PWRON_KEY) && (bootmode == BOOTMODE_NORMAL)) {
++	/*
++	 * Only show the charging screen when a charger is actually
++	 * connected (as the Rockchip vendor charge animation does). If
++	 * the power-on source is misreported, e.g. a stale USB power-on
++	 * after the charger was unplugged, boot normally instead of
++	 * flashing the charging screen and powering off.
++	 */
++	if (!charge_screen_done &&
++	    (pwron_src != PWRON_KEY) && (bootmode == BOOTMODE_NORMAL) &&
++	    is_charging()) {
+ 		gou_init_lcd();
+ 
+ 		/* RK817 BOOST, OTG_POWER(USB A-type VBUS) disable */
+ 		rk817_i2c_write(RK817_POWER_EN3, 0xf0);
++		rk817_pwrkey_arm();
+ 		printf("battery charge state\n");
+ 		while(1) {
+ 			cap = get_battery_cap();
+@@ -229,10 +332,19 @@ int board_check_power(void)
+ 
+ 			if(check_charge_exit_key())
+ 				break;
++			if(rk817_pwrkey_long_pressed()) {
++				if (is_power_low()) {
++					printf("Low power, unable to boot, charging...\n");
++				} else {
++					printf("Charge Exit by power key long press. Normal Boot\n");
++					break;
++				}
++			}
+ 
+ 			if(!is_charging())
+ 				run_command("poweroff", 0);
+ 		}
++		charge_screen_done = 1;
+ 	}
+ 	if(is_power_low() && !is_charging()) return -1;
+ 
+diff --git a/board/hardkernel/odroidgou/odroid_pmic.h b/board/hardkernel/odroidgou/odroid_pmic.h
+index e757194..e234570 100755
+--- a/board/hardkernel/odroidgou/odroid_pmic.h
++++ b/board/hardkernel/odroidgou/odroid_pmic.h
+@@ -27,6 +27,13 @@
+ 
+ #define RK817_SYS_CFG(i)	(0xf1 + (i))
+ 
++#define RK817_INT_STS_REG0	0xf8
++#define RK817_INT_STS_MSK_REG0	0xf9
++/* power key is active low: press = falling edge, release = rising edge */
++#define RK817_PWRON_FALL	0x01
++#define RK817_PWRON_RISE	0x02
++#define RK817_PWRON_IRQS	(RK817_PWRON_FALL | RK817_PWRON_RISE)
++
+ #define KEY_MENU_LEFT	GPIOEE(GPIOX_17)
+ #define KEY_MENU_RIGHT	GPIOEE(GPIOX_16)
+ 
