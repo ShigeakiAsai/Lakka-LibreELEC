@@ -18,9 +18,6 @@
         ;;
     esac
 
-  # U-Boot firmware package(s) to use
-    UBOOT_FIRMWARE="amlogic-boot-fip"
-
   # Kernel to use
     LINUX="amlogic-s922x"
 
