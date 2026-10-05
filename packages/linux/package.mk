@@ -23,8 +23,8 @@ case "${LINUX}" in
     PKG_PATCH_DIRS="default"
     ;;
   amlogic-s922x)
-    PKG_VERSION="6.18.45"
-    PKG_SHA256="30fa4a56579ca614ac125a12614f7f6466f87ab1278aef7b951dd74156deab33"
+    PKG_VERSION="7.2.9"
+    PKG_SHA256="b4c5dfbe51a364a6c7f03869200f88c8e1f77403539005f14b7fc6bc91b8d8ba"
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
     ;;
   raspberrypi)
@@ -488,6 +488,7 @@ make_target() {
         NO_LIBBABELTRACE=1 \
         NO_CAPSTONE=1 \
         NO_LIBPFM4=1 \
+        NO_RUST=1 \
         BUILD_BPF_SKEL=0 \
         CROSS_COMPILE="${TARGET_PREFIX}" \
         JOBS="${CONCURRENCY_MAKE_LEVEL}" \
