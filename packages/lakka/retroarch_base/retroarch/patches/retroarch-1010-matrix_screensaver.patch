@@ -94,7 +94,7 @@ diff -uNr a/menu/menu_screensaver.c b/menu/menu_screensaver.c
           break;
 +#ifdef HAVE_LAKKA
 +      case MENU_SCREENSAVER_MATRIX:
-+         menu_screensaver_init_matrix(screensaver, width, height);
++         menu_screensaver_init_matrix(screensaver, VIDEO_SCALE_W(dims), VIDEO_SCALE_H(dims));
 +         break;
 +#endif
        default:
