@@ -66,6 +66,9 @@ pre_make_target() {
     AMLGX)
       [ "${ARCH}" = "arm" ] && PKG_MAKE_OPTS_TARGET+=" platform=AMLGX-amlogic" || true
       ;;
+    S922X)
+      PKG_MAKE_OPTS_TARGET+=" platform=arm64_cortex_a53_gles3"
+      ;;
     RK3326)
       [ "${ARCH}" = "arm" ] && PKG_MAKE_OPTS_TARGET+=" platform=odroid BOARD=ODROIDGOA" || true
       ;;
