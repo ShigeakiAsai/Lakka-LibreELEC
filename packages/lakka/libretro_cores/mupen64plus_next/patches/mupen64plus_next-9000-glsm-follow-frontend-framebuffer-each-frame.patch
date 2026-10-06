@@ -1,0 +1,52 @@
+diff --git a/libretro-common/glsm/glsm.c b/libretro-common/glsm/glsm.c
+index b3e8c60..cb24e35 100644
+--- a/libretro-common/glsm/glsm.c
++++ b/libretro-common/glsm/glsm.c
+@@ -3094,9 +3094,47 @@ static void glsm_state_setup(void)
+ #endif
+ }
+ 
++/* The frontend may hand out a different framebuffer each frame
++ * (RetroArch does under threaded video, from a ring of them), so
++ * take the current one before the core renders, rather than keep
++ * the one seen at context reset. */
++static void glsm_update_default_framebuffer(void)
++{
++   unsigned p;
++   GLint params;
++   GLuint old = default_framebuffer;
++   GLuint fb  = glsm_get_current_framebuffer();
++
++   if (fb == old || fb >= MAX_FRAMEBUFFERS)
++      return;
++
++   if (!framebuffers[fb])
++   {
++      framebuffers[fb] = (struct gl_framebuffers*)calloc(1, sizeof(struct gl_framebuffers));
++      if (!framebuffers[fb])
++         return;
++      glBindFramebuffer(GL_FRAMEBUFFER, fb);
++      glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &params);
++      framebuffers[fb]->color_attachment = params;
++      glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &params);
++      framebuffers[fb]->depth_attachment = params;
++      framebuffers[fb]->target = GL_TEXTURE_2D;
++      /* Bound behind the cache's back: make the next bind real */
++      gl_state.framebuf[0].location = 0;
++      gl_state.framebuf[1].location = 0;
++   }
++
++   default_framebuffer = fb;
++   for (p = 0; p < 2; p++)
++      if (gl_state.framebuf[p].desired_location == old)
++         gl_state.framebuf[p].desired_location = fb;
++}
++
+ static void glsm_state_bind(void)
+ {
+    unsigned i;
++
++   glsm_update_default_framebuffer();
+ #ifndef HAVE_OPENGLES2
+    if (gl_state.bindvertex.array != 0) {
+       glBindVertexArray(gl_state.bindvertex.array);
