@@ -1,0 +1,177 @@
+diff -ru a/gfx/gfx_display.c b/gfx/gfx_display.c
+--- a/gfx/gfx_display.c	2026-10-06 19:18:40.166763853 +0900
++++ b/gfx/gfx_display.c	2026-10-06 19:18:40.169331706 +0900
+@@ -1633,6 +1633,9 @@
+     * buffer that outlives the load */
+    bool                         owned;
+    bool                         cancelled;
++   /* The slot holds a texture that stays drawn until this one lands,
++    * and is unloaded then */
++   bool                         replace;
+ } gfx_display_tex_load_t;
+ 
+ /* Main thread only, as surface submits and their completions are */
+@@ -1653,6 +1656,8 @@
+    /* A handle of 0 is a load the driver refused or a teardown */
+    if (!e->cancelled && s->handle)
+    {
++      if (e->replace && *e->item)
++         video_driver_texture_unload(e->item);
+       *e->item  = s->handle;
+       s->handle = 0;
+    }
+@@ -1679,8 +1684,10 @@
+ }
+ 
+ static bool gfx_display_texture_load_ex(struct texture_image *ti,
+-      enum texture_filter_type filter, uintptr_t *item, bool owned)
++      enum texture_filter_type filter, uintptr_t *item, bool owned,
++      bool replace)
+ {
++   uintptr_t tex = 0;
+ #ifdef HAVE_THREADS
+    if (     ti && item && ti->pixels && !ti->compressed && !ti->pix10
+          && VIDEO_SCALE_FITS(ti->width, ti->height)
+@@ -1700,6 +1707,7 @@
+          e->item          = item;
+          e->img           = *ti;
+          e->owned         = owned;
++         e->replace       = replace;
+          /* The entry frees the pixels from its release, which always
+           * runs: a display load's surface is only freed there. */
+          src.pixels       = ti->pixels;
+@@ -1720,6 +1728,8 @@
+          }
+          if (r == GFX_SURFACE_SUBMIT_DONE)
+          {
++            if (replace && *item)
++               video_driver_texture_unload(item);
+             *item     = s->handle;
+             s->handle = 0;
+             gfx_surface_free(s);
+@@ -1731,13 +1741,32 @@
+       gfx_surface_free(s);
+    }
+ #endif
+-   return video_driver_texture_load(ti, filter, item);
++   if (!replace)
++      return video_driver_texture_load(ti, filter, item);
++
++   /* Load first, so the old texture is only unloaded once there is
++    * one to take its place */
++   if (!video_driver_texture_load(ti, filter, &tex))
++      return false;
++#ifdef HAVE_THREADS
++   gfx_display_texture_loads_cancel(item, sizeof(*item));
++#endif
++   if (*item)
++      video_driver_texture_unload(item);
++   *item = tex;
++   return true;
+ }
+ 
+ bool gfx_display_texture_load(struct texture_image *ti,
+       enum texture_filter_type filter, uintptr_t *item)
+ {
+-   return gfx_display_texture_load_ex(ti, filter, item, true);
++   return gfx_display_texture_load_ex(ti, filter, item, true, false);
++}
++
++bool gfx_display_texture_replace(struct texture_image *ti,
++      enum texture_filter_type filter, uintptr_t *item)
++{
++   return gfx_display_texture_load_ex(ti, filter, item, true, true);
+ }
+ 
+ /* NOTE: Reads image from memory buffer */
+@@ -1939,7 +1968,7 @@
+ 
+    /* The pixel is static: lent to the load, never freed by it */
+    gfx_display_texture_load_ex(&ti,
+-         TEXTURE_FILTER_NEAREST, &gfx_white_texture, false);
++         TEXTURE_FILTER_NEAREST, &gfx_white_texture, false, false);
+ }
+ 
+ void gfx_display_free(void)
+diff -ru a/gfx/gfx_display.h b/gfx/gfx_display.h
+--- a/gfx/gfx_display.h	2026-10-06 19:18:40.166856586 +0900
++++ b/gfx/gfx_display.h	2026-10-06 19:18:40.169381394 +0900
+@@ -537,6 +537,12 @@
+ bool gfx_display_texture_load(struct texture_image *ti,
+       enum texture_filter_type filter, uintptr_t *item);
+ 
++/* As gfx_display_texture_load(), for a slot that may already hold a
++ * texture: that one stays in @item, and is drawn, until the new one
++ * is uploaded, and is unloaded then. Nothing is left blank meanwhile. */
++bool gfx_display_texture_replace(struct texture_image *ti,
++      enum texture_filter_type filter, uintptr_t *item);
++
+ /* Before a texture slot in [@base, @base + @len) is reset or freed:
+  * a load still in flight into it unloads its texture on completion
+  * instead of writing the slot. */
+diff -ru a/menu/drivers/xmb.c b/menu/drivers/xmb.c
+--- a/menu/drivers/xmb.c	2026-10-06 19:18:40.167266824 +0900
++++ b/menu/drivers/xmb.c	2026-10-06 19:18:40.169458880 +0900
+@@ -1805,7 +1805,14 @@
+ 
+    xmb_path_dynamic_wallpaper(xmb, path, sizeof(path));
+ 
+-   if (!string_is_equal(path, xmb->bg_file_path) || reset)
++   /* A path with no file behind it is no wallpaper, as is a NULL
++    * bg_file_path: moving between two such lists changes nothing */
++   if (!path_is_valid(path))
++      path[0] = '\0';
++
++   if (     !string_is_equal(path,
++               xmb->bg_file_path ? xmb->bg_file_path : "")
++         || reset)
+    {
+       if (path_is_valid(path))
+       {
+@@ -1819,8 +1826,6 @@
+                      gfx_surface_wants_rgba(), 0,
+                      0,
+                      menu_display_handle_wallpaper_upload, NULL);
+-
+-            gfx_display_init_white_texture();
+          }
+          else
+             task_push_image_load(path,
+@@ -10580,7 +10585,6 @@
+    gfx_display_texture_loads_cancel(&xmb->textures.bg,
+          sizeof(xmb->textures.bg));
+    video_driver_texture_unload(&xmb->textures.bg);
+-   gfx_display_deinit_white_texture();
+ }
+ 
+ static bool xmb_load_image(void *userdata, void *data,
+@@ -10594,16 +10598,17 @@
+    switch (type)
+    {
+       case MENU_IMAGE_WALLPAPER:
+-         xmb_context_bg_destroy(xmb);
+-         gfx_display_texture_load((struct texture_image*)data,
++         /* The current wallpaper stays up until the new one is
++          * uploaded, which under threaded video is a frame or more
++          * later; unloading it first would leave the background
++          * blank meanwhile */
++         gfx_display_texture_replace((struct texture_image*)data,
+                gfx_display_texture_filter(),
+                &xmb->textures.bg);
+-         gfx_display_init_white_texture();
+          break;
+       case MENU_IMAGE_NONE:
+       default:
+          xmb_context_bg_destroy(xmb);
+-         gfx_display_init_white_texture();
+          break;
+    }
+ 
+@@ -10898,6 +10903,7 @@
+ 
+    xmb_context_destroy_horizontal_list(xmb);
+    xmb_context_bg_destroy(xmb);
++   gfx_display_deinit_white_texture();
+ 
+    font_driver_free(xmb->font);
+    xmb->font  = NULL;
