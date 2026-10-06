@@ -1,5 +1,5 @@
 PKG_NAME="retroarch"
-PKG_VERSION="59196dea93f01d0b2cca234904b3130ea02d0570"
+PKG_VERSION="59fa8b8cf0f379dc5a67d2ba4f28f3c9b3d6adba"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="${PKG_SITE}.git"
@@ -19,7 +19,6 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
                            --enable-kms \
                            --enable-egl \
                            --enable-ssl \
-                           --enable-builtinmbedtls \
                            --datarootdir=${SYSROOT_PREFIX}/usr/share" # don't use host /usr/share!
 
 PKG_MAKE_OPTS_TARGET="V=1 \
@@ -31,7 +30,6 @@ PKG_MAKE_OPTS_TARGET="V=1 \
                       HAVE_BLUETOOTH=1 \
                       HAVE_CLOUDSYNC=1 \
                       HAVE_SSL=1 \
-                      HAVE_BUILTINMBEDTLS=1 \
                       HAVE_FREETYPE=1"
 
 if [ "${PROJECT}" = "RPi" ]; then
