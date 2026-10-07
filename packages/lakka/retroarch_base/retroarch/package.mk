@@ -213,6 +213,8 @@ makeinstall_target() {
     sed -i ${ra_config} -e 's|^input_menu_toggle_gamepad_combo = .*|input_menu_toggle_gamepad_combo = "4"|'
     sed -i ${ra_config} -e 's|^menu_widget_scale_auto = .*|menu_widget_scale_auto = "false"|'
     sed -i ${ra_config} -e 's|^menu_widget_scale_factor = .*|menu_widget_scale_factor = "2.250000"|'
+    sed -i ${ra_config} -e 's|^video_refresh_rate = .*|video_refresh_rate = "58.879000"|'
+    sed -i ${ra_config} -e 's|^screen_brightness = .*|screen_brightness = "60"|'
   fi
 
   # RPiZero/RPiZero2 + GPiCase (1st Gen Retroflag GPiCase)
