@@ -38,6 +38,12 @@ if [ "${PROJECT}" = "RPi" ]; then
   fi
 fi
 
+if [ "${PROJECT}" = "Amlogic" ]; then
+  if [ "${DEVICE}" = "S922X" ]; then
+    PKG_CONFIGURE_OPTS_TARGET+=" --enable-lakka_backlight"
+  fi
+fi
+
 if [ "${OPENGLES_SUPPORT}" = yes ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
   PKG_CONFIGURE_OPTS_TARGET+=" --enable-opengles"
