@@ -1,0 +1,39 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Thu, 8 Oct 2026 19:18:48 +0900
+Subject: [PATCH] arm64: dts: meson: odroid-go-ultra: add red charging LED
+
+The red LED on the back of the ODROID-GO Ultra (left of the power LED)
+is driven by GPIOAO_6, active high, but it is not described in the
+mainline device tree, so it never lights under Linux.
+
+Add it to the gpio-leds node with the battery power supply's
+charging-blink-full-solid trigger: it blinks while charging and stays
+on when the battery is full.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+index cebedab..7554cf3 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+@@ -220,6 +220,13 @@
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
++		led-red {
++			color = <LED_COLOR_ID_RED>;
++			function = LED_FUNCTION_CHARGING;
++			gpios = <&gpio_ao GPIOAO_6 GPIO_ACTIVE_HIGH>;
++			linux,default-trigger = "battery-charging-blink-full-solid";
++		};
++
+ 		led-blue {
+ 			color = <LED_COLOR_ID_BLUE>;
+ 			gpios = <&gpio_ao GPIOAO_11 GPIO_ACTIVE_HIGH>;
+-- 
+2.43.0
+
