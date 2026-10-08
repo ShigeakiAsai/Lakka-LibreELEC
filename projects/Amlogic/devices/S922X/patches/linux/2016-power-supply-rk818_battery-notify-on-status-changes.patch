@@ -1,0 +1,115 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Thu, 8 Oct 2026 19:58:38 +0900
+Subject: [PATCH] power: supply: rk818_battery: notify on status changes
+
+power_supply_changed() is only called when the displayed SoC changes,
+so plugging or unplugging the charger is not reported until the next
+1% step, which can take many minutes. The power supply LED triggers
+go stale: on the ODROID-GO Ultra the battery-charging-blink-full-solid
+LED keeps blinking long after the charger is unplugged.
+
+Move the STATUS mapping into rk818_bat_status() and also notify when
+the status changes without a SoC step.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ drivers/power/supply/rk818_battery.c | 55 ++++++++++++++++++----------
+ 1 file changed, 35 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/power/supply/rk818_battery.c b/drivers/power/supply/rk818_battery.c
+index 9969741..e5d1b67 100644
+--- a/drivers/power/supply/rk818_battery.c
++++ b/drivers/power/supply/rk818_battery.c
+@@ -275,6 +275,7 @@ struct rk818_battery {
+ 
+ 	int	chrg_status;
+ 	bool	is_charging;
++	int	psy_status;
+ 
+ 	/* COFFSET auto-calibration state, reset each charge cycle */
+ 	bool	coffset_calib_done;
+@@ -1329,12 +1330,33 @@ static void rk818_update_temperature(struct rk818_battery *di)
+ 	dev_dbg(di->dev, "temperature = %d\n", di->temperature);
+ }
+ 
++static int rk818_bat_status(struct rk818_battery *di)
++{
++	switch (di->chrg_status) {
++	case RK818_CHG_STS_WAKEUP_CUR:
++	case RK818_CHG_STS_TRICKLE_CUR:
++	case RK818_CHG_STS_CC_OR_CV:
++		return POWER_SUPPLY_STATUS_CHARGING;
++	case RK818_CHG_STS_TERMINATED:
++		return rk818_charger_online(di) ?
++		       POWER_SUPPLY_STATUS_FULL :
++		       POWER_SUPPLY_STATUS_DISCHARGING;
++	case RK818_CHG_STS_USB_OV:
++	case RK818_CHG_STS_BAT_TEMP_FAULT:
++	case RK818_CHG_STS_TIMEOUT:
++		return POWER_SUPPLY_STATUS_NOT_CHARGING;
++	default:
++		return POWER_SUPPLY_STATUS_DISCHARGING;
++	}
++}
++
+ static void rk818_battery_work(struct work_struct *work)
+ {
+ 	struct rk818_battery *di =
+ 		container_of(work, struct rk818_battery, work.work);
+ 	int prev_dsoc = di->dsoc;
+ 	bool is_charging;
++	int status;
+ 	ktime_t now = ktime_get_boottime();
+ 
+ 	if (!di->last_calib ||
+@@ -1410,6 +1432,18 @@ static void rk818_battery_work(struct work_struct *work)
+ 			 di->remain_cap_mah, di->fcc_mah);
+ 	}
+ 
++	/*
++	 * Also notify when the status changes without a dsoc step, e.g.
++	 * when the charger is plugged in or unplugged, so that the power
++	 * supply LED triggers follow it.
++	 */
++	status = rk818_bat_status(di);
++	if (status != di->psy_status) {
++		di->psy_status = status;
++		if (di->dsoc == prev_dsoc && di->charger_psy)
++			power_supply_changed(di->charger_psy);
++	}
++
+ 	dev_dbg(di->dev,
+ 		"v=%d ocv=%d rv=%d i=%d cap=%d rsoc=%d dsoc=%d chrg=0x%x\n",
+ 		di->voltage_avg_mv, di->voltage_ocv_mv, di->voltage_relax_mv,
+@@ -1430,26 +1464,7 @@ static int rk818_bat_get_property(struct rk818_battery *di,
+ {
+ 	switch (psp) {
+ 	case POWER_SUPPLY_PROP_STATUS:
+-		switch (di->chrg_status) {
+-		case RK818_CHG_STS_WAKEUP_CUR:
+-		case RK818_CHG_STS_TRICKLE_CUR:
+-		case RK818_CHG_STS_CC_OR_CV:
+-			val->intval = POWER_SUPPLY_STATUS_CHARGING;
+-			break;
+-		case RK818_CHG_STS_TERMINATED:
+-			val->intval = rk818_charger_online(di) ?
+-				      POWER_SUPPLY_STATUS_FULL :
+-				      POWER_SUPPLY_STATUS_DISCHARGING;
+-			break;
+-		case RK818_CHG_STS_USB_OV:
+-		case RK818_CHG_STS_BAT_TEMP_FAULT:
+-		case RK818_CHG_STS_TIMEOUT:
+-			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
+-			break;
+-		default:
+-			val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
+-			break;
+-		}
++		val->intval = rk818_bat_status(di);
+ 		break;
+ 	case POWER_SUPPLY_PROP_PRESENT:
+ 		val->intval = rk818_battery_present(di);
+-- 
+2.43.0
+
