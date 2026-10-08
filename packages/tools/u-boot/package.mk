@@ -5,6 +5,10 @@
 PKG_NAME="u-boot"
 PKG_VERSION="2025.07"
 PKG_SHA256="0f933f6c5a426895bf306e93e6ac53c60870e4b54cda56d95211bec99e63bec7"
+if [ "${PROJECT}" = "Amlogic" -a "${DEVICE}" = "S922X" ]; then
+  PKG_VERSION="2026.07"
+  PKG_SHA256="78e8bfc382fe388f9b55aa1daf8c563522a037779b5d4c349d1415e381f1243e"
+fi
 PKG_ARCH="arm aarch64"
 PKG_LICENSE="GPL"
 PKG_SITE="https://www.denx.de/wiki/U-Boot"
