@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Thu, 8 Oct 2026 22:26:12 +0900
+Subject: [PATCH 2/2] arm: dts: meson-g12b-odroid-go-ultra-u-boot: set vddio_c
+ to 3.3V
+
+vddio_c (RK818 LDO9) is the vqmmc supply of the SD card. Linux picks
+3.0V for it, and after a reboot from Linux U-Boot finds it still at
+3.0V: the card initializes, but data reads fail, so the kernel cannot
+be loaded and the board drops to the U-Boot prompt. A cold boot works
+since the PMIC starts from its 3.3V default.
+
+Set it to 3.3V when U-Boot probes the regulator.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ arch/arm/dts/meson-g12b-odroid-go-ultra-u-boot.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/arm/dts/meson-g12b-odroid-go-ultra-u-boot.dtsi b/arch/arm/dts/meson-g12b-odroid-go-ultra-u-boot.dtsi
+index 1c0f9765..9ae0a50c 100644
+--- a/arch/arm/dts/meson-g12b-odroid-go-ultra-u-boot.dtsi
++++ b/arch/arm/dts/meson-g12b-odroid-go-ultra-u-boot.dtsi
+@@ -22,3 +22,11 @@
+ &vdd_ee {
+ 	regulator-init-microvolt = <875000>;
+ };
++
++/*
++ * vddio_c supplies the SD card I/O. Linux may leave it at 3.0V across a
++ * reboot, where SD card reads fail in U-Boot; start from 3.3V.
++ */
++&vddio_c {
++	regulator-init-microvolt = <3300000>;
++};
+-- 
+2.43.0
+
