@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From d013a0542a89d470bccc8f9281b46c9b1379c9b2 Mon Sep 17 00:00:00 2001
 From: Shigeaki Asai <y-asai.0816@docomonet.jp>
 Date: Fri, 9 Oct 2026 10:11:30 +0900
 Subject: [PATCH] board: odroid-go-ultra: add off-mode charging
@@ -23,16 +23,21 @@ interrupt status is set when the charger powers the board up and is
 cleared by the Linux driver, so the loop is only entered when both are
 set. U-Boot clears PLUG_IN itself after reading it.
 
+A battery disconnect resets the RK818 charger settings, and the reset
+default limits the input current to 450 mA until Linux has run once.
+Before entering the loop, write the values the Lakka rk818 driver uses
+(USB_CTRL 0xf7, CHRG_CTRL1-3 0xb0/0x0d/0x06).
+
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ---
- .../amlogic/odroid-go-ultra/odroid-go-ultra.c | 299 ++++++++++++++++++
- 1 file changed, 299 insertions(+)
+ .../amlogic/odroid-go-ultra/odroid-go-ultra.c | 335 ++++++++++++++++++
+ 1 file changed, 335 insertions(+)
 
 diff --git a/board/amlogic/odroid-go-ultra/odroid-go-ultra.c b/board/amlogic/odroid-go-ultra/odroid-go-ultra.c
-index fc005774..10c2a9df 100644
+index fc005774..eae4e057 100644
 --- a/board/amlogic/odroid-go-ultra/odroid-go-ultra.c
 +++ b/board/amlogic/odroid-go-ultra/odroid-go-ultra.c
-@@ -3,8 +3,18 @@
+@@ -3,8 +3,19 @@
   * Copyright (C) 2023 Neil Armstrong <neil.armstrong@linaro.org>
   */
  
@@ -47,11 +52,12 @@ index fc005774..10c2a9df 100644
 +#include <asm/gpio.h>
 +#include <linux/bitops.h>
 +#include <linux/delay.h>
++#include <linux/kernel.h>
 +#include <power/pmic.h>
  #include <power/regulator.h>
  
  int mmc_get_env_dev(void)
-@@ -13,3 +23,292 @@ int mmc_get_env_dev(void)
+@@ -13,3 +24,327 @@ int mmc_get_env_dev(void)
  		return 1;
  	return 0;
  }
@@ -68,6 +74,10 @@ index fc005774..10c2a9df 100644
 + * - long press on the power key boots if the battery is above
 + *   OGU_BOOT_MIN_MV, otherwise red/blue alternate briefly
 + * - unplugging the charger powers the device off again
++ *
++ * The charger settings written by Linux survive power-off, but a battery
++ * disconnect resets them to the RK818 defaults, which limit the input
++ * current to 450 mA. Write the Linux values before entering the loop.
 + */
 +
 +#define RK818_VB_MON_REG		0x21
@@ -77,6 +87,10 @@ index fc005774..10c2a9df 100644
 +#define RK818_INT_STS_REG2		0x4e
 +#define RK818_INT_PLUG_IN		BIT(0)
 +#define RK818_SUP_STS_REG		0xa0
++#define RK818_USB_CTRL_REG		0xa1
++#define RK818_CHRG_CTRL_REG1		0xa3
++#define RK818_CHRG_CTRL_REG2		0xa4
++#define RK818_CHRG_CTRL_REG3		0xa5
 +#define RK818_CHG_STS_MASK		(7 << 4)
 +#define RK818_CHG_STS_TERMINATED	(4 << 4)
 +#define RK818_TS_CTRL_REG		0xac
@@ -131,6 +145,32 @@ index fc005774..10c2a9df 100644
 +		dm_gpio_set_value(&c->red, red);
 +	if (c->have_blue)
 +		dm_gpio_set_value(&c->blue, blue);
++}
++
++/* Charger settings as the Lakka rk818 driver leaves them */
++static const struct {
++	u8 reg;
++	u8 val;
++} ogu_charge_cfg[] = {
++	{ RK818_USB_CTRL_REG,	0xf7 },	/* input limit 2 A */
++	{ RK818_CHRG_CTRL_REG1,	0xb0 },	/* charge enabled, 4.2 V */
++	{ RK818_CHRG_CTRL_REG2,	0x0d },
++	{ RK818_CHRG_CTRL_REG3,	0x06 },
++};
++
++static void ogu_charge_setup(struct ogu_charge *c)
++{
++	int i, val;
++
++	for (i = 0; i < ARRAY_SIZE(ogu_charge_cfg); i++) {
++		val = pmic_reg_read(c->rk818, ogu_charge_cfg[i].reg);
++		if (val == ogu_charge_cfg[i].val)
++			continue;
++		printf("OGU:   charger reg 0x%02x: 0x%02x -> 0x%02x\n",
++		       ogu_charge_cfg[i].reg, val, ogu_charge_cfg[i].val);
++		pmic_reg_write(c->rk818, ogu_charge_cfg[i].reg,
++			       ogu_charge_cfg[i].val);
++	}
 +}
 +
 +static int ogu_read16(struct udevice *dev, uint regh, uint regl)
@@ -333,6 +373,7 @@ index fc005774..10c2a9df 100644
 +
 +	c.have_red = !ogu_led_get(&c.red, "aobus-banks6");
 +	c.have_blue = !ogu_led_get(&c.blue, "aobus-banks11");
++	ogu_charge_setup(&c);
 +	ogu_init_voltage(&c);
 +
 +	ogu_charge_loop(&c);
