@@ -1,0 +1,46 @@
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Subject: [PATCH] LOCAL: power: reset: odroid-go-ultra: keep RK817 BUCKs on at
+ power-off
+
+With both PMICs set to DEV_OFF, plugging in a charger while the
+device is off wakes RK818 (u-boot reports "RK818 (on=0x40)"), but the
+SoC never boots because RK817 is fully off. The vendor u-boot only
+turns off RK817's LDOs and BOOST at power-off and leaves BUCK2
+(vddcpu_b) and BUCK3 (vcc_2v3) running. Do the same here, so that the
+device boots on charger plug-in and u-boot can run its off-mode
+charging loop.
+
+Not for upstream: leaving rails on while off costs some battery,
+though the measured drain stayed within the noise (96% to 96%
+after 7.7 hours off, OCV re-anchored).
+---
+diff --git a/drivers/power/reset/odroid-go-ultra-poweroff.c b/drivers/power/reset/odroid-go-ultra-poweroff.c
+index 9cac7aef77f0..9f868f7fb592 100644
+--- a/drivers/power/reset/odroid-go-ultra-poweroff.c
++++ b/drivers/power/reset/odroid-go-ultra-poweroff.c
+@@ -48,10 +48,22 @@ static int odroid_go_ultra_poweroff_prepare(struct sys_off_data *data)
+ 
+ 	dev_info(poweroff_data->dev, "Setting PMICs for power off");
+ 
+-	/* RK817 */
+-	ret = regmap_update_bits(rk817, RK817_SYS_CFG(3), DEV_OFF, DEV_OFF);
++	/*
++	 * RK817: turn off its LDOs and BOOST/OTG switch only, as the vendor
++	 * u-boot does, and leave its BUCKs (vddcpu_b, vcc_2v3) running.
++	 * RK818 powers up on its own when a charger is plugged in, but the
++	 * SoC can only boot if RK817's BUCKs are up too, so a full DEV_OFF
++	 * here leaves the device unable to wake on charger plug-in.
++	 * The POWER_EN registers take a write mask in the upper nibble:
++	 * 0xf0 clears all four enables of the group.
++	 */
++	ret = regmap_write(rk817, RK817_POWER_EN_REG(1), 0xf0);
++	if (!ret)
++		ret = regmap_write(rk817, RK817_POWER_EN_REG(2), 0xf0);
++	if (!ret)
++		ret = regmap_write(rk817, RK817_POWER_EN_REG(3), 0xf0);
+ 	if (ret) {
+-		dev_err(poweroff_data->dev, "failed to poweroff rk817\n");
++		dev_err(poweroff_data->dev, "failed to turn off rk817 ldos\n");
+ 		return notifier_from_errno(ret);
+ 	}
+ 
