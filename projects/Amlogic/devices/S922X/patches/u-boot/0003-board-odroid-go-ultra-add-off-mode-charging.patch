@@ -1,0 +1,349 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Fri, 9 Oct 2026 10:11:30 +0900
+Subject: [PATCH] board: odroid-go-ultra: add off-mode charging
+
+When the charger is plugged in while the device is off, the RK818
+powers the board up with ON_SOURCE = plug-in. Instead of booting
+Linux, wait in a charging loop:
+
+- the red LED (GPIOAO_6) blinks while charging and stays on when the
+  charger reports charge termination
+- a 2 s press on the power key (RK817 PWRON events) boots if the
+  battery is at or above 3470 mV, as in the vendor U-Boot; below that
+  the red and blue LEDs alternate briefly and charging continues
+- unplugging the charger for 2 s powers the device off again: RK817
+  LDOs and BOOST off (BUCKs kept, so the next plug-in can power the
+  board up), then RK818 DEV_OFF
+- any key on the serial console leaves the loop and boots
+
+ON_SOURCE is read-only and stays latched across a reboot from Linux,
+and the Amlogic reboot reason reads 0 there as well. The RK818 PLUG_IN
+interrupt status is set when the charger powers the board up and is
+cleared by the Linux driver, so the loop is only entered when both are
+set. U-Boot clears PLUG_IN itself after reading it.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ .../amlogic/odroid-go-ultra/odroid-go-ultra.c | 299 ++++++++++++++++++
+ 1 file changed, 299 insertions(+)
+
+diff --git a/board/amlogic/odroid-go-ultra/odroid-go-ultra.c b/board/amlogic/odroid-go-ultra/odroid-go-ultra.c
+index fc005774..10c2a9df 100644
+--- a/board/amlogic/odroid-go-ultra/odroid-go-ultra.c
++++ b/board/amlogic/odroid-go-ultra/odroid-go-ultra.c
+@@ -3,8 +3,18 @@
+  * Copyright (C) 2023 Neil Armstrong <neil.armstrong@linaro.org>
+  */
+ 
++#include <console.h>
++#include <dm.h>
++#include <hang.h>
+ #include <log.h>
++#include <stdio.h>
++#include <time.h>
+ #include <asm/arch/boot.h>
++#include <asm/arch/sm.h>
++#include <asm/gpio.h>
++#include <linux/bitops.h>
++#include <linux/delay.h>
++#include <power/pmic.h>
+ #include <power/regulator.h>
+ 
+ int mmc_get_env_dev(void)
+@@ -13,3 +23,292 @@ int mmc_get_env_dev(void)
+ 		return 1;
+ 	return 0;
+ }
++
++/*
++ * Off-mode charging
++ *
++ * The RK818 (battery, charger, fuel gauge) keeps charging while the
++ * device is off. When a charger is plugged in, the RK818 powers the
++ * board up and the boot lands here with ON_SOURCE = plug-in. Instead of
++ * booting Linux, wait in a small loop:
++ *
++ * - red LED (GPIOAO_6) blinks while charging, stays on when full
++ * - long press on the power key boots if the battery is above
++ *   OGU_BOOT_MIN_MV, otherwise red/blue alternate briefly
++ * - unplugging the charger powers the device off again
++ */
++
++#define RK818_VB_MON_REG		0x21
++#define RK818_PLUG_IN_STS		BIT(6)
++#define RK818_DEVCTRL_REG		0x4b
++#define RK818_DEV_OFF			BIT(0)
++#define RK818_INT_STS_REG2		0x4e
++#define RK818_INT_PLUG_IN		BIT(0)
++#define RK818_SUP_STS_REG		0xa0
++#define RK818_CHG_STS_MASK		(7 << 4)
++#define RK818_CHG_STS_TERMINATED	(4 << 4)
++#define RK818_TS_CTRL_REG		0xac
++#define RK818_GG_EN			BIT(7)
++#define RK818_ON_SOURCE_REG		0xae
++#define RK818_ON_PLUG_IN		BIT(6)
++#define RK818_BAT_VOL_REGH		0xc4
++#define RK818_BAT_VOL_REGL		0xc5
++#define RK818_VCALIB0_REGH		0xd5
++#define RK818_VCALIB0_REGL		0xd6
++#define RK818_VCALIB1_REGH		0xd7
++#define RK818_VCALIB1_REGL		0xd8
++
++#define RK817_POWER_EN_REG(i)		(0xb1 + (i))
++#define RK817_INT_STS_REG0		0xf8
++#define RK817_PWRON_FALL		BIT(0)	/* key pressed */
++#define RK817_PWRON_RISE		BIT(1)	/* key released */
++
++#define OGU_BOOT_MIN_MV			3470
++#define OGU_LONG_PRESS_MS		2000
++#define OGU_BLINK_MS			500
++#define OGU_POLL_MS			50
++#define OGU_UNPLUG_MS			2000
++
++struct ogu_charge {
++	struct udevice *rk818;
++	struct udevice *rk817;
++	struct gpio_desc red;
++	struct gpio_desc blue;
++	bool have_red;
++	bool have_blue;
++	int vol_k;
++	int vol_b;
++};
++
++static int ogu_led_get(struct gpio_desc *desc, const char *name)
++{
++	int ret;
++
++	ret = dm_gpio_lookup_name(name, desc);
++	if (ret)
++		return ret;
++	ret = dm_gpio_request(desc, "charge-led");
++	if (ret)
++		return ret;
++	return dm_gpio_set_dir_flags(desc, GPIOD_IS_OUT);
++}
++
++static void ogu_leds(struct ogu_charge *c, int red, int blue)
++{
++	if (c->have_red)
++		dm_gpio_set_value(&c->red, red);
++	if (c->have_blue)
++		dm_gpio_set_value(&c->blue, blue);
++}
++
++static int ogu_read16(struct udevice *dev, uint regh, uint regl)
++{
++	return (pmic_reg_read(dev, regh) << 8) | pmic_reg_read(dev, regl);
++}
++
++/* Same calibration as the Linux rk818 battery driver */
++static void ogu_init_voltage(struct ogu_charge *c)
++{
++	int v0, v1;
++
++	pmic_clrsetbits(c->rk818, RK818_TS_CTRL_REG, 0, RK818_GG_EN);
++
++	v0 = ogu_read16(c->rk818, RK818_VCALIB0_REGH, RK818_VCALIB0_REGL);
++	v1 = ogu_read16(c->rk818, RK818_VCALIB1_REGH, RK818_VCALIB1_REGL);
++	if (v1 <= v0) {
++		c->vol_k = 0;
++		return;
++	}
++	/* vcalib0 is the ADC code at 3000 mV, vcalib1 at 4200 mV */
++	c->vol_k = (4200 - 3000) * 1000 / (v1 - v0);
++	c->vol_b = 4200 - c->vol_k * v1 / 1000;
++}
++
++static int ogu_battery_mv(struct ogu_charge *c)
++{
++	int raw;
++
++	if (!c->vol_k)
++		return -1;
++	raw = ogu_read16(c->rk818, RK818_BAT_VOL_REGH, RK818_BAT_VOL_REGL);
++	return c->vol_k * raw / 1000 + c->vol_b;
++}
++
++static bool ogu_charger_online(struct ogu_charge *c)
++{
++	return pmic_reg_read(c->rk818, RK818_VB_MON_REG) & RK818_PLUG_IN_STS;
++}
++
++static bool ogu_charge_done(struct ogu_charge *c)
++{
++	return (pmic_reg_read(c->rk818, RK818_SUP_STS_REG) &
++		RK818_CHG_STS_MASK) == RK818_CHG_STS_TERMINATED;
++}
++
++/* Read and clear the RK817 power key events */
++static int ogu_pwrkey_events(struct ogu_charge *c)
++{
++	int sts = pmic_reg_read(c->rk817, RK817_INT_STS_REG0);
++
++	if (sts < 0)
++		return 0;
++	sts &= RK817_PWRON_FALL | RK817_PWRON_RISE;
++	if (sts)
++		pmic_reg_write(c->rk817, RK817_INT_STS_REG0, sts);
++	return sts;
++}
++
++/*
++ * Turn the board off the same way the vendor U-Boot does: switch off
++ * the RK817 LDOs and BOOST (keeping its BUCKs, so that plugging in the
++ * charger can power the board up again), then put the RK818 in DEV_OFF.
++ */
++static void __noreturn ogu_power_off(struct ogu_charge *c)
++{
++	ogu_leds(c, 0, 0);
++	printf("Charger unplugged, powering off (VB_MON=0x%02x SUP_STS=0x%02x)\n",
++	       pmic_reg_read(c->rk818, RK818_VB_MON_REG),
++	       pmic_reg_read(c->rk818, RK818_SUP_STS_REG));
++	mdelay(10);
++
++	pmic_reg_write(c->rk817, RK817_POWER_EN_REG(1), 0xf0);
++	pmic_reg_write(c->rk817, RK817_POWER_EN_REG(2), 0xf0);
++	pmic_reg_write(c->rk817, RK817_POWER_EN_REG(3), 0xf0);
++	pmic_clrsetbits(c->rk818, RK818_DEVCTRL_REG, 0, RK818_DEV_OFF);
++
++	mdelay(1000);
++	printf("Power off failed\n");
++	hang();
++}
++
++static void ogu_low_battery(struct ogu_charge *c)
++{
++	int i;
++
++	for (i = 0; i < 4; i++) {
++		ogu_leds(c, 1, 0);
++		mdelay(250);
++		ogu_leds(c, 0, 1);
++		mdelay(250);
++	}
++	ogu_leds(c, 0, 0);
++}
++
++static void ogu_charge_loop(struct ogu_charge *c)
++{
++	ulong blink = get_timer(0);
++	ulong press = 0;
++	ulong unplug = 0;
++	bool unplugged = false;
++	bool pressed = false;
++	bool led = true;
++	int mv;
++
++	printf("Charging (press the power key for 2s to boot)\n");
++	ogu_pwrkey_events(c);
++	ogu_leds(c, 1, 0);
++
++	for (;;) {
++		int ev;
++
++		/*
++		 * Power off only after the charger has been gone for a while,
++		 * so that a short drop of VBUS (connector, cable, boot load)
++		 * does not end the loop.
++		 */
++		if (ogu_charger_online(c)) {
++			if (unplugged)
++				printf("Charger back\n");
++			unplugged = false;
++		} else if (!unplugged) {
++			printf("Charger gone? (VB_MON=0x%02x)\n",
++			       pmic_reg_read(c->rk818, RK818_VB_MON_REG));
++			unplugged = true;
++			unplug = get_timer(0);
++		} else if (get_timer(unplug) >= OGU_UNPLUG_MS) {
++			ogu_power_off(c);
++		}
++
++		/* Escape hatch on the serial console */
++		if (tstc()) {
++			getchar();
++			break;
++		}
++
++		if (ogu_charge_done(c)) {
++			led = true;
++		} else if (get_timer(blink) >= OGU_BLINK_MS) {
++			blink = get_timer(0);
++			led = !led;
++		}
++		ogu_leds(c, led, 0);
++
++		ev = ogu_pwrkey_events(c);
++		if (ev & RK817_PWRON_FALL) {
++			pressed = true;
++			press = get_timer(0);
++		}
++		if (ev & RK817_PWRON_RISE)
++			pressed = false;
++
++		if (pressed && get_timer(press) >= OGU_LONG_PRESS_MS) {
++			pressed = false;
++			mv = ogu_battery_mv(c);
++			printf("Battery %d mV\n", mv);
++			if (mv < 0 || mv >= OGU_BOOT_MIN_MV)
++				break;
++			ogu_low_battery(c);
++			blink = get_timer(0);
++		}
++
++		mdelay(OGU_POLL_MS);
++	}
++
++	ogu_leds(c, 0, 0);
++	printf("Booting\n");
++}
++
++int meson_board_late_init(void)
++{
++	struct ogu_charge c = { };
++	int on_source, int_sts2, reason;
++
++	if (uclass_get_device_by_name(UCLASS_PMIC, "pmic@1c", &c.rk818) ||
++	    uclass_get_device_by_name(UCLASS_PMIC, "pmic@20", &c.rk817))
++		return 0;
++
++	on_source = pmic_reg_read(c.rk818, RK818_ON_SOURCE_REG);
++	int_sts2 = pmic_reg_read(c.rk818, RK818_INT_STS_REG2);
++	reason = meson_sm_get_reboot_reason();
++	printf("OGU:   on_source=0x%02x int_sts2=0x%02x reboot_reason=%d charger=%d\n",
++	       on_source, int_sts2, reason, ogu_charger_online(&c));
++
++	/*
++	 * ON_SOURCE is read-only and latched until the next PMIC power-up,
++	 * so it still says plug-in after a reboot from Linux, and the
++	 * Amlogic reboot reason reads 0 in both cases. The PLUG_IN
++	 * interrupt status tells them apart: it is set when the charger
++	 * powers the board up, and the Linux driver clears it at probe.
++	 * Clear it here too, so that only a fresh plug-in enters the loop.
++	 */
++	if (on_source < 0 || int_sts2 < 0)
++		return 0;
++	if (int_sts2 & RK818_INT_PLUG_IN)
++		pmic_reg_write(c.rk818, RK818_INT_STS_REG2, RK818_INT_PLUG_IN);
++	if (!(on_source & RK818_ON_PLUG_IN) ||
++	    !(int_sts2 & RK818_INT_PLUG_IN) || !ogu_charger_online(&c))
++		return 0;
++
++	c.have_red = !ogu_led_get(&c.red, "aobus-banks6");
++	c.have_blue = !ogu_led_get(&c.blue, "aobus-banks11");
++	ogu_init_voltage(&c);
++
++	ogu_charge_loop(&c);
++
++	if (c.have_red)
++		dm_gpio_free(c.red.dev, &c.red);
++	if (c.have_blue)
++		dm_gpio_free(c.blue.dev, &c.blue);
++
++	return 0;
++}
+-- 
+2.43.0
+
