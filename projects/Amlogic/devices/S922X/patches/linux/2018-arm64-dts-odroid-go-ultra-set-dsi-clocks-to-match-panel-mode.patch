@@ -1,0 +1,26 @@
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Subject: arm64: dts: odroid-go-ultra: set DSI clocks to match the panel mode
+
+The DSI node added by 0002 pins GP0 and the DSI bit clock to 344976000
+(28.748 MHz x 12), but the panel mode uses a 29170 kHz pixel clock
+(350.04 MHz bit clock for RGB888 on 2 lanes).
+
+The meson DSI driver does request 350.04 MHz, but at that point the
+pixel clock is still prepared and vclk2_div is CLK_SET_RATE_GATE, so
+GP0 is rate-protected and the request is silently rounded to the old
+rate. The panel then runs at 58.88 Hz instead of 60 Hz.
+
+Override the assigned rates so the clocks match the mode. Measured
+refresh rate after this change: 59.91 Hz.
+
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-10-10 23:05:12.442149479 +0900
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts	2026-10-10 23:05:12.444861577 +0900
+@@ -826,3 +826,8 @@
+ 		remote-endpoint = <&mipi_in_panel>;
+ 	};
+ };
++
++/* Lakka: run the DSI clocks at the rate the panel mode asks for */
++&mipi_dsi {
++	assigned-clock-rates = <350040000>, <0>, <350040000>, <0>, <0>;
++};
