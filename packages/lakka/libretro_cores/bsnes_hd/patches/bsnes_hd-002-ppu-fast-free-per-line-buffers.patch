@@ -1,0 +1,95 @@
+From f391728969d2070cf604a6e6e51072a71829a277 Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Sun, 11 Oct 2026 00:24:58 +0900
+Subject: [PATCH] sfc/ppu-fast: free the per-line buffers when the PPU is
+ destroyed
+
+Each of the 240 PPU::Line objects allocates above/below/windowAbove/
+windowBelow with new[] (about 1 MiB per line) but never frees them.
+When a frontend unloads and reloads the core, the PPU is destroyed and
+constructed again and these buffers leak each time; on a 2 GB device
+the frontend is OOM-killed after a few reloads.
+
+Add a destructor that frees them. Line is now non-copyable, so the
+places in line.cpp and mode7hd.cpp that copied a whole Line only to
+read a few of its fields take a const reference instead (this also
+avoids copying the large struct inside those loops).
+
+This patch was written with the help of Claude (claude-opus-5-5).
+---
+ bsnes/sfc/ppu-fast/line.cpp    |  8 ++++----
+ bsnes/sfc/ppu-fast/mode7hd.cpp |  4 ++--
+ bsnes/sfc/ppu-fast/ppu.hpp     | 11 +++++++++++
+ 3 files changed, 17 insertions(+), 6 deletions(-)
+
+diff --git a/bsnes/sfc/ppu-fast/line.cpp b/bsnes/sfc/ppu-fast/line.cpp
+index 551430c..56ba70f 100644
+--- a/bsnes/sfc/ppu-fast/line.cpp
++++ b/bsnes/sfc/ppu-fast/line.cpp
+@@ -129,8 +129,8 @@ auto PPU::Line::avgBgC(uint dist, uint offset) const -> uint32 {
+     int uY = (hdY-i)/scale;
+     int dY = (hdY+i)/scale;
+     if(uY < 0 || dY >= 224) break; /////////////////////////////
+-    auto uL = ppufast.lines[uY];
+-    auto dL = ppufast.lines[dY];
++    const auto& uL = ppufast.lines[uY];
++    const auto& dL = ppufast.lines[dY];
+     if( io.col.halve     != dL.io.col.halve     || io.col.halve     != uL.io.col.halve     ||
+         io.col.mathMode  != dL.io.col.mathMode  || io.col.mathMode  != uL.io.col.mathMode  ||
+         io.col.blendMode != dL.io.col.blendMode || io.col.blendMode != uL.io.col.blendMode ||
+@@ -244,8 +244,8 @@ auto PPU::Line::render(bool fieldID) -> void {
+       int uY = (hdY-i)/scale;
+       int dY = (hdY+i)/scale;
+       if(uY <= 0 || dY >= 224) break;
+-      auto uL = ppufast.lines[uY];
+-      auto dL = ppufast.lines[dY];
++      const auto& uL = ppufast.lines[uY];
++      const auto& dL = ppufast.lines[dY];
+ 
+       if( io.col.halve     != dL.io.col.halve     || io.col.halve     != uL.io.col.halve     ||
+           io.col.mathMode  != dL.io.col.mathMode  || io.col.mathMode  != uL.io.col.mathMode  ||
+diff --git a/bsnes/sfc/ppu-fast/mode7hd.cpp b/bsnes/sfc/ppu-fast/mode7hd.cpp
+index 8fd6f4e..9f2e4af 100644
+--- a/bsnes/sfc/ppu-fast/mode7hd.cpp
++++ b/bsnes/sfc/ppu-fast/mode7hd.cpp
+@@ -134,13 +134,13 @@ auto PPU::Line::renderMode7HD(PPU::IO::Background& self, uint8 source) -> void {
+   }
+   #undef isLineMode7
+ 
+-  Line line_a = ppu.lines[y_a];
++  const Line& line_a = ppu.lines[y_a];
+   float a_a = (int16)line_a.io.mode7.a;
+   float b_a = (int16)line_a.io.mode7.b;
+   float c_a = (int16)line_a.io.mode7.c;
+   float d_a = (int16)line_a.io.mode7.d;
+ 
+-  Line line_b = ppu.lines[y_b];
++  const Line& line_b = ppu.lines[y_b];
+   float a_b = (int16)line_b.io.mode7.a;
+   float b_b = (int16)line_b.io.mode7.b;
+   float c_b = (int16)line_b.io.mode7.c;
+diff --git a/bsnes/sfc/ppu-fast/ppu.hpp b/bsnes/sfc/ppu-fast/ppu.hpp
+index b4a71c0..e059ae2 100644
+--- a/bsnes/sfc/ppu-fast/ppu.hpp
++++ b/bsnes/sfc/ppu-fast/ppu.hpp
+@@ -358,6 +358,17 @@ public:
+     bool *windowAbove = new bool[61440] ;
+     bool *windowBelow = new bool[61440] ;
+ 
++    //the buffers above are owned by each Line: free them, and forbid copies
++    Line() = default;
++    Line(const Line&) = delete;
++    auto operator=(const Line&) -> Line& = delete;
++    ~Line() {
++      delete[] above;
++      delete[] below;
++      delete[] windowAbove;
++      delete[] windowBelow;
++    }
++
+     //flush()
+     static uint start;
+     static uint count;
+-- 
+2.43.0
+
