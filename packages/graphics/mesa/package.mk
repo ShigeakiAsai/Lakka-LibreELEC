@@ -5,6 +5,10 @@
 PKG_NAME="mesa"
 PKG_VERSION="26.0.3"
 PKG_SHA256="ddb7443d328e89aa45b4b6b80f077bf937f099daeca8ba48cabe32aab769e134"
+if [ "${PROJECT}" = "Amlogic" -a "${DEVICE}" = "S922X" ]; then
+  PKG_VERSION="26.2.4"
+  PKG_SHA256="bce5f7fbebb934373b86c999a064d52fb5065878dc57f287f95346648ec832e9"
+fi
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.mesa3d.org/"
 PKG_URL="https://mesa.freedesktop.org/archive/mesa-${PKG_VERSION}.tar.xz"
