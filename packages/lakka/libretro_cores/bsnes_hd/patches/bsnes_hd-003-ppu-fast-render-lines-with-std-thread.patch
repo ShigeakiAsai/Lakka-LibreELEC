@@ -1,0 +1,165 @@
+From 135c539190d0b2eb607272d001f5d971c121838f Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Sun, 11 Oct 2026 10:18:43 +0900
+Subject: [PATCH] sfc/ppu-fast: render lines on all cores with std::thread
+ instead of OpenMP
+
+The only OpenMP use in the core is the parallel loop over the queued
+lines in Line::flush(). Some platforms build the core without OpenMP
+(for example Lakka, whose toolchain has no libgomp), and then every
+line is rendered on one core; on a Cortex-A73/A53 handheld this drops
+some games from 60 to about 50 fps in HD mode.
+
+Replace the pragma with a small worker pool built on std::thread. It
+starts one worker per extra CPU core on first use, splits the lines
+the same way as the OpenMP loop (still only when 8 or more lines are
+queued), and stops and joins the workers when it is destroyed, so no
+thread is left behind when the frontend unloads the core.
+
+This patch was written with the help of Claude (claude-opus-5-5).
+---
+ bsnes/sfc/ppu-fast/line.cpp | 97 ++++++++++++++++++++++++++++++++++++-
+ bsnes/sfc/ppu-fast/ppu.cpp  |  6 +++
+ 2 files changed, 101 insertions(+), 2 deletions(-)
+
+diff --git a/bsnes/sfc/ppu-fast/line.cpp b/bsnes/sfc/ppu-fast/line.cpp
+index 56ba70f..ebd7154 100644
+--- a/bsnes/sfc/ppu-fast/line.cpp
++++ b/bsnes/sfc/ppu-fast/line.cpp
+@@ -2,6 +2,95 @@
+ uint PPU::Line::start = 0;
+ uint PPU::Line::count = 0;
+ 
++//renders the queued lines on all CPU cores without OpenMP.
++//the worker threads are started on first use and are stopped and joined
++//when this object is destroyed (i.e. when the core is unloaded), so no
++//thread is left running code that has been unmapped.
++struct LineRenderPool {
++  ~LineRenderPool() {
++    { std::lock_guard<std::mutex> lock(mutex); quit = true; }
++    wake.notify_all();
++    for(auto& worker : workers) worker.join();
++  }
++
++  auto run(unsigned total, const std::function<void (unsigned)>& body) -> void {
++    if(!started) start();
++    if(workers.empty()) {
++      for(unsigned i = 0; i < total; i++) body(i);
++      return;
++    }
++    {
++      std::lock_guard<std::mutex> lock(mutex);
++      job = &body;
++      count = total;
++      next = 0;
++      pending = workers.size();
++      generation++;
++    }
++    wake.notify_all();
++    work();
++    std::unique_lock<std::mutex> lock(mutex);
++    done.wait(lock, [&] { return pending == 0; });
++    job = nullptr;
++  }
++
++private:
++  auto start() -> void {
++    started = true;
++    unsigned threads = std::thread::hardware_concurrency();
++    if(threads < 2) return;
++    for(unsigned i = 1; i < threads; i++) {
++      workers.emplace_back([this] { loop(); });
++    }
++  }
++
++  auto loop() -> void {
++    unsigned seen = 0;
++    while(true) {
++      {
++        std::unique_lock<std::mutex> lock(mutex);
++        wake.wait(lock, [&] { return quit || generation != seen; });
++        if(quit) return;
++        seen = generation;
++      }
++      work();
++      {
++        std::lock_guard<std::mutex> lock(mutex);
++        if(--pending == 0) done.notify_one();
++      }
++    }
++  }
++
++  //lines are handed out under the mutex rather than with std::atomic:
++  //240 lock/unlock pairs per frame cost nothing, and it avoids needing
++  //the libgcc outline-atomics helpers on aarch64 toolchains without them
++  auto work() -> void {
++    while(true) {
++      unsigned i;
++      {
++        std::lock_guard<std::mutex> lock(mutex);
++        if(next >= count) return;
++        i = next++;
++      }
++      (*job)(i);
++    }
++  }
++
++  std::vector<std::thread> workers;
++  std::mutex mutex;
++  std::condition_variable wake;
++  std::condition_variable done;
++  const std::function<void (unsigned)>* job = nullptr;
++  unsigned next = 0;
++  unsigned count = 0;
++  unsigned pending = 0;
++  unsigned generation = 0;
++  bool quit = false;
++  bool started = false;
++};
++
++static LineRenderPool lineRenderPool;
++
+ auto PPU::Line::flush() -> void {
+ 
+   ppu.wsExt = HdToolkit::determineWsExt(ppu.widescreenRaw(),
+@@ -73,8 +162,7 @@ auto PPU::Line::flush() -> void {
+ 
+   if(Line::count) {
+     if(ppu.hdScale() > 1) cacheMode7HD();
+-    #pragma omp parallel for if(Line::count >= 8)
+-    for(uint y = 0; y < Line::count; y++) {
++    auto renderLine = [](unsigned y) {
+       if(ppu.deinterlace()) {
+         if(!ppu.interlace()) {
+           //some games enable interlacing in 240p mode, just force these to even fields
+@@ -88,6 +176,11 @@ auto PPU::Line::flush() -> void {
+         //standard 240p (progressive) and 480i (interlaced) rendering
+         ppu.lines[Line::start + y].render(ppu.field());
+       }
++    };
++    if(Line::count >= 8) {
++      lineRenderPool.run(Line::count, renderLine);
++    } else {
++      for(uint y = 0; y < Line::count; y++) renderLine(y);
+     }
+     Line::start = 0;
+     Line::count = 0;
+diff --git a/bsnes/sfc/ppu-fast/ppu.cpp b/bsnes/sfc/ppu-fast/ppu.cpp
+index d7260af..4722165 100644
+--- a/bsnes/sfc/ppu-fast/ppu.cpp
++++ b/bsnes/sfc/ppu-fast/ppu.cpp
+@@ -1,5 +1,11 @@
+ #include <sfc/sfc.hpp>
+ 
++#include <condition_variable>
++#include <functional>
++#include <mutex>
++#include <thread>
++#include <vector>
++
+ namespace SuperFamicom {
+ 
+ PPU& ppubase = ppu;
+-- 
+2.43.0
+
