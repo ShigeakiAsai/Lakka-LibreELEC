@@ -1,0 +1,23 @@
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-go-ultra.dts
+@@ -831,3 +831,20 @@
+ &mipi_dsi {
+ 	assigned-clock-rates = <350040000>, <0>, <350040000>, <0>, <0>;
+ };
++
++/*
++ * Lakka: the RK817 RTC seems to run without a 32 kHz crystal on this board
++ * and loses minutes per hour while the device is off, but the RK818 RTC
++ * keeps the correct time. Make the RK818 RTC rtc0, so that the system time
++ * is read from it at boot.
++ *
++ * Give every RTC an alias: an RTC without one takes the lowest free number,
++ * and the RK817 RTC is registered first, so it would take rtc0.
++ */
++/ {
++	aliases {
++		rtc0 = &rk818;
++		rtc1 = &vrtc;
++		rtc2 = &rk817;
++	};
++};
