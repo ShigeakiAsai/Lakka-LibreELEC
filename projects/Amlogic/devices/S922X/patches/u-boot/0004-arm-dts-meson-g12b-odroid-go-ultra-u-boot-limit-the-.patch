@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Tue, 13 Oct 2026 11:04:17 +0900
+Subject: [PATCH] arm: dts: meson-g12b-odroid-go-ultra-u-boot: limit the eMMC
+ to 26MHz
+
+After a cold boot, U-Boot often cannot read the eMMC on the ODROID-GO
+Ultra (Samsung AJTD4R). In the 52MHz high speed mode the 8-bit bus test
+fails, U-Boot falls back to a 1-bit bus at 40MHz, and every read then
+fails, so distro boot finds no partition table on mmc 1 and the board
+cannot boot from the eMMC. On my board it failed on 3 of 3 cold boots
+with a UART cable attached, and on 1 of 3 without one.
+
+At the same U-Boot prompt, reinitializing the eMMC at 26MHz gives an
+8-bit bus and the reads work. The meson MMC driver has no tuning in
+U-Boot, while Linux tunes the eMMC and runs it in HS200 without
+problems.
+
+Limit the eMMC to 26MHz in U-Boot. With this change the board booted
+from the eMMC on 15 of 15 cold boots (10 with a UART cable, 5 without).
+Linux is not affected.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ arch/arm/dts/meson-g12b-odroid-go-ultra-u-boot.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/arch/arm/dts/meson-g12b-odroid-go-ultra-u-boot.dtsi b/arch/arm/dts/meson-g12b-odroid-go-ultra-u-boot.dtsi
+index 9ae0a50..a8a7693 100644
+--- a/arch/arm/dts/meson-g12b-odroid-go-ultra-u-boot.dtsi
++++ b/arch/arm/dts/meson-g12b-odroid-go-ultra-u-boot.dtsi
+@@ -30,3 +30,13 @@
+ &vddio_c {
+ 	regulator-init-microvolt = <3300000>;
+ };
++
++/*
++ * After a cold boot, U-Boot sometimes cannot use the eMMC at 52MHz: the
++ * 8-bit bus test fails, it falls back to a 1-bit bus, and reads then fail,
++ * so the board cannot boot from the eMMC. This controller has no tuning in
++ * U-Boot; at 26MHz the 8-bit bus works.
++ */
++&sd_emmc_c {
++	max-frequency = <26000000>;
++};
