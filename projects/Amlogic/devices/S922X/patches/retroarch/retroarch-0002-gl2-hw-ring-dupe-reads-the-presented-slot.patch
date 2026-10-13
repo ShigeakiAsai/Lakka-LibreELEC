@@ -1,0 +1,43 @@
+--- a/gfx/common/gl2_common.h
++++ b/gfx/common/gl2_common.h
+@@ -87,7 +87,11 @@
+     * set_texture_frame() is applied by the video thread in
+     * thread_update_driver_state(), and reading the setting there races
+     * the menu writing it. */
+-   GL2_FLAG_MENU_LINEAR_FILTER     = (1 << 26)
++   GL2_FLAG_MENU_LINEAR_FILTER     = (1 << 26),
++   /* The hardware ring has set tex_index for the next frame, one slot
++    * before the slot to read: the frame advances it whether or not it
++    * is a dupe. */
++   GL2_FLAG_HW_RING_SLOT_SET       = (1 << 29)
+ };
+ 
+ struct gl2
+--- a/gfx/drivers/gl2.c
++++ b/gfx/drivers/gl2.c
+@@ -3432,8 +3432,10 @@
+    }
+ #endif
+    /* The frame advances tex_index itself before reading; land on the
+-    * slot after that advance. */
++    * slot after that advance. A dupe advances it too, so it reads this
++    * slot and not the one before it. */
+    gl->tex_index = (slot + gl->textures - 1) % gl->textures;
++   gl->flags    |= GL2_FLAG_HW_RING_SLOT_SET;
+    return true;
+ }
+ 
+@@ -4557,8 +4559,12 @@
+          gl2_set_viewport(gl, VIDEO_SCALE_PACK(width, height), false, true);
+    }
+ 
+-   if (frame)
++   /* A dupe (NULL frame) reads the texture of the last frame again,
++    * except under the hardware ring, which has just set tex_index one
++    * slot before the slot to read. */
++   if (frame || (gl->flags & GL2_FLAG_HW_RING_SLOT_SET))
+       gl->tex_index = ((gl->tex_index + 1) % gl->textures);
++   gl->flags &= ~GL2_FLAG_HW_RING_SLOT_SET;
+ 
+    glBindTexture(GL_TEXTURE_2D, gl->texture[gl->tex_index]);
+ 
