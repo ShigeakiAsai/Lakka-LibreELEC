@@ -68,9 +68,9 @@ mkimage_dtb(){
 }
 
 mkimage_gou_extras(){
-  if [ -d "$INSTALL/usr/share/bootloader/res" ]; then
-    echo "image: copying ODROID-GO Ultra graphic resources (res)..."
-    mcopy -s -o "$INSTALL/usr/share/bootloader/res" ::
+  if [ -f "$INSTALL/usr/share/bootloader/u-boot.bin.sd.bin" ]; then
+    echo "image: copying u-boot.bin.sd.bin..."
+    mcopy -s -o "$INSTALL/usr/share/bootloader/u-boot.bin.sd.bin" ::
   fi
 }
 
