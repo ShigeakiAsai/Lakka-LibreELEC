@@ -1,0 +1,28 @@
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Subject: [PATCH] panvk/jm: make every invocation of the index min/max search
+ loop the same number of times
+
+On Mali-G52 (Bifrost v7, JM), vkCmdDrawIndexed() with more than 1024
+indices can get a wrong minimum index: only the result of the last
+invocation of panlib_draw_index_minmax_search_helper seems to be kept.
+index - min then becomes negative and the GPU reads position data at an
+address with bit 36 set (page fault), or the first primitives are missing.
+
+It does not happen when every invocation scans the same number of
+indices.  As a workaround until the root cause is fixed upstream, loop
+min(max_count_per_thread, index_count) times in every invocation and
+skip the indices that are out of range.
+
+This was made with the help of Claude (an AI assistant).
+---
+--- a/src/panfrost/libpan/draw_helper.cl	2026-10-15 00:12:24.000000000 +0900
++++ b/src/panfrost/libpan/draw_helper.cl	2026-10-15 23:23:50.796770241 +0900
+@@ -620,7 +620,7 @@
+ #define MINMAX_SEARCH_CASE(sz)                                                 \
+    case sz: {                                                                  \
+       global uint##sz##_t *indices = (global uint##sz##_t *)index_buffer_ptr;  \
+-      for (uint32_t i = 0; i < count; i++) {                                   \
++      for (uint32_t i = 0; i < MIN2(max_count_per_thread, index_count); i++) if (i < count) {                                   \
+          uint32_t val = (uint32_t)indices[start + base_idx + i];               \
+          if (primitive_restart__2 && val == UINT##sz##_MAX)                    \
+             continue;                                                          \
