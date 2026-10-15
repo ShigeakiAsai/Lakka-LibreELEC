@@ -24,6 +24,9 @@
   # Kernel target
     KERNEL_TARGET="Image"
 
+  # Vulkan implementation to use (vulkan-loader / no)
+    VULKAN="vulkan-loader"
+
   # Displayserver to use (wl / x11 / no)
     DISPLAYSERVER="wl"
 
