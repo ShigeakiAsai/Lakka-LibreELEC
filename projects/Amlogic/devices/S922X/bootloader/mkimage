@@ -87,7 +87,7 @@ case "${UBOOT_SYSTEM}" in
     mkimage_extlinux_fdtdir
     mkimage_dtb
     ;;
-  odroid-go-ultra)
+  odroid-go-ultra|rgb10-max-3-pro)
     mkimage_uboot_ogu
     mkimage_extlinux
     mkimage_dtb

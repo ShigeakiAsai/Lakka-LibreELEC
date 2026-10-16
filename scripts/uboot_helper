@@ -255,6 +255,10 @@ devices = \
         'dtb': 'meson-g12b-odroid-go-ultra.dtb',
         'config': 'odroid-go-ultra_defconfig'
       },
+      'rgb10-max-3-pro': {
+        'dtb': 'meson-g12b-powkiddy-rgb10-max-3-pro.dtb',
+        'config': 'odroid-go-ultra_defconfig'
+      },
     },
   },
   'NXP': {
