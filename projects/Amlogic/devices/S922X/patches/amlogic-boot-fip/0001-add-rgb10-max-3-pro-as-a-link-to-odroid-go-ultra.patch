@@ -1,0 +1,15 @@
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Subject: [PATCH] add rgb10-max-3-pro as a link to odroid-go-ultra
+
+The Powkiddy RGB10 Max 3 Pro uses the same boot firmware as the
+ODROID-GO Ultra.
+
+This was made with the help of Claude (an AI assistant).
+---
+diff --git a/rgb10-max-3-pro b/rgb10-max-3-pro
+new file mode 120000
+--- /dev/null
++++ b/rgb10-max-3-pro
+@@ -0,0 +1 @@
++odroid-go-ultra
+\ No newline at end of file
