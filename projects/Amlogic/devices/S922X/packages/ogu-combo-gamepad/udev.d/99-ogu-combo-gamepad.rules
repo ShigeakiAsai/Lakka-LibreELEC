@@ -6,3 +6,5 @@
 # sticks, so this rule is static and does not depend on grab timing.
 SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="ogu-gpio-keys-gamepad", ENV{ID_INPUT_JOYSTICK}="0"
 SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="ogu-adc-joystick", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="rgb10-gpio-keys-gamepad", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="rgb10-adc-joystick", ENV{ID_INPUT_JOYSTICK}="0"
