@@ -1,0 +1,203 @@
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Subject: [PATCH] arm64: dts: meson: add the Powkiddy RGB10 Max 3 Pro
+
+Based on ROCKNIX's patch by spycat88 ("arm64: meson: add dt for
+powkiddy-rgb10-max-3-pro"), adapted to the Lakka ODROID-GO Ultra device
+tree. The gamepad and the joystick are named rgb10-gpio-keys-gamepad and
+rgb10-adc-joystick, so that the ogu_combo_gamepad input handler creates
+rgb10-combo-gamepad. L3/R3 are BTN_THUMBL/BTN_THUMBR. There is no
+headphone detection.
+
+This was made with the help of Claude (an AI assistant).
+---
+diff -ruN a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
+--- a/arch/arm64/boot/dts/amlogic/Makefile	2026-10-16 13:15:30.804169533 +0900
++++ b/arch/arm64/boot/dts/amlogic/Makefile	2026-10-16 13:15:30.807003733 +0900
+@@ -33,6 +33,7 @@
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-gtking.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-a311d-libretech-cc.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-odroid-go-ultra.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-g12b-powkiddy-rgb10-max-3-pro.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-odroid-n2-plus.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-odroid-n2.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-g12b-odroid-n2l.dtb
+diff -ruN a/arch/arm64/boot/dts/amlogic/meson-g12b-powkiddy-rgb10-max-3-pro.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-powkiddy-rgb10-max-3-pro.dts
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-powkiddy-rgb10-max-3-pro.dts	1970-01-01 09:00:00.000000000 +0900
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-powkiddy-rgb10-max-3-pro.dts	2026-10-16 13:15:30.809274920 +0900
+@@ -0,0 +1,176 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2022-24 JELOS (https://github.com/JustEnoughLinuxOS)
++ *
++ * Based on ROCKNIX's meson-g12b-powkiddy-rgb10-max-3-pro.dts, adapted to
++ * the Lakka ODROID-GO Ultra device tree.
++ */
++
++/dts-v1/;
++
++#include "meson-g12b-odroid-go-ultra.dts"
++
++/ {
++	compatible = "powkiddy,rgb10-max-3-pro", "amlogic,a311d", "amlogic,g12b";
++	model = "Powkiddy RGB10 MAX 3 Pro";
++
++	/* No headphone detection on this device */
++	/delete-node/ ogu-gpio-keys-headphone;
++
++	/*
++	 * The gamepad and the joystick get their own names, so that the
++	 * ogu_combo_gamepad input handler creates "rgb10-combo-gamepad",
++	 * which has its own RetroArch autoconfig file.
++	 */
++	/delete-node/ ogu-gpio-keys-gamepad;
++	/delete-node/ ogu-adc-joystick;
++
++	rgb10-adc-joystick {
++		compatible = "adc-joystick";
++		io-channels = <&saradc 2>, <&saradc 3>, <&saradc 0>, <&saradc 1>;
++		poll-interval = <10>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		axis@0 {
++			reg = <0>;
++			linux,code = <ABS_Y>;
++			abs-range = <950 3150>;
++			abs-fuzz = <64>;
++			abs-flat = <64>;
++		};
++		axis@1 {
++			reg = <1>;
++			linux,code = <ABS_X>;
++			abs-range = <925 3125>;
++			abs-fuzz = <64>;
++			abs-flat = <64>;
++		};
++		axis@2 {
++			reg = <2>;
++			linux,code = <ABS_RY>;
++			abs-range = <920 3120>;
++			abs-fuzz = <64>;
++			abs-flat = <64>;
++		};
++		axis@3 {
++			reg = <3>;
++			linux,code = <ABS_RX>;
++			abs-range = <880 3080>;
++			abs-fuzz = <64>;
++			abs-flat = <64>;
++		};
++	};
++
++	rgb10-gpio-keys-gamepad {
++		compatible = "gpio-keys-polled";
++		poll-interval = <10>;
++		pinctrl-0 = <&keypad_gpio_pins>;
++		pinctrl-names = "default";
++
++		dpad-up-button {
++			label = "DPAD-UP";
++			linux,code = <BTN_DPAD_UP>;
++			gpios = <&gpio GPIOX_0 GPIO_ACTIVE_LOW>;
++		};
++		dpad-down-button {
++			label = "DPAD-DOWN";
++			linux,code = <BTN_DPAD_DOWN>;
++			gpios = <&gpio GPIOX_1 GPIO_ACTIVE_LOW>;
++		};
++		dpad-left-button {
++			label = "DPAD-LEFT";
++			linux,code = <BTN_DPAD_LEFT>;
++			gpios = <&gpio GPIOX_2 GPIO_ACTIVE_LOW>;
++		};
++		dpad-right-button {
++			label = "DPAD-RIGHT";
++			linux,code = <BTN_DPAD_RIGHT>;
++			gpios = <&gpio GPIOX_3 GPIO_ACTIVE_LOW>;
++		};
++		a-button {
++			label = "A";
++			linux,code = <BTN_EAST>;
++			gpios = <&gpio GPIOX_4 GPIO_ACTIVE_LOW>;
++		};
++		b-button {
++			label = "B";
++			linux,code = <BTN_SOUTH>;
++			gpios = <&gpio GPIOX_5 GPIO_ACTIVE_LOW>;
++		};
++		y-button {
++			label = "Y";
++			linux,code = <BTN_WEST>;
++			gpios = <&gpio GPIOX_6 GPIO_ACTIVE_LOW>;
++		};
++		x-button {
++			label = "X";
++			linux,code = <BTN_NORTH>;
++			gpios = <&gpio GPIOX_7 GPIO_ACTIVE_LOW>;
++		};
++		select-button {
++			label = "SELECT";
++			linux,code = <BTN_TRIGGER_HAPPY1>;
++			gpios = <&gpio GPIOX_12 GPIO_ACTIVE_LOW>;
++		};
++		f1-button {
++			label = "F1";
++			linux,code = <BTN_TRIGGER_HAPPY2>;
++			gpios = <&gpio GPIOX_10 GPIO_ACTIVE_LOW>;
++		};
++		thumbl-button {
++			label = "THUMBL";
++			linux,code = <BTN_THUMBL>;
++			gpios = <&gpio GPIOX_17 GPIO_ACTIVE_LOW>;
++		};
++		thumbr-button {
++			label = "THUMBR";
++			linux,code = <BTN_THUMBR>;
++			gpios = <&gpio GPIOX_16 GPIO_ACTIVE_LOW>;
++		};
++		f2-button {
++			label = "F2";
++			linux,code = <BTN_TRIGGER_HAPPY5>;
++			gpios = <&gpio GPIOX_11 GPIO_ACTIVE_LOW>;
++		};
++		start-button {
++			label = "START";
++			linux,code = <BTN_TRIGGER_HAPPY6>;
++			gpios = <&gpio GPIOX_13 GPIO_ACTIVE_LOW>;
++		};
++		top-left-button {
++			label = "TOP Left";
++			linux,code = <BTN_TL>;
++			gpios = <&gpio GPIOX_14 GPIO_ACTIVE_LOW>;
++		};
++		top-left2-button {
++			label = "TOP Left 2";
++			linux,code = <BTN_TL2>;
++			gpios = <&gpio GPIOX_19 GPIO_ACTIVE_LOW>;
++		};
++		top-right-button {
++			label = "TOP Right";
++			linux,code = <BTN_TR>;
++			gpios = <&gpio GPIOX_15 GPIO_ACTIVE_LOW>;
++		};
++		top-right2-button {
++			label = "TOP Right 2";
++			linux,code = <BTN_TR2>;
++			gpios = <&gpio GPIOX_18 GPIO_ACTIVE_LOW>;
++		};
++	};
++
++	sound {
++		model = "RGB10-MAX-3-Pro";
++	};
++
++	/* A311D: the Cortex-A53 cluster runs at up to 1.8 GHz */
++	opp-table-0 {
++		opp-1800000000 {
++			opp-hz = /bits/ 64 <1800000000>;
++			opp-microvolt = <987500>;
++		};
++		/delete-node/ opp-1896000000;
++		/delete-node/ opp-1992000000;
++	};
++};
