@@ -1,0 +1,104 @@
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Subject: [PATCH] input: ogu-combo-gamepad: use rgb10-* names on the RGB10 Max 3 Pro
+
+On the Powkiddy RGB10 Max 3 Pro, look for "rgb10-adc-joystick" and
+"rgb10-gpio-keys-gamepad", and create "rgb10-combo-gamepad" (product
+0x0002), so that it gets its own RetroArch autoconfig file. It has L3/R3
+where the ODROID-GO Ultra has F3/F4. Nothing changes on the ODROID-GO Ultra.
+
+This was made with the help of Claude (an AI assistant).
+---
+--- a/drivers/input/joystick/ogu_combo_gamepad.c	2026-10-16 19:00:54.180586255 +0900
++++ b/drivers/input/joystick/ogu_combo_gamepad.c	2026-10-16 19:00:54.192677202 +0900
+@@ -36,6 +36,7 @@
+  */
+ 
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/mutex.h>
+ #include <linux/input.h>
+ #include <linux/bitops.h>
+@@ -43,9 +44,15 @@
+ 
+ #define DRIVER_NAME	"ogu_combo_gamepad"
+ 
+-#define DEV_NAME_ADC	"ogu-adc-joystick"
+-#define DEV_NAME_GPIO	"ogu-gpio-keys-gamepad"
+-#define DEV_NAME_COMBO	"ogu-combo-gamepad"
++/*
++ * Device names and product ID. The Powkiddy RGB10 Max 3 Pro uses its own
++ * names (set in ogu_combo_init()), so that it gets its own RetroArch
++ * autoconfig file: it has L3/R3 where the ODROID-GO Ultra has F3/F4.
++ */
++static const char *dev_name_adc = "ogu-adc-joystick";
++static const char *dev_name_gpio = "ogu-gpio-keys-gamepad";
++static const char *dev_name_combo = "ogu-combo-gamepad";
++static u16 combo_product = 0x0001;
+ 
+ struct ogu_combo {
+ 	struct mutex lock;
+@@ -101,10 +108,10 @@
+ 	if (!dev)
+ 		return false;
+ 
+-	dev->name = DEV_NAME_COMBO;
++	dev->name = dev_name_combo;
+ 	dev->id.bustype = BUS_HOST;
+ 	dev->id.vendor  = 0x0001;
+-	dev->id.product = 0x0001;
++	dev->id.product = combo_product;
+ 	dev->id.version = 0x0001;
+ 
+ 	/*
+@@ -161,7 +168,7 @@
+ 		input_event(dev, EV_ABS, axis, dev->absinfo[axis].value);
+ 	input_sync(dev);
+ 
+-	pr_info(DRIVER_NAME ": " DEV_NAME_COMBO " active\n");
++	pr_info(DRIVER_NAME ": %s active\n", dev_name_combo);
+ 	return true;
+ 
+ err_ungrab_adc:
+@@ -191,7 +198,7 @@
+ 	if (c->combo_dev) {
+ 		input_unregister_device(c->combo_dev);
+ 		c->combo_dev = NULL;
+-		pr_info(DRIVER_NAME ": " DEV_NAME_COMBO " deactivated\n");
++		pr_info(DRIVER_NAME ": %s deactivated\n", dev_name_combo);
+ 	}
+ }
+ 
+@@ -217,7 +224,7 @@
+ 			     struct input_dev *dev,
+ 			     const struct input_device_id *id)
+ {
+-	bool is_adc = !strcmp(dev->name, DEV_NAME_ADC);
++	bool is_adc = !strcmp(dev->name, dev_name_adc);
+ 	struct input_handle *handle = is_adc ? &oguc.adc_handle
+ 					     : &oguc.gpio_handle;
+ 	int err;
+@@ -275,8 +282,8 @@
+ static bool ogu_combo_match(struct input_handler *handler,
+ 			    struct input_dev *dev)
+ {
+-	return !strcmp(dev->name, DEV_NAME_ADC) ||
+-	       !strcmp(dev->name, DEV_NAME_GPIO);
++	return !strcmp(dev->name, dev_name_adc) ||
++	       !strcmp(dev->name, dev_name_gpio);
+ }
+ 
+ /*
+@@ -303,6 +310,13 @@
+ 
+ static int __init ogu_combo_init(void)
+ {
++	if (of_machine_is_compatible("powkiddy,rgb10-max-3-pro")) {
++		dev_name_adc = "rgb10-adc-joystick";
++		dev_name_gpio = "rgb10-gpio-keys-gamepad";
++		dev_name_combo = "rgb10-combo-gamepad";
++		combo_product = 0x0002;
++	}
++
+ 	mutex_init(&oguc.lock);
+ 	INIT_WORK(&oguc.work, ogu_combo_work_fn);
+ 	return input_register_handler(&ogu_combo_handler);
