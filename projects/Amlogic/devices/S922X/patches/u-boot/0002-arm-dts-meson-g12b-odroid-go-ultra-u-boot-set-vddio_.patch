@@ -12,6 +12,11 @@ since the PMIC starts from its 3.3V default.
 
 Set it to 3.3V when U-Boot probes the regulator.
 
+This patch was sent to the U-Boot mailing list, but I withdrew it on
+2026-10-17, because the problem could not be reproduced again:
+https://lore.kernel.org/u-boot/EDD5DF6959F6392F3006A@docomonet.jp/
+It is kept in Lakka as a safeguard.
+
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ---
  arch/arm/dts/meson-g12b-odroid-go-ultra-u-boot.dtsi | 8 ++++++++
