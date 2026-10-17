@@ -13,6 +13,9 @@ indices.  As a workaround until the root cause is fixed upstream, loop
 min(max_count_per_thread, index_count) times in every invocation and
 skip the indices that are out of range.
 
+Reported upstream as Mesa issue #16597:
+https://gitlab.freedesktop.org/mesa/mesa/-/work_items/16597
+
 This was made with the help of Claude (an AI assistant).
 ---
 --- a/src/panfrost/libpan/draw_helper.cl	2026-10-15 00:12:24.000000000 +0900
