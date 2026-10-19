@@ -1,0 +1,47 @@
+From: Igor Velkov <iav@iav.lv>
+Date: Sat, 10 Oct 2026 18:20:30 +0000
+Subject: [PATCH] irqchip/meson-gpio: Allow the GPIO interrupts to wake the system
+
+meson_gpio_irq_chip has neither .irq_set_wake nor IRQCHIP_SKIP_SET_WAKE,
+so enable_irq_wake() fails with -ENXIO for every interrupt routed through
+it, and such an interrupt never gets IRQD_WAKEUP_STATE.
+
+That matters for suspend-to-idle. suspend_device_irqs() keeps only the
+wakeup interrupts enabled; the rest are suspended and masked by the flow
+handler when they first fire. A GPIO interrupt that fires during s2idle
+therefore brings a CPU out of idle once, gets masked, and the system
+sleeps on. For mem the firmware chooses the wakeup sources, and this
+flag changes nothing there.
+
+Set IRQCHIP_SKIP_SET_WAKE, like the other hierarchical irqchips with a
+GIC parent. The GIC sets the same flag, so irq_chip_set_wake_parent()
+would end there anyway.
+
+Tested on ODROID-HC4 with the PCF8563 alarm interrupt routed through this
+controller: with the flag the alarm wakes the board from s2idle 4/4, and
+/sys/power/pm_wakeup_irq names it; without the flag the board stayed in
+s2idle past the alarm until a power cycle (0/5).
+
+Assisted-by: LLM
+Signed-off-by: Igor Velkov <iav@iav.lv>
+Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+Link: https://lore.kernel.org/all/20261010-meson-gpio-wake-v2-1-790ecc6df792@iav.lv/
+[Lakka: backported from tip irq/drivers. On the ODROID-GO Ultra the RK818
+ (RTC alarm) and RK817 (power key) interrupts come through this
+ controller (GPIOAO_7, GPIOAO_5), so this lets them wake the device from
+ s2idle.]
+---
+ drivers/irqchip/irq-meson-gpio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/irqchip/irq-meson-gpio.c
++++ b/drivers/irqchip/irq-meson-gpio.c
+@@ -538,7 +538,7 @@
+ #ifdef CONFIG_SMP
+ 	.irq_set_affinity	= irq_chip_set_affinity_parent,
+ #endif
+-	.flags			= IRQCHIP_SET_TYPE_MASKED,
++	.flags			= IRQCHIP_SET_TYPE_MASKED | IRQCHIP_SKIP_SET_WAKE,
+ };
+ 
+ static int meson_gpio_irq_domain_translate(struct irq_domain *domain,
