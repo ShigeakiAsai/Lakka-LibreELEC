@@ -23,6 +23,7 @@
 #include <linux/input.h>
 
 #define REPRESS_MS    350   // Automatically press the button again after 350ms
+#define REPEAT_MS     100   // and then every 100ms while it is held
 #define MAX_IDEVS       8
 
 const unsigned event_map[KEY_MAX + 1] = {
@@ -54,8 +55,9 @@ static bool inlist(char **list, int count, const char *needle) {
 
 static uint64_t gettimems() {
   struct timespec spec;
-  clock_gettime(CLOCK_REALTIME, &spec);
-  return ((uint64_t)spec.tv_sec) + (spec.tv_nsec / 1000000);
+  // Monotonic, so that a clock change (NTP) does not affect key repeat
+  clock_gettime(CLOCK_MONOTONIC, &spec);
+  return ((uint64_t)spec.tv_sec) * 1000 + (spec.tv_nsec / 1000000);
 }
 
 static int connectsocket() {
@@ -122,8 +124,20 @@ int main(int argc, char **argv) {
       fds[i].events = POLLIN;
     }
 
-    // Wake up every 100ms to allow for repeated key tracking
-    poll(fds, numdevs, 100);
+    // Sleep until the next repeat of a held key, or until an event
+    int timeout = -1;
+    uint64_t now = gettimems();
+    for (int i = 0; i < numdevs; i++) {
+      for (int j = 1; j < MAX_KEYS; j++) {
+        if (keystate[i][j]) {
+          uint64_t due = keystate[i][j] + REPRESS_MS;
+          int left = due > now ? (int)(due - now) : 0;
+          if (timeout < 0 || left < timeout)
+            timeout = left;
+        }
+      }
+    }
+    poll(fds, numdevs, timeout);
 
     for (int i = 0; i < numdevs; i++) {
       if (fds[i].revents & POLLIN) {
@@ -161,17 +175,19 @@ int main(int argc, char **argv) {
     }
 
     // Keys that are being held
+    now = gettimems();
     for (int i = 0; i < numdevs; i++) {
       for (int j = 1; j < MAX_KEYS; j++) {
         if (keystate[i][j]) {
           // Has been pressed for more than some time
-          bool longpressed = keystate[i][j] &&
-                             (gettimems() - keystate[i][j]) > REPRESS_MS;
+          bool longpressed = (now - keystate[i][j]) >= REPRESS_MS;
+          if (!longpressed)
+            continue;
           // Inject the event
           const char *cmd = cmd_map[j];
           write(clientfd, cmd, strlen(cmd));
-          // Update pressed time for the next repeat
-          keystate[i][j] = gettimems();
+          // Set the time so that the next repeat comes after REPEAT_MS
+          keystate[i][j] = now - REPRESS_MS + REPEAT_MS;
         }
       }
     }
