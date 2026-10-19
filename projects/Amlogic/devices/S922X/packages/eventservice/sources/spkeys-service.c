@@ -40,6 +40,14 @@ const char *cmd_map[] = {
   "MUTE\n",
 };
 
+// Keys that repeat while held (MUTE would only toggle on and off)
+const bool repeat_map[] = {
+  false,
+  true,
+  true,
+  false,
+};
+
 #define MAX_KEYS (sizeof(cmd_map)/sizeof(cmd_map[0]))
 
 static int dev_looks_valid(const struct dirent *dir) {
@@ -129,7 +137,7 @@ int main(int argc, char **argv) {
     uint64_t now = gettimems();
     for (int i = 0; i < numdevs; i++) {
       for (int j = 1; j < MAX_KEYS; j++) {
-        if (keystate[i][j]) {
+        if (keystate[i][j] && repeat_map[j]) {
           uint64_t due = keystate[i][j] + REPRESS_MS;
           int left = due > now ? (int)(due - now) : 0;
           if (timeout < 0 || left < timeout)
@@ -178,7 +186,7 @@ int main(int argc, char **argv) {
     now = gettimems();
     for (int i = 0; i < numdevs; i++) {
       for (int j = 1; j < MAX_KEYS; j++) {
-        if (keystate[i][j]) {
+        if (keystate[i][j] && repeat_map[j]) {
           // Has been pressed for more than some time
           bool longpressed = (now - keystate[i][j]) >= REPRESS_MS;
           if (!longpressed)
