@@ -1,0 +1,63 @@
+From d854ab8edcb891b399c2882158660f12dbfb0ad2 Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Mon, 19 Oct 2026 12:03:30 +0900
+Subject: [PATCH] command: use larger volume steps at low levels on Lakka
+
+The volume up and down commands change the volume by 0.5 dB. This is
+fine near 0 dB, but at low levels a 0.5 dB step is hard to hear, and
+going down to a quiet level takes many presses. This matters on
+handhelds, where the volume keys send these commands.
+
+On Lakka, use 0.5 dB steps down to -20 dB, 2 dB steps down to -40 dB,
+and 5 dB steps below that. Stop at -20 dB and -40 dB on the way, so
+that the same levels are used in both directions. Other builds keep
+the 0.5 dB step.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ command.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/command.c b/command.c
+index 86852fdada..55bfb53b9d 100644
+--- a/command.c
++++ b/command.c
+@@ -2268,7 +2268,35 @@ void command_event_set_volume(
+ {
+    size_t _len;
+    char msg[128];
++#ifdef HAVE_LAKKA
++   float volume     = settings->floats.audio_volume;
++   float new_volume;
++
++   /* Use larger steps at low levels, where a 0.5 dB step is
++    * hard to hear: 0.5 dB down to -20 dB, 2 dB down to -40 dB,
++    * and 5 dB below that. Stop at -20 dB and -40 dB on the way,
++    * so that the same levels are used in both directions. */
++   if (gain < 0.0f)
++   {
++      if (volume > -20.0f)
++         new_volume = MAX(volume - 0.5f, -20.0f);
++      else if (volume > -40.0f)
++         new_volume = MAX(volume - 2.0f, -40.0f);
++      else
++         new_volume = volume - 5.0f;
++   }
++   else
++   {
++      if (volume < -40.0f)
++         new_volume = MIN(volume + 5.0f, -40.0f);
++      else if (volume < -20.0f)
++         new_volume = MIN(volume + 2.0f, -20.0f);
++      else
++         new_volume = volume + 0.5f;
++   }
++#else
+    float new_volume = settings->floats.audio_volume + gain;
++#endif
+    new_volume       = MAX(new_volume, -80.0f);
+    new_volume       = MIN(new_volume, 12.0f);
+    configuration_set_float(settings, settings->floats.audio_volume, new_volume);
+-- 
+2.43.0
+
