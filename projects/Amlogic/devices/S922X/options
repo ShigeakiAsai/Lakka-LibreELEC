@@ -34,7 +34,7 @@
     WINDOWMANAGER="sway"
 
   # additional packages to install
-    ADDITIONAL_PACKAGES+=" ogu-combo-gamepad odroidgou-utils odroidgou-volkeys"
+    ADDITIONAL_PACKAGES+=" ogu-combo-gamepad odroidgou-utils odroidgou-volkeys S922X-suspend-resume"
     ADDITIONAL_PACKAGES="${ADDITIONAL_PACKAGES/ethmactool/}"
 
   # kernel serial console
