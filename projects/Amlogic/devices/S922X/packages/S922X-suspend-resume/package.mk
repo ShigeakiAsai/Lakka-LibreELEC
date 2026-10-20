@@ -16,6 +16,9 @@ makeinstall_target() {
   mkdir -p "${INSTALL}/usr/lib/systemd/sleep.conf.d"
     cp -av "${PKG_DIR}/sleep.conf.d/s922x-suspend-state.conf" "${INSTALL}/usr/lib/systemd/sleep.conf.d"
 
+  mkdir -p "${INSTALL}/usr/lib/tmpfiles.d"
+    cp -av "${PKG_DIR}/tmpfiles.d/s922x-mem-sleep.conf" "${INSTALL}/usr/lib/tmpfiles.d"
+
   mkdir -p "${INSTALL}/usr/lib/systemd/system/systemd-suspend.service.d"
     cp -av "${PKG_DIR}/systemd-suspend.service.d/s922x-suspend-hooks.conf" "${INSTALL}/usr/lib/systemd/system/systemd-suspend.service.d"
 
