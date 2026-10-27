@@ -1,0 +1,32 @@
+From 2d545c4028ca386692845e6270cdc1666658e66b Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Wed, 21 Oct 2026 09:37:27 +0900
+Subject: [PATCH 1/2] odroid-go-ultra: update bl301.bin to Hardkernel 923594290
+
+bl301.bin for odroid-go-ultra is built from hardkernel/u-boot
+odroidgoU-v2015.01 at 7f68d7d79 (2022-09-26). This rebuilds it at
+923594290 (2023-01-09), which includes f6bc1fb85: the power key
+wakeup source is GPIOAO_5 on this board, not GPIOAO_3.
+
+Toolchain: Linaro arm-none-eabi 4.8-2014.04, which rebuilds the
+current blob byte for byte at 7f68d7d79.
+---
+ odroid-go-ultra/bl301.bin | Bin 6061 -> 6061 bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+diff --git a/odroid-go-ultra/bl301.bin b/odroid-go-ultra/bl301.bin
+index fad743fb53b5c28a46b8a7074206d42124b363e9..cc072f100e8541f8268f71eaa486ef7a07ccef4d 100644
+GIT binary patch
+delta 113
+zcmV-%0FM8yFRd@I`~zHYwL$XS0|6xfBt>BbV-rmTU_)R)BM2tLV6A8cBLX50Ap>EC
+zVo&h@GY2MvVZ&hoVnSlZVnbttW5HtrWP)H_u>)m8WlJMZ^ng`^WdkEcWPxPFWWr^G
+TU~s*&SOm}o0-6T1Dhh)Q;z200
+
+delta 113
+zcmV-%0FM8yFRd@I`~zI@wL$XS0|6!gB}QQeV-rpVU<fBeV76#LBLX50A;Vw;Bv0`F
+zGlyaaCj?=GVZ&hoVnSlaVnbttW5HtrWP)H;u}}1XRs&^2WlJMQWPxPGWP@eGWrSex
+Ty#T+nSOm}o0vZRiDhh)QJBBIU
+
+-- 
+2.43.0
+
