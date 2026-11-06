@@ -139,7 +139,7 @@ LIBRETRO_CORES="\
                 puae \
                 puae2021 \
                 px68k \
-                pzretro \
+                puzzlescript \
                 quasi88 \
                 quicknes \
                 race \
