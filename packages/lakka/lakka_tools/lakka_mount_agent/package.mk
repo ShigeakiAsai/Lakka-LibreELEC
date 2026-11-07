@@ -2,7 +2,7 @@
 # Copyright (C) 2026-present ShigeakiAsai
 
 PKG_NAME="lakka_mount_agent"
-PKG_VERSION="1.0"
+PKG_VERSION="1.1"
 PKG_ARCH="any"
 PKG_LICENSE="OSS"
 PKG_DEPENDS_TARGET="toolchain dbus glib connman"
