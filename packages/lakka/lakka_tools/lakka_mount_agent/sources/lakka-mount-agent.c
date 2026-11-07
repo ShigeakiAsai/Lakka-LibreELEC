@@ -4,8 +4,15 @@
  * Watches ConnMan's per-service IPv4 address state over D-Bus (not the
  * aggregated Manager.State, which combine_state() can report as
  * "ready"/"online" from IPv6 alone even while IPv4 is still unconfigured)
- * and restarts a configured set of systemd mount units whenever IPv4
- * connectivity appears, at boot or after roaming back into range.
+ * and restarts the network mount units whenever IPv4 connectivity
+ * appears, at boot or after roaming back into range.
+ *
+ * Unless --unit is given, the units are found at each IPv4 change: every
+ * enabled *.mount unit in /storage/.config/system.d/ whose Type= is a
+ * network filesystem (cifs, smb3, nfs, nfs4). So any name works (not
+ * only storage-roms-nas.mount), and units added later are picked up
+ * without restarting the agent. Local mounts (e.g. a USB disk) are left
+ * alone.
  *
  * On a successful restart, also notifies RetroArch via its Lakka-only
  * UDS command interface (input_driver_init_command(), HAVE_LAKKA
@@ -31,6 +38,8 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <ctype.h>
+#include <glob.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -42,10 +51,16 @@
 #define CONNMAN_MANAGER_INTERFACE "net.connman.Manager"
 #define CONNMAN_SERVICE_INTERFACE "net.connman.Service"
 
-#define AGENT_VERSION       "1.0"
+#define AGENT_VERSION       "1.1"
 #define DEBOUNCE_SECONDS    5
 
+#define LAKKA_SYSTEM_D_DIR  "/storage/.config/system.d/"
+
 #define RETROARCH_UDS_ABSTRACT_NAME "retroarch/cmd"
+
+static const char *const network_mount_types[] = {
+	"cifs", "smb3", "nfs", "nfs4", NULL
+};
 
 static DBusConnection *connection;
 
@@ -59,10 +74,11 @@ static gint64 last_restart_monotonic = 0;
 static GOptionEntry options[] = {
 	{ "unit", 'u', 0, G_OPTION_ARG_STRING_ARRAY, &option_units,
 	  "systemd mount unit to restart when IPv4 becomes available "
-	  "(may be given multiple times)", "UNIT" },
+	  "(may be given multiple times; default: every enabled network "
+	  ".mount unit in " LAKKA_SYSTEM_D_DIR ")", "UNIT" },
 	{ "debug", 0, 0, G_OPTION_ARG_NONE, &option_debug,
 	  "Also log normal state transitions (IPv4 gained/lost, debounce "
-	  "skips), not just warnings and restarts", NULL },
+	  "skips, skipped units), not just warnings and restarts", NULL },
 	{ "version", 'v', 0, G_OPTION_ARG_NONE, &option_version,
 	  "Show version information and exit" },
 	{ NULL },
@@ -121,6 +137,101 @@ static void notify_retroarch(const char *message)
 		send(fd, buf, (size_t)len, 0);
 
 	close(fd);
+}
+
+/*
+ * Returns whether the unit file's Type= is a network filesystem.
+ * Only the first Type= line counts; it is in [Mount] in any sane
+ * mount unit.
+ */
+static bool unit_file_is_network_mount(const char *path)
+{
+	FILE *fp;
+	char line[512];
+	bool result = false;
+
+	fp = fopen(path, "r");
+	if (!fp)
+		return false;
+
+	while (fgets(line, sizeof(line), fp)) {
+		char *p = line, *end;
+		guint i;
+
+		while (isspace((unsigned char)*p))
+			p++;
+
+		/* systemd allows whitespace around '=' ("Type = cifs") */
+		if (strncmp(p, "Type", 4))
+			continue;
+
+		p += 4;
+		while (*p == ' ' || *p == '\t')
+			p++;
+
+		if (*p != '=')
+			continue;
+
+		p++;
+		while (isspace((unsigned char)*p))
+			p++;
+
+		end = p + strlen(p);
+		while (end > p && isspace((unsigned char)end[-1]))
+			*--end = '\0';
+
+		for (i = 0; network_mount_types[i] != NULL; i++) {
+			if (!strcmp(p, network_mount_types[i])) {
+				result = true;
+				break;
+			}
+		}
+		break;
+	}
+
+	fclose(fp);
+	return result;
+}
+
+/*
+ * Returns the units to act on: the --unit list if one was given,
+ * otherwise every network .mount unit found right now in
+ * LAKKA_SYSTEM_D_DIR. The units do not need to be enabled: dropping a
+ * .mount file there (e.g. over the Samba share) is enough, and renaming
+ * it to something not ending in ".mount" turns it off. Free with
+ * g_ptr_array_unref().
+ */
+static GPtrArray *collect_units(void)
+{
+	GPtrArray *units = g_ptr_array_new_with_free_func(g_free);
+	glob_t glob_result;
+	size_t i;
+
+	if (option_units) {
+		for (i = 0; option_units[i] != NULL; i++)
+			g_ptr_array_add(units, g_strdup(option_units[i]));
+		return units;
+	}
+
+	if (glob(LAKKA_SYSTEM_D_DIR "*.mount", 0, NULL, &glob_result) != 0)
+		return units; /* no *.mount files configured */
+
+	for (i = 0; i < glob_result.gl_pathc; i++) {
+		const char *path = glob_result.gl_pathv[i];
+		const char *name = strrchr(path, '/');
+
+		name = name ? name + 1 : path;
+
+		if (!unit_file_is_network_mount(path)) {
+			debug_log("Skipping %s (not a network mount)", name);
+			continue;
+		}
+
+		g_ptr_array_add(units, g_strdup(name));
+	}
+
+	globfree(&glob_result);
+	return units;
 }
 
 /*
@@ -246,48 +357,52 @@ static bool services_array_has_ipv4(DBusMessageIter *iter)
 
 static void restart_units(void)
 {
+	GPtrArray *units = collect_units();
 	guint i;
 
-	if (!option_units)
-		return;
+	if (units->len == 0)
+		debug_log("IPv4 available, but no network mount units to restart");
 
-	for (i = 0; option_units[i] != NULL; i++) {
+	for (i = 0; i < units->len; i++) {
+		const char *unit = g_ptr_array_index(units, i);
 		char cmd[512];
 		int ret;
 
 		snprintf(cmd, sizeof(cmd),
-			 "systemctl restart --no-block -- %s",
-			 option_units[i]);
+			 "systemctl restart --no-block -- %s", unit);
 
-		g_message("IPv4 available, restarting %s", option_units[i]);
+		g_message("IPv4 available, restarting %s", unit);
 
 		ret = system(cmd);
 		if (ret != 0) {
 			g_warning("Failed to enqueue restart for %s (exit %d)",
-				  option_units[i], ret);
+				  unit, ret);
 		} else {
 			char msg[256];
 
 			snprintf(msg, sizeof(msg),
-				 "NAS mount available: %s", option_units[i]);
+				 "NAS mount available: %s", unit);
 			notify_retroarch(msg);
 		}
 	}
+
+	g_ptr_array_unref(units);
 }
 
 static void notify_lost_mounts(void)
 {
+	GPtrArray *units = collect_units();
 	guint i;
 	char msg[256];
 
-	if (!option_units)
-		return;
-
-	for (i = 0; option_units[i] != NULL; i++) {
+	for (i = 0; i < units->len; i++) {
 		snprintf(msg, sizeof(msg),
-			 "Network lost, mount may drop: %s", option_units[i]);
+			 "Network lost, mount may drop: %s",
+			 (const char *)g_ptr_array_index(units, i));
 		notify_retroarch(msg);
 	}
+
+	g_ptr_array_unref(units);
 }
 
 /*
@@ -440,11 +555,6 @@ int main(int argc, char *argv[])
 	if (option_version) {
 		printf("%s\n", AGENT_VERSION);
 		return EXIT_SUCCESS;
-	}
-
-	if (!option_units || !option_units[0]) {
-		fprintf(stderr, "At least one --unit=<name> is required\n");
-		return EXIT_FAILURE;
 	}
 
 	dbus_error_init(&dbus_err);
