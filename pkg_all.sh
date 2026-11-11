@@ -41,7 +41,7 @@ targets="\
 	Allwinner|H616|aarch64| \
 	Allwinner|H6|aarch64| \
 	Allwinner|R40|arm| \
-	Amlogic|AMLGX|aarch64| \
+	Amlogic|Amlogic|aarch64| \
 	Ayn|Odin|aarch64| \
 	Generic|Generic|i386| \
 	Generic|Generic|x86_64| \

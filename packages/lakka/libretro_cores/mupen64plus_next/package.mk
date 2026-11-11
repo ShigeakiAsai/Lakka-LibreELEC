@@ -63,7 +63,7 @@ pre_make_target() {
     H6)
       PKG_MAKE_OPTS_TARGET+=" platform=rpi3_64-mesa"
       ;;
-    AMLGX)
+    Amlogic)
       [ "${ARCH}" = "arm" ] && PKG_MAKE_OPTS_TARGET+=" platform=AMLGX-amlogic" || true
       ;;
     RK3326)
