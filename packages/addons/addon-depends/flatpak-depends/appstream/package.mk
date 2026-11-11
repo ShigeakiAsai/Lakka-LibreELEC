@@ -2,14 +2,14 @@
 # Copyright (C) 2026-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="appstream"
-PKG_VERSION="1.1.6"
-PKG_SHA256="f9b79193d2620474bb48d0cd32abd76e002939fce3daa991a1b60642eecbb67f"
+PKG_VERSION="1.2.2"
+PKG_SHA256="6b554b90c2139aceef65e1aebe811cfe398af4ea749eb5ffa0b7286053ff9e50"
 PKG_LICENSE="LGPL-2.1-or-later"
 PKG_SITE="https://github.com/ximion/appstream"
 PKG_URL="https://github.com/ximion/appstream/archive/v${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_HOST="toolchain:host curl:host itstool:host libfyaml:host libxml2:host libxmlb:host"
 PKG_DEPENDS_TARGET="toolchain appstream:host curl glib libfyaml libxml2 libxmlb xz zstd"
-PKG_DEPENDS_CONFIG="libfyaml libxmlb xz"
+PKG_DEPENDS_CONFIG="libfyaml libxmlb"
 PKG_LONGDESC="Tools and libraries to work with AppStream metadata"
 PKG_BUILD_FLAGS="-sysroot"
 
@@ -17,7 +17,6 @@ PKG_MESON_OPTS_HOST="-Dstemming=false \
                      -Dsystemd=false \
                      -Dbash-completion=false \
                      -Dgir=false \
-                     -Dsvg-support=false \
                      -Ddisplay-detection=none \
                      -Dzstd-support=false \
                      -Ddocs=false \
@@ -28,7 +27,6 @@ PKG_MESON_OPTS_TARGET="-Dstemming=false \
                        -Dbash-completion=false \
                        -Dsystemd=false \
                        -Dgir=false \
-                       -Dsvg-support=false \
                        -Ddisplay-detection=none \
                        -Dzstd-support=true \
                        -Ddocs=false \

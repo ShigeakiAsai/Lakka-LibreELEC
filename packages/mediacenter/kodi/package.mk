@@ -3,8 +3,8 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="kodi"
-PKG_VERSION="c0d95ea08ccf831c46590028217d81ece8ea7ec4"
-PKG_SHA256="ef3ccfec342cca9fea3654f13d8af8dbc0ff3f4202e71b1fd72d41f4a913fe29"
+PKG_VERSION="22.0rc2-Piers"
+PKG_SHA256="e704ca70bcccd41baf409f6d54119add52a03f34e6eea3f11c6304f1553b4397"
 PKG_LICENSE="GPL-2.0-or-later"
 PKG_SITE="http://www.kodi.tv"
 PKG_URL="https://github.com/xbmc/xbmc/archive/${PKG_VERSION}.tar.gz"
@@ -246,7 +246,7 @@ configure_package() {
     KODI_LIRCCLIENT="-DENABLE_LIRCCLIENT=OFF"
   fi
 
-  if [ "${PROJECT}" = "Allwinner" -o "${PROJECT}" = "Rockchip" ]; then
+  if [ "${PROJECT}" = "Allwinner" -o "${PROJECT}" = "Amlogic" -o "${PROJECT}" = "Rockchip" ]; then
     PKG_PATCH_DIRS+=" drmprime-filter"
   fi
 
@@ -278,6 +278,7 @@ configure_package() {
                          -DENABLE_DEBUGFISSION=OFF \
                          -DENABLE_APP_AUTONAME=OFF \
                          -DENABLE_TESTING=OFF \
+                         -DENABLE_BLUETOOTH=OFF \
                          -DENABLE_LCMS2=OFF \
                          -DADDONS_CONFIGURE_AT_STARTUP=OFF \
                          -Dgroovy_SOURCE_DIR=$(get_build_dir groovy) \

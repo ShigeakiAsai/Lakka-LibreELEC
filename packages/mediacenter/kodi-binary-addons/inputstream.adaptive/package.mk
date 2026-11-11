@@ -2,8 +2,8 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="inputstream.adaptive"
-PKG_VERSION="22.3.20-Piers"
-PKG_SHA256="a144f800e4ae4d35fea5cb8006140ad480f4fbb2f6d01bb49094e12209c27849"
+PKG_VERSION="22.3.24-Piers"
+PKG_SHA256="374403df391a6a6053667653dc9e032622da4ccdebc908c8ec1a3853b51e17c1"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL-2.0-or-later"
@@ -15,12 +15,3 @@ PKG_SHORTDESC="inputstream.adaptive"
 PKG_LONGDESC="inputstream.adaptive"
 
 PKG_IS_ADDON="yes"
-
-addon() {
-  install_binary_addon ${PKG_ADDON_ID}
-
-  if [ "${ARCH}" = "aarch64" ]; then
-    mkdir -p ${ADDON_BUILD}/${PKG_ADDON_ID}
-    cp -P ${PKG_BUILD}/.${TARGET_NAME}/lib/cdm_aarch64/libcdm_aarch64_loader.so ${ADDON_BUILD}/${PKG_ADDON_ID}
-  fi
-}

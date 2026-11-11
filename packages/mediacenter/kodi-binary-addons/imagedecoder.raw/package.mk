@@ -2,9 +2,9 @@
 # Copyright (C) 2016-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="imagedecoder.raw"
-PKG_VERSION="22.0.4-Piers"
-PKG_SHA256="5e016e61f32d85d690550b433f3353c9c6246757c6d4405c76c5704b207eccbc"
-PKG_REV="4"
+PKG_VERSION="22.1.1-Piers"
+PKG_SHA256="ee4692563acff8fce4d77ffd629778d9df3cb516825b7a74ffc80f25d902f419"
+PKG_REV="2"
 PKG_ARCH="any"
 PKG_LICENSE="GPL-2.0-or-later"
 PKG_SITE="https://github.com/xbmc/imagedecoder.raw"

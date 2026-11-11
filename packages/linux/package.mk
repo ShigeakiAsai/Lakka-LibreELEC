@@ -16,15 +16,15 @@ PKG_PATCH_DIRS="${LINUX}"
 
 case "${LINUX}" in
   amlogic)
-    PKG_VERSION="8d3ae59288f1e7d58d76558a6ee96d533bc5019f" # 7.2.0
-    PKG_SHA256="2aa2222302771165aa398c30bf66aca1a2433dd1a3b36db43e7157689a090a97"
+    PKG_VERSION="a90ee4305c4a5df72c11b31dacfdc76e00fcf78a" # 7.3-rc6
+    PKG_SHA256="0ee910353dee732a3f1517750dc58cbd6ba8026d6e4e1c5ae7e2a4a2d2829766"
     PKG_URL="https://github.com/torvalds/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     PKG_PATCH_DIRS="default dvb"
     ;;
   raspberrypi)
-    PKG_VERSION="846462aa452708cd2d3528b6a8141e560919fc1c" # 6.18.44
-    PKG_SHA256="46e94cc270150be7c971b2016bd57ca752d4794c9cd6b452b7c627f750eaeaad"
+    PKG_VERSION="ef71464298cd2dd89f6d190c08e812296240281e" # 6.18.62
+    PKG_SHA256="8929ed86b09093a04f104c2cafdf5739698180aeb25b2ba585b570f4cdb6cd6e"
     PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     PKG_PATCH_DIRS="raspberrypi"
@@ -68,8 +68,8 @@ case "${LINUX}" in
     PKG_GIT_CLONE_BRANCH="sdm845-5.19.16"
     ;;
   *)
-    PKG_VERSION="7.1.2"
-    PKG_SHA256="37198c93727be247c9fb5309bb86cd5e496c61e5322cd8c4eca9476bb0b5883f"
+    PKG_VERSION="7.3"
+    PKG_SHA256="87363c24f10e06321eb362765521094e94471f6bff8bce2d6b3e40f39f004953"
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
     PKG_PATCH_DIRS="default"
     case ${DEVICE} in
@@ -445,10 +445,9 @@ make_target() {
             ;;
         esac
 
-        [ "${TARGET_ARCH}" != "x86_64" ] && PERF_NO_RUST="1" || PERF_NO_RUST=""
-
         if [ "${LINUX}" = "ayn-odin" ]; then
           # Removed "BUILD_BPF_SKEL=0" from make parameters.
+          # "NO_RUST=1" is not needed in "${LINUX}" = "ayn-odin"
           WERROR=0 \
           NO_LIBPERL=1 \
           NO_LIBPYTHON=1 \
@@ -486,8 +485,8 @@ make_target() {
           NO_LIBPFM4=1 \
           NO_LIBBABELTRACE=1 \
           NO_CAPSTONE=1 \
+          NO_RUST=1 \
           NO_LIBPFM4=1 \
-          NO_RUST="${PERF_NO_RUST}" \
           BUILD_BPF_SKEL=0 \
           CROSS_COMPILE="${TARGET_PREFIX}" \
           JOBS="${CONCURRENCY_MAKE_LEVEL}" \

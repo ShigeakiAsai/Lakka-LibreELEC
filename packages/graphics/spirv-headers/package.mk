@@ -8,8 +8,8 @@ PKG_NAME="spirv-headers"
 # When updating glslang pkg_version please update to the known_good spirv-headers pkg_version.
 # When updating spirv-llvm-translator pkg_version validate the minimum githash from
 # https://github.com/KhronosGroup/SPIRV-LLVM-Translator/blob/main/spirv-headers-tag.conf
-PKG_VERSION="29981f65241605e08b0ede4cfeb999fe3b723c6a"
-PKG_SHA256="232899f1ad4104fb5bc377b94596c7621575eee62ad9a9e8f929b63a7dd8a7ad"
+PKG_VERSION="cb42dec3830d3ac67fa449ecdc0c0f73d5e74498"
+PKG_SHA256="117010e525fe36b1ce006e0e58a6e0a3b415aabc9179d912b92737f41f3f994f"
 PKG_LICENSE="MIT"
 PKG_SITE="https://github.com/KhronosGroup/SPIRV-headers"
 PKG_URL="https://github.com/KhronosGroup/SPIRV-headers/archive/${PKG_VERSION}.tar.gz"
