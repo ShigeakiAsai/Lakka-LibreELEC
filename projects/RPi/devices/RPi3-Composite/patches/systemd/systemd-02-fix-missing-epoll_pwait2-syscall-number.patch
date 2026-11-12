@@ -1,0 +1,17 @@
+--- a/src/libc/epoll.c
++++ b/src/libc/epoll.c
+@@ -6,6 +6,14 @@
+ #include <sys/syscall.h>
+ #include <unistd.h>
+ 
++/* Kernel headers older than 5.11 (as used by e.g. some LibreELEC/Lakka
++ * targets with intentionally pinned kernel headers) do not define this
++ * syscall number. It is the same across architectures using the
++ * generic/common syscall table (x86_64, aarch64, arm, ...). */
++#ifndef __NR_epoll_pwait2
++#define __NR_epoll_pwait2 441
++#endif
++
+ int missing_epoll_pwait2(
+                 int fd,
+                 struct epoll_event *events,
