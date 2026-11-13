@@ -14,6 +14,7 @@ LIBRETRO_CORES="\
                 anarch \
                 applewin \
                 ardens \
+                armsx2 \
                 atari800 \
                 azahar \
                 b2 \
@@ -334,6 +335,10 @@ fi
 if [ "${TARGET_ARCH}" = "arm" -o "${TARGET_ARCH}" = "i386" ]; then
   EXCLUDE_LIBRETRO_CORES+=" doukutsu_rs \
                             holani"
+fi
+
+if [ "${VULKAN_SUPPORT}" != "yes" ]; then
+  EXCLUDE_LIBRETRO_CORES+=" armsx2"
 fi
 
 # exclude some cores at build time via env EXCLUDE_LIBRETRO_CORES="core1 core2"
