@@ -6,9 +6,9 @@ index 9808f7b..c0ecbf0 100644
  ifeq ($(DEBUG), 1)
     CFLAGS += -O0 -g
  else
--   CFLAGS += -O3 -Wno-format -Wno-format-security
+-   CFLAGS += -O3 -Wno-format -Wno-format-security -Wno-free-nonheap-object
 -   LDFLAGS += -s
-+   CFLAGS += -O3 -Wno-format -Wno-format-security -g
++   CFLAGS += -O3 -Wno-format -Wno-format-security -Wno-free-nonheap-object -g
  endif
  
  # Zlib
