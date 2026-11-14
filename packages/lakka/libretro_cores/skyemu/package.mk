@@ -1,5 +1,5 @@
 PKG_NAME="skyemu"
-PKG_VERSION="46efbcbdb3b902373a09f4724e6d3b1a5acc4af3"
+PKG_VERSION="b64903f0fde8104d0796546b96859e9f682311b7"
 PKG_LICENSE="MIT"
 PKG_SITE="https://github.com/skylersaleh/SkyEmu"
 PKG_URL="${PKG_SITE}.git"
