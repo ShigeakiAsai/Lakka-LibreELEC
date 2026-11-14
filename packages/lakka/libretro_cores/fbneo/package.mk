@@ -1,5 +1,5 @@
 PKG_NAME="fbneo"
-PKG_VERSION="af33e4d8f11336d6902bff0874309066a405cadf"
+PKG_VERSION="3afad87ed555f6bfda2be3f4763b37068fd4ed86"
 PKG_LICENSE="Non-commercial"
 PKG_SITE="https://github.com/libretro/fbneo"
 PKG_URL="${PKG_SITE}.git"
@@ -18,6 +18,10 @@ if [ "${ARCH}" = "arm" ]; then
 else
   PKG_MAKE_OPTS_TARGET+=" profile=accuracy"
 fi
+
+pre_make_target() {
+  cd "${PKG_BUILD}"
+}
 
 makeinstall_target() {
   mkdir -p ${INSTALL}/usr/lib/libretro
