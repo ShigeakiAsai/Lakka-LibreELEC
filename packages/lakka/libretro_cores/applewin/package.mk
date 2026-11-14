@@ -1,5 +1,5 @@
 PKG_NAME="applewin"
-PKG_VERSION="e8eca6285c8f6a239959cc204760204e0bc17b1c"
+PKG_VERSION="e9ebeb7c83b7ffe67d8604a3b79d34925d56aada"
 PKG_LICENSE="GPL-2.0"
 PKG_SITE="https://github.com/audetto/AppleWin"
 PKG_URL="${PKG_SITE}.git"
