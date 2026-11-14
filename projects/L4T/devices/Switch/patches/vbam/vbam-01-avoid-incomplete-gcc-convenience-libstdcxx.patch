@@ -1,0 +1,15 @@
+diff -uNr a/src/libretro/CMakeLists.txt b/src/libretro/CMakeLists.txt
+--- a/src/libretro/CMakeLists.txt	2026-08-25 19:37:03.000000000 +0900
++++ b/src/libretro/CMakeLists.txt	2026-08-30 22:53:41.869742097 +0900
+@@ -487,11 +487,6 @@
+     set_target_properties(vbam_libretro PROPERTIES
+         LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/link.T
+     )
+-    if(NOT BUILD_SHARED_LIBS)
+-        target_link_options(vbam_libretro PRIVATE
+-            -static-libgcc -static-libstdc++
+-        )
+-    endif()
+ 
+ endif()
+ 
