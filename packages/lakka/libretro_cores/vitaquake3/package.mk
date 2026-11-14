@@ -1,5 +1,5 @@
 PKG_NAME="vitaquake3"
-PKG_VERSION="198e9959e2d5b692a592aa6fd7537e9a00869c42"
+PKG_VERSION="61374f650f42c4f25c215ea1f8db992af162ada6"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/vitaquake3"
 PKG_URL="${PKG_SITE}.git"
