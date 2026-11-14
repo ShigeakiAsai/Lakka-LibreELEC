@@ -1,16 +1,16 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 85126e0..bc780bd 100644
+index 878b5d5a5..fa2c2e4b1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -202,6 +202,7 @@ elseif(LIBRETRO)
+@@ -204,6 +204,7 @@ elseif(LIBRETRO)
+ 	set(CMAKE_SHARED_LIBRARY_PREFIX "")
  	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
  	target_compile_definitions(${PROJECT_NAME} PRIVATE LIBRETRO)
- 	target_compile_options(${PROJECT_NAME} PRIVATE -Wno-misleading-indentation)
 +	target_compile_options(${PROJECT_NAME} PRIVATE -g)
  	if(APPLE)
  		find_library(FOUNDATION Foundation)
  		target_link_libraries(${PROJECT_NAME} PRIVATE ${FOUNDATION})
-@@ -266,7 +267,9 @@ if(WINDOWS_STORE)
+@@ -276,7 +277,9 @@ if(WINDOWS_STORE)
  	set(USE_VULKAN OFF)
  endif()
  
