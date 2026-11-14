@@ -47,16 +47,3 @@ index 345a8c8..9804364 100644
  		vorbis.ov_pcm_total = ov_pcm_total;
  		vorbis.ov_read = ov_read;
  		vorbis.ov_time_seek = ov_time_seek;
-diff --git a/dependencies/SDL/src/audio/libretro/SDL_libretroaudio.c b/dependencies/SDL/src/audio/libretro/SDL_libretroaudio.c
-index ddffd52..dcb06de 100644
---- a/dependencies/SDL/src/audio/libretro/SDL_libretroaudio.c
-+++ b/dependencies/SDL/src/audio/libretro/SDL_libretroaudio.c
-@@ -155,7 +155,7 @@ void LIBRETRO_MixAudio()
- 	(*spec->callback)(spec->userdata, audio->hidden->mixbuf, audio->hidden->mixlen);
- 	SDL_mutexV(audio->mixer_lock);
- 
--	libretro_audio_cb(audio->hidden->mixbuf, spec->size / spec->channels / 2);
-+	libretro_audio_cb((int16_t*)(audio->hidden->mixbuf), spec->size / spec->channels / 2);
- }
- 
- static int LIBRETRO_OpenAudio(_THIS, SDL_AudioSpec *spec)
