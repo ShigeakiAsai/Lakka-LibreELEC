@@ -1,0 +1,9 @@
+--- a/src/core/cpu_code_cache.cpp
++++ b/src/core/cpu_code_cache.cpp
+@@ -6,5 +6,6 @@
+ #include "settings.h"
+ #include "system.h"
+ #include "timing_event.h"
++#include <algorithm>
+ #include <cstring>
+ Log_SetChannel(CPU::CodeCache);
