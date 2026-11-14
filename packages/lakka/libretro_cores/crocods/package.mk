@@ -1,5 +1,5 @@
 PKG_NAME="crocods"
-PKG_VERSION="a320f6e38af49af84a63f81329a1bdb9322022b4"
+PKG_VERSION="a9c63b29443715ae2add392010fca4eae7f93e67"
 PKG_LICENSE="MIT"
 PKG_SITE="https://github.com/libretro/libretro-crocods"
 PKG_URL="${PKG_SITE}.git"
