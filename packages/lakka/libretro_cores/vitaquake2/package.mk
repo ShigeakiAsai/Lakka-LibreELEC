@@ -1,5 +1,5 @@
 PKG_NAME="vitaquake2"
-PKG_VERSION="5e3add960dcf63b48e0dd839fac2617ec0160609"
+PKG_VERSION="4b333fe18e8816974f04432af01f87654ae16e21"
 PKG_ARCH="aarch64 x86_64"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/vitaquake2"
