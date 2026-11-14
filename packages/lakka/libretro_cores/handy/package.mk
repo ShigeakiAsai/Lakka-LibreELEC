@@ -1,5 +1,5 @@
 PKG_NAME="handy"
-PKG_VERSION="fca239207e9c111da3e85d2faf0b1b9d7524e498"
+PKG_VERSION="bc55d462f0b2d6b073ea93dc552ebd73cec60fd1"
 PKG_LICENSE="Zlib"
 PKG_SITE="https://github.com/libretro/libretro-handy"
 PKG_URL="${PKG_SITE}.git"
