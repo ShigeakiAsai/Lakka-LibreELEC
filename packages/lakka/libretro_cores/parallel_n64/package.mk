@@ -1,5 +1,5 @@
 PKG_NAME="parallel_n64"
-PKG_VERSION="1da824e13e725a7144f3245324f43d59623974f8"
+PKG_VERSION="f56f7a211b60e5c727cba3aec63360ab86153eaa"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/parallel-n64"
 PKG_URL="${PKG_SITE}.git"
@@ -24,6 +24,17 @@ fi
 if [ "${OPENGLES_SUPPORT}" = "yes" ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
   PKG_MAKE_OPTS_TARGET+=" FORCE_GLES=1"
+fi
+
+# workaround for RPiZero2-GPiCase compile error
+if [ "${DEVICE}" = "RPiZero2-GPiCase" ]; then
+  # TODO: package.mk and the core's Makefile need a proper review to
+  # correctly enable GLES support.
+  PKG_MAKE_OPTS_TARGET="${PKG_MAKE_OPTS_TARGET/HAVE_OPENGL=0/HAVE_OPENGL=1}"
+
+  # parallel-rdp's vulkan/semaphore.h shadows <semaphore.h> needed by the
+  # Broadcom EGL headers; parallel-RDP needs Vulkan anyway.
+  PKG_MAKE_OPTS_TARGET="${PKG_MAKE_OPTS_TARGET/HAVE_PARALLEL=1/HAVE_PARALLEL=0}"
 fi
 
 if [ "${VULKAN_SUPPORT}" = "yes" ]; then
