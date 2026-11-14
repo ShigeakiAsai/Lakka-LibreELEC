@@ -1,0 +1,11 @@
+diff -uNr a/third_party/elfio/elfio/elfio.hpp b/third_party/elfio/elfio/elfio.hpp
+--- a/third_party/elfio/elfio/elfio.hpp 2026-08-24 13:30:38.000000000 +0900
++++ b/third_party/elfio/elfio/elfio.hpp 2026-08-24 14:36:42.973650768 +0900
+@@ -32,6 +32,7 @@
+ #include <vector>
+ #include <deque>
+ #include <memory>
++#include <cstdint>
+
+ #include <elfio/elf_types.hpp>
+ #include <elfio/elfio_version.hpp>
