@@ -1,5 +1,5 @@
 PKG_NAME="boom3"
-PKG_VERSION="0bea79abf5ec8262dfe9af73cb8c54ea6e2aeb98"
+PKG_VERSION="4e66cb2cc50da28de9320d28c380433faa11c6b5"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/libretro/boom3"
 PKG_URL="${PKG_SITE}.git"
