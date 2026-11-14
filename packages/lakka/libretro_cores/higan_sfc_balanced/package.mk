@@ -1,5 +1,5 @@
 PKG_NAME="higan_sfc_balanced"
-PKG_VERSION="5e965d0db4c0d05e7e8fb6449035538781c73473"
+PKG_VERSION="5b2b5da3a9654d88b2e51fb7a1637808ac601a18"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/nSide"
 PKG_URL="${PKG_SITE}.git"
@@ -18,5 +18,5 @@ pre_make_target() {
 
 makeinstall_target() {
   mkdir -p ${INSTALL}/usr/lib/libretro
-    cp -v nSide/out/higan_sfc_balanced_libretro.so ${INSTALL}/usr/lib/libretro/
+    cp -v nSide/out/nside_sfc_balanced_libretro.so ${INSTALL}/usr/lib/libretro/
 }
