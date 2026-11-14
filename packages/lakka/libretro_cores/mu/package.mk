@@ -1,5 +1,5 @@
 PKG_NAME="mu"
-PKG_VERSION="d9766f139ece646703b5785097374a3a68dd07ad"
+PKG_VERSION="afaeb157b8ba38a4a9bdf426ba663f7efb2cc6f8"
 PKG_LICENSE="Non-commercial"
 PKG_SITE="https://github.com/libretro/Mu"
 PKG_URL="${PKG_SITE}.git"
