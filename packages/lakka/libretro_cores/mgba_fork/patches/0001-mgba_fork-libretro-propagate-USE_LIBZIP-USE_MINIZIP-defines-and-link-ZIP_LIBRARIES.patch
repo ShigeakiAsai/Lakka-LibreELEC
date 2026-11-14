@@ -1,0 +1,24 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9d528e790..5b315c47a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1102,11 +1102,17 @@ if(BUILD_LIBRETRO)
+ 	add_dependencies(${BINARY_NAME}_libretro ${BINARY_NAME}-version-info)
+ 	# The make-era libretro builds all used the gnu dialect (-std=gnu99) plus
+ 	# _GNU_SOURCE; newlib toolchains hide POSIX declarations under strict c11
+-	set_target_properties(${BINARY_NAME}_libretro PROPERTIES PREFIX "" C_EXTENSIONS ON COMPILE_DEFINITIONS "__LIBRETRO__;_GNU_SOURCE;${LIBRETRO_COLOR_DEFINES};DISABLE_THREADING;MGBA_STANDALONE;${OS_DEFINES};${FUNCTION_DEFINES};ENABLE_VFS;ENABLE_DIRECTORIES;MINIMAL_CORE=2;${LIBRETRO_EXTRA_DEFINES}")
++	set(LIBRETRO_ZIP_DEFINES "")
++	if(USE_LIBZIP)
++		set(LIBRETRO_ZIP_DEFINES "USE_LIBZIP")
++	elseif(USE_MINIZIP)
++		set(LIBRETRO_ZIP_DEFINES "USE_MINIZIP")
++	endif()
++	set_target_properties(${BINARY_NAME}_libretro PROPERTIES PREFIX "" C_EXTENSIONS ON COMPILE_DEFINITIONS "__LIBRETRO__;_GNU_SOURCE;${LIBRETRO_COLOR_DEFINES};DISABLE_THREADING;MGBA_STANDALONE;${OS_DEFINES};${FUNCTION_DEFINES};ENABLE_VFS;ENABLE_DIRECTORIES;MINIMAL_CORE=2;${LIBRETRO_ZIP_DEFINES};${LIBRETRO_EXTRA_DEFINES}")
+ 	if(LIBRETRO_EXTRA_FLAGS)
+ 		target_compile_options(${BINARY_NAME}_libretro PRIVATE ${LIBRETRO_EXTRA_FLAGS})
+ 	endif()
+-	target_link_libraries(${BINARY_NAME}_libretro ${OS_LIB})
++	target_link_libraries(${BINARY_NAME}_libretro ${OS_LIB} ${ZIP_LIBRARIES})
+ 	if(MSVC)
+ 		install(TARGETS ${BINARY_NAME}_libretro RUNTIME DESTINATION ${LIBRETRO_LIBDIR} COMPONENT ${BINARY_NAME}_libretro)
+ 	else()
