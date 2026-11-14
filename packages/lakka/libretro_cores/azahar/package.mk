@@ -1,5 +1,5 @@
 PKG_NAME="azahar"
-PKG_VERSION="9b045bf8370d035cacd99e5ad19a082df9e3b262"
+PKG_VERSION="11eceda5e0e682a1f44e396bf954a1b9137097ca"
 PKG_ARCH="x86_64 aarch64"
 PKG_LICENSE="GPL-2.0"
 PKG_SITE="https://github.com/azahar-emu/azahar"
