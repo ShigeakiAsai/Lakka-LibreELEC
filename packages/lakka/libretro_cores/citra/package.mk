@@ -1,5 +1,5 @@
 PKG_NAME="citra"
-PKG_VERSION="5263fae3344e5e9af43036e0e38bec2d10fb2407"
+PKG_VERSION="a0483e9abe8134ae6b290cdca7d49cb77689f05b"
 PKG_ARCH="x86_64 aarch64"
 PKG_LICENSE="GPLv2+"
 PKG_SITE="https://github.com/libretro/citra"
@@ -18,6 +18,7 @@ PKG_CMAKE_OPTS_TARGET="-DENABLE_TESTS=OFF \
                        -DENABLE_LIBUSB=OFF \
                        -DCITRA_ENABLE_BUNDLE_TARGET=OFF \
                        -DCITRA_WARNINGS_AS_ERRORS=OFF \
+                       -DENABLE_OPT=OFF \
                        -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 if [ "${OPENGL_SUPPORT}" = "yes" ]; then
