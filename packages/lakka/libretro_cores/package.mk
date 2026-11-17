@@ -126,6 +126,7 @@ LIBRETRO_CORES="\
                 openlara \
                 opera \
                 panda3ds \
+                parallel_dc \
                 parallel_n64 \
                 pcsx_rearmed \
                 pd777 \
@@ -295,6 +296,7 @@ elif [ "${PROJECT}" = "RPi" ]; then
                               mupen64plus_next \
                               openlara \
                               opera \
+                              parallel_dc \
                               parallel_n64 \
                               play \
                               ppsspp \
@@ -318,6 +320,7 @@ elif [ "${PROJECT}" = "RPi" ]; then
   elif [ "${DEVICE}" = "RPiZero2-GPiCase" ]; then
     EXCLUDE_LIBRETRO_CORES+=" boom3 \
                               openlara \
+                              parallel_dc \
                               play \
                               ppsspp \
                               scummvm \
