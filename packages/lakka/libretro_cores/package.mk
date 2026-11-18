@@ -112,6 +112,7 @@ LIBRETRO_CORES="\
                 mesen_s \
                 mgba \
                 mgba_fork \
+                minivmac \
                 mojozork \
                 mrboom \
                 mu \
