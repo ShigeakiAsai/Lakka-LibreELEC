@@ -1,0 +1,103 @@
+diff -uNr a/intl/msg_hash_lbl.h b/intl/msg_hash_lbl.h
+--- a/intl/msg_hash_lbl.h	2026-08-25 13:00:46.001315555 +0000
++++ b/intl/msg_hash_lbl.h	2026-08-25 13:00:50.529104639 +0000
+@@ -272,6 +272,10 @@
+    MENU_ENUM_LABEL_BLUETOOTH_ENABLE_STR
+    )
+ MSG_HASH(
++   MENU_ENUM_LABEL_LAKKA_DATE_AND_TIME,
++   "lakka_date_and_time"
++   )
++MSG_HASH(
+    MENU_ENUM_LABEL_TIMEZONE,
+    MENU_ENUM_LABEL_TIMEZONE_STR
+    )
+diff -uNr a/intl/msg_hash_us.h b/intl/msg_hash_us.h
+--- a/intl/msg_hash_us.h	2026-08-25 13:00:46.009796087 +0000
++++ b/intl/msg_hash_us.h	2026-08-25 13:00:54.817796610 +0000
+@@ -34624,6 +34624,14 @@
+    "Enable or disable Wi-Fi Access Point."
+    )
+ MSG_HASH(
++   MENU_ENUM_LABEL_VALUE_LAKKA_DATE_AND_TIME,
++   "Date & Time"
++   )
++MSG_HASH(
++   MENU_ENUM_SUBLABEL_LAKKA_DATE_AND_TIME,
++   "Adjust the system date and time."
++   )
++MSG_HASH(
+    MENU_ENUM_LABEL_VALUE_TIMEZONE,
+    "Time zone"
+    )
+diff -uNr a/menu/menu_displaylist.c b/menu/menu_displaylist.c
+--- a/menu/menu_displaylist.c	2026-08-25 13:00:46.029796088 +0000
++++ b/menu/menu_displaylist.c	2026-08-25 13:01:01.197796990 +0000
+@@ -10997,6 +10997,7 @@
+                {MENU_ENUM_LABEL_SAMBA_ENABLE,                                          PARSE_ONLY_BOOL},
+                {MENU_ENUM_LABEL_BLUETOOTH_ENABLE,                                      PARSE_ONLY_BOOL},
+                {MENU_ENUM_LABEL_LOCALAP_ENABLE,                                        PARSE_ONLY_BOOL},
++               {MENU_ENUM_LABEL_LAKKA_DATE_AND_TIME,                                   PARSE_ACTION},
+ #ifdef HAVE_RETROFLAG
+                {MENU_ENUM_LABEL_SAFESHUTDOWN_ENABLE,                                   PARSE_ONLY_BOOL},
+ #endif
+diff -uNr a/menu/menu_setting.c b/menu/menu_setting.c
+--- a/menu/menu_setting.c	2026-08-25 13:00:46.042727375 +0000
++++ b/menu/menu_setting.c	2026-08-25 13:01:28.796097472 +0000
+@@ -167,6 +167,10 @@
+ #include "../libretro-common/vfs/vfs_implementation_smb.h"
+ #endif
+ 
++#ifdef HAVE_LAKKA
++#include "../tasks/task_content.h"
++#endif
++
+ /* Forward declaration for Win32 native menubar rebuild.
+  * Defined in ui/drivers/ui_win32.c. Declared here rather than included
+  * via ui/drivers/ui_win32.h to avoid dragging <windows.h> and friends
+@@ -10255,6 +10259,18 @@
+ }
+ #endif
+ 
++static int lakka_date_and_time_action_callback(rarch_setting_t *setting, size_t idx, bool wraparound)
++{
++   const char *core_path = "/usr/lib/libretro/lakkasimpleclock_libretro.so";
++   (void)setting;
++   (void)idx;
++   (void)wraparound;
++
++   task_push_load_contentless_core_from_menu(core_path);
++
++   return 0;
++}
++
+ static void timezone_change_handler(rarch_setting_t *setting)
+ {
+    RFILE *tzfp;
+@@ -16608,6 +16624,15 @@
+          SETTINGS_ACTION_SET(change, &(*list)[list_info->index - 1], safeshutdown_enable_toggle_change_handler)
+ #endif
+ 
++            CONFIG_ACTION(
++                  list, list_info,
++                  MENU_ENUM_LABEL_LAKKA_DATE_AND_TIME,
++                  MENU_ENUM_LABEL_VALUE_LAKKA_DATE_AND_TIME,
++                  &group_info,
++                  &subgroup_info,
++                  parent_group);
++            SETTINGS_ACTION_SET(ok, &(*list)[list_info->index - 1], lakka_date_and_time_action_callback)
++
+          CONFIG_STRING_OPTIONS(
+                list, list_info,
+                settings->arrays.timezone,
+diff -uNr a/msg_hash.h b/msg_hash.h
+--- a/msg_hash.h	2026-08-25 13:00:46.050592756 +0000
++++ b/msg_hash.h	2026-08-25 13:00:57.868701846 +0000
+@@ -22231,6 +22231,7 @@
+    MENU_LABEL(SAMBA_ENABLE),
+    MENU_LABEL(BLUETOOTH_ENABLE),
+    MENU_LABEL(LOCALAP_ENABLE),
++   MENU_LABEL(LAKKA_DATE_AND_TIME),
+ #ifdef HAVE_RETROFLAG
+    MENU_LABEL(SAFESHUTDOWN_ENABLE),
+ #endif
