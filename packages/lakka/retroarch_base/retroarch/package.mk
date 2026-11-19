@@ -1,11 +1,11 @@
 PKG_NAME="retroarch"
-PKG_VERSION="69a4f0ea1e8aaf442ae4858f2e7f2b31a1776576"
+PKG_VERSION="be3ec365825d24b8b5ce1c2bdfbd28a4f954bf7c"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
 PKG_URL="${PKG_SITE}.git"
 PKG_DEPENDS_TARGET="toolchain freetype zlib ffmpeg libass libxkbcommon glsl_shaders slang_shaders systemd libpng fontconfig SDL2_input"
 PKG_LONGDESC="Reference frontend for the libretro API."
-PKG_LR_UPDATE_TAG="yes"
+# PKG_LR_UPDATE_TAG="yes"
 
 PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
                            --disable-sdl \
@@ -18,7 +18,6 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
                            --enable-kms \
                            --enable-egl \
                            --enable-ssl \
-                           --enable-builtinmbedtls \
                            --datarootdir=${SYSROOT_PREFIX}/usr/share" # don't use host /usr/share!
 
 PKG_MAKE_OPTS_TARGET="V=1 \
@@ -30,7 +29,6 @@ PKG_MAKE_OPTS_TARGET="V=1 \
                       HAVE_BLUETOOTH=1 \
                       HAVE_CLOUDSYNC=1 \
                       HAVE_SSL=1 \
-                      HAVE_BUILTINMBEDTLS=1 \
                       HAVE_FREETYPE=1"
 
 if [ "${PROJECT}" = "RPi" ]; then
