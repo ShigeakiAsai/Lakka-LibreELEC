@@ -2,8 +2,8 @@
 # Copyright (C) 2026-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="SDL3"
-PKG_VERSION="3.4.14"
-PKG_SHA256="30d4aa2b3037718142b32dffd4e72f917ebb6cc5227150e7bb9c45efb2153aeb"
+PKG_VERSION="3.4.20"
+PKG_SHA256="f3bb06f55bed9557227a700af2ea62e49497ebdf58037732a731a5fb3ef8581f"
 PKG_LICENSE="ZLIB"
 PKG_SITE="https://www.libsdl.org"
 PKG_URL="https://www.libsdl.org/release/SDL3-${PKG_VERSION}.tar.gz"
