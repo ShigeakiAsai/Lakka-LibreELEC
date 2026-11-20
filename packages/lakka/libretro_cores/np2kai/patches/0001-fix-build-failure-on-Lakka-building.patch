@@ -1,0 +1,35 @@
+From d143fce7701b6afe96d48871fd58328714a6e25c Mon Sep 17 00:00:00 2001
+From: Shigeaki Asai <y-asai.0816@docomonet.jp>
+Date: Fri, 8 May 2026 09:29:46 +0900
+Subject: [PATCH] fix build failure on Lakka building
+
+---
+ io/np2sysp.c | 2 +-
+ io/printif.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/io/np2sysp.c b/io/np2sysp.c
+index 27ecb4b..790917a 100644
+--- a/io/np2sysp.c
++++ b/io/np2sysp.c
+@@ -1,5 +1,5 @@
+-#include <common/strres.h>
+ #include <compiler.h>
++#include <common/strres.h>
+ 
+ #if defined(OSLANG_UCS2)
+ #include "oemtext.h"
+diff --git a/io/printif.c b/io/printif.c
+index 1cef6ad..65da449 100755
+--- a/io/printif.c
++++ b/io/printif.c
+@@ -1,5 +1,5 @@
+-#include "commng.h"
+ #include "compiler.h"
++#include "commng.h"
+ #include "cpucore.h"
+ #include "iocore.h"
+ #include "pccore.h"
+-- 
+2.43.0
+

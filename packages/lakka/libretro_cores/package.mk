@@ -344,10 +344,5 @@ if [ -n "${EXCLUDE_LIBRETRO_CORES}" ]; then
   done
 fi
 
-# temporary disabled due to build error
-for core in np2kai ; do
-  LIBRETRO_CORES="${LIBRETRO_CORES// ${core} /}"
-done
-
 # finally set package dependencies
 PKG_DEPENDS_TARGET="${LIBRETRO_CORES}"
