@@ -10,8 +10,10 @@ PKG_TOOLCHAIN="make"
 PKG_MAKE_OPTS_TARGET="-C ../src/libretro"
 
 pre_make_target() {
-  CFLAGS+=" -DSYSTEM_HAVE_STRLCPY"
-  CXXFLAGS+=" -DSYSTEM_HAVE_STRLCPY"
+  if [ "${PROJECT}" != "L4T" ]; then
+    CFLAGS+=" -DSYSTEM_HAVE_STRLCPY"
+    CXXFLAGS+=" -DSYSTEM_HAVE_STRLCPY"
+  fi
 }
 
 makeinstall_target() {
